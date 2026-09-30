@@ -1,325 +1,435 @@
 # Graph Report - CONTROL ZYTERON  (2026-09-30)
 
 ## Corpus Check
-- cluster-only mode — file stats not available
+- 155 files · ~28,036 words
+- Verdict: corpus is large enough that graph structure adds value.
+- Unclassified: 4 file(s) not represented in the graph (top: (none) 2, .example 1, .css 1)
 
 ## Summary
-- 619 nodes · 1227 edges · 60 communities (51 shown, 9 thin omitted)
-- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 50 edges (avg confidence: 0.8)
+- 1223 nodes · 2503 edges · 95 communities (68 shown, 27 thin omitted)
+- Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 143 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
+## Graph Freshness
+- Built from commit: `8c3000e8`
+- Run `git rev-parse HEAD` and compare to check if the graph is stale.
+- Run `graphify update .` after code changes (no API cost).
+
 ## Community Hubs (Navigation)
-- Client API & Policies
-- module-page.tsx
+- RequireRoles
+- ContractsRepository
 - ext_packages_contracts_dist_index_js
-- app.module.ts
-- enterprise-shell.tsx
-- TypeScript Configuration
-- clients.service.ts
-- emptyDomain
-- client-integrations.service.ts
-- client-360.tsx
-- new-client-wizard.tsx
-- client-hub.tsx
+- index.ts
+- clients.module.ts
+- client-domain.test.ts
+- packages_contracts_dist_index
+- @nestjs/common
+- client-services.service.ts
+- clients-api.ts
+- .publish
+- users_eduardoavila_desktop_zyteron_cl_control_zyteron_packages_contracts_dist_index_client
 - react
-- useAccess
+- module-page.tsx
 - web/package.json
-- main.ts
-- client-provider-ports.ts
-- Santiago Date & Time
-- API Package
-- API Dependencies
-- Authentication Guard
-- clients.dto.ts
-- dependencies
-- next
-- scripts
-- Public
-- devDependencies
-- scripts
-- devDependencies
-- ClientsPolicy
+- api/package.json
+- 20260930120000_complete_client_domain.sql
+- client-domain-api.ts
+- client-360.tsx
+- 20260930070000_client_360.sql
+- users_eduardoavila_desktop_zyteron_cl_control_zyteron_packages_contracts_dist_index_roles
+- users_eduardoavila_desktop_zyteron_cl_control_zyteron_packages_contracts_dist_index_clientstatuses
+- package.json
+- contact-directory.tsx
+- useAccess
+- client-integrations.service.ts
+- emptyDomain
+- RenewalsRepository
+- ClientServicesRepository
+- app.module.ts
+- control-dashboard 2.tsx
+- ContactsRepository
+- new-client-wizard.tsx
+- renewal-center.tsx
+- Zyteron Control
+- crm.controller.ts
+- compilerOptions
+- compilerOptions
+- contracts/package.json
+- client-hub.tsx
+- compilerOptions
+- commercial-pipeline.tsx
+- module-content.ts
+- compilerOptions
+- UsersController
+- audits.module.ts
+- documents.module.ts
+- incidents.module.ts
+- monitoring.module.ts
+- notifications.module.ts
+- permissions.module.ts
+- projects.module.ts
+- quotes.module.ts
+- web_next_types_root_params_d
+- reports.module.ts
+- roles.module.ts
+- security.module.ts
+- settings.module.ts
+- support.module.ts
+- vault.module.ts
+- work-orders.module.ts
+- ADR-002 — Renovaciones materializadas
+- Q: ¿Cuál es el primer vertical funcional para iniciar Zyteron Control?
+- Q: ¿Qué arquitectura y postura de seguridad exige el arranque?
+- Q: ¿Cómo se conectan los dominios, permisos y rutas empresariales?
+- Q: ¿Cómo conecta Client 360 con los dominios empresariales?
+- Q: ¿Qué puertos externos prepara Client 360 sin simular integraciones?
+- Q: ¿Qué directorio raíz y comandos de build/start requiere Render para desplegar la aplicación web Next.js dentro de este monorepo pnpm?
+- Q: ¿Por qué Render muestra Failed to fetch y CORS al llamar localhost:4000 desde zyteroncontrol.onrender.com?
+- Q: ¿Por qué Zyteron Control necesita dos servicios en Render?
+- Q: ¿Qué causa el 500 en GET /api/clients del despliegue Render si /api/health responde 200 y CORS ya es correcto?
+- Q: ¿Por qué POST /api/clients devuelve 500 en producción mientras GET /api/clients funciona y la lista sigue vacía?
+- Q: ¿Por qué aparecen alertas de UUID después de desplegar el wizard corregido?
+- Q: ¿Por qué sólo funciona Todos los clientes y las demás secciones del menú devuelven Internal server error?
 - nest-cli.json
-- .index
-- AuthController
-- .index
-- .index
-- .index
-- .index
-- .index
-- .index
-- .index
-- .index
-- .index
-- .index
-- .index
-- .index
-- .index
-- .index
-- .index
-- .index
-- .index
-- .index
-- .index
 - next-env.d.ts
 - activity-feed.tsx
-- Controller
-- Get
-- Body
-- Post
+- users_eduardoavila_desktop_zyteron_cl_control_zyteron_packages_contracts_dist_index_clientcontact
+- users_eduardoavila_desktop_zyteron_cl_control_zyteron_packages_contracts_dist_index_clientevent
+- users_eduardoavila_desktop_zyteron_cl_control_zyteron_packages_contracts_dist_index_clienthealthfactor
+- users_eduardoavila_desktop_zyteron_cl_control_zyteron_packages_contracts_dist_index_clienthealthstatus
+- users_eduardoavila_desktop_zyteron_cl_control_zyteron_packages_contracts_dist_index_clientlistresponse
+- users_eduardoavila_desktop_zyteron_cl_control_zyteron_packages_contracts_dist_index_clientportalsettings
+- users_eduardoavila_desktop_zyteron_cl_control_zyteron_packages_contracts_dist_index_clientservice
+- users_eduardoavila_desktop_zyteron_cl_control_zyteron_packages_contracts_dist_index_commercialrecord
+- users_eduardoavila_desktop_zyteron_cl_control_zyteron_packages_contracts_dist_index_createclientinput
+- users_eduardoavila_desktop_zyteron_cl_control_zyteron_packages_contracts_dist_index_createcommercialrecord
+- users_eduardoavila_desktop_zyteron_cl_control_zyteron_packages_contracts_dist_index_pipelinestage
+- users_eduardoavila_desktop_zyteron_cl_control_zyteron_packages_contracts_dist_index_pipelinestages
+- users_eduardoavila_desktop_zyteron_cl_control_zyteron_packages_contracts_dist_index_pipelinesummary
+- users_eduardoavila_desktop_zyteron_cl_control_zyteron_packages_contracts_dist_index_role
+- web_next_types_routes_d
+- web_src_app_globals
 
 ## God Nodes (most connected - your core abstractions)
-1. `RequireRoles()` - 66 edges
-2. `emptyDomain()` - 41 edges
-3. `@nestjs/common` - 40 edges
-4. `ClientsRepository` - 33 edges
-5. `ClientsController` - 25 edges
-6. `ClientsService` - 23 edges
-7. `ModulePage()` - 19 edges
-8. `react` - 16 edges
-9. `useAccess()` - 13 edges
-10. `compilerOptions` - 10 edges
+1. `RequireRoles()` - 106 edges
+2. `@nestjs/common` - 61 edges
+3. `emptyDomain()` - 39 edges
+4. `ClientsRepository` - 36 edges
+5. `useAccess()` - 31 edges
+6. `ClientsController` - 25 edges
+7. `ClientsService` - 23 edges
+8. `ContractsRepository` - 23 edges
+9. `ClientServicesRepository` - 22 edges
+10. `RenewalsRepository` - 22 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `ModulePage()` --calls--> `getModuleDescriptor()`  [EXTRACTED]
-  web/src/components/module-page.tsx → web/src/lib/module-content.ts
-- `NewClientWizard()` --calls--> `useAccess()`  [EXTRACTED]
-  web/src/components/clients/new-client-wizard.tsx → web/src/components/access-context.tsx
-- `submit()` --calls--> `normalizeRut()`  [EXTRACTED]
-  web/src/components/clients/new-client-wizard.tsx → web/src/lib/rut.ts
-- `Review()` --calls--> `normalizeRut()`  [EXTRACTED]
-  web/src/components/clients/new-client-wizard.tsx → web/src/lib/rut.ts
-- `ClientResults()` --calls--> `formatDate()`  [EXTRACTED]
-  web/src/components/clients/client-hub.tsx → web/src/lib/date-time.ts
+- `eventService()` --calls--> `ClientsRepository`  [EXTRACTED]
+  apps/api/src/client-domain.test.ts → apps/api/src/clients/clients.repository.ts
+- `Client360()` --calls--> `useAccess()`  [EXTRACTED]
+  apps/web/src/components/clients/client-360.tsx → apps/web/src/components/access-context.tsx
+- `Services()` --calls--> `useAccess()`  [EXTRACTED]
+  apps/web/src/components/clients/client-360.tsx → apps/web/src/components/access-context.tsx
+- `ClientHub()` --calls--> `useAccess()`  [EXTRACTED]
+  apps/web/src/components/clients/client-hub.tsx → apps/web/src/components/access-context.tsx
+- `ContactCard()` --calls--> `useAccess()`  [EXTRACTED]
+  apps/web/src/components/clients/contact-directory.tsx → apps/web/src/components/access-context.tsx
 
 ## Import Cycles
 - None detected.
 
-## Communities (60 total, 9 thin omitted)
+## Communities (95 total, 27 thin omitted)
 
-### Community 0 - "Client API & Policies"
+### Community 0 - "RequireRoles"
 Cohesion: 0.07
-Nodes (13): RequireRoles(), ClientsController, Body, Controller, Get, Post, ClientsRepository, Injectable (+5 more)
+Nodes (13): RequireRoles(), ClientsController, Body, Controller, Get, Param, Patch, Post (+5 more)
 
-### Community 1 - "module-page.tsx"
-Cohesion: 0.07
-Nodes (5): CommercialPipeline(), RoleGuard(), FilterBar(), StatusBadge(), ModulePage()
-
-### Community 2 - "ext_packages_contracts_dist_index_js"
+### Community 1 - "ContractsRepository"
 Cohesion: 0.08
-Nodes (22): CrmController, Body, Controller, Get, Post, CrmService, Injectable, ext_packages_contracts_dist_index_js (+14 more)
+Nodes (14): ClientContractsController, ContractsController, Body, Controller, Get, Param, Patch, Post (+6 more)
 
-### Community 3 - "app.module.ts"
-Cohesion: 0.07
-Nodes (26): AuthModule, Module, ClientsModule, Module, DevelopmentModule, Module, HrModule, Module (+18 more)
+### Community 3 - "index.ts"
+Cohesion: 0.05
+Nodes (42): billingFrequencies, BillingFrequency, Client, ClientContact, ClientContactDirectoryItem, ClientContract, ClientEvent, ClientHealthFactor (+34 more)
 
-### Community 4 - "enterprise-shell.tsx"
-Cohesion: 0.11
-Nodes (19): lucide-react, ref_node_fs, ref_vitest, users_eduardoavila_desktop_zyteron_cl_control_zyteron_packages_contracts_dist_index_role, AccessContext, AccessContextValue, NotificationCenter(), EnterpriseShell() (+11 more)
-
-### Community 5 - "TypeScript Configuration"
-Cohesion: 0.07
-Nodes (25): compilerOptions, emitDecoratorMetadata, experimentalDecorators, module, moduleResolution, outDir, rootDir, strictPropertyInitialization (+17 more)
-
-### Community 6 - "clients.service.ts"
-Cohesion: 0.16
-Nodes (16): ClientEventsService, Injectable, ClientHealthService, Injectable, ClientIntegrationsService, Injectable, clientManagers, clientReaders (+8 more)
-
-### Community 8 - "client-integrations.service.ts"
+### Community 4 - "clients.module.ts"
 Cohesion: 0.09
-Nodes (21): AuditsModule, Module, clientDomainModules, CrmModule, Module, DocumentsModule, Module, FinanceModule (+13 more)
+Nodes (22): ClientDomainHealthSignals, ClientHealthService, Injectable, ClientIntegrationsService, Injectable, clientManagers, clientReaders, optionalUuid() (+14 more)
 
-### Community 9 - "client-360.tsx"
-Cohesion: 0.15
-Nodes (11): ref_supabase_supabase_js, users_eduardoavila_desktop_zyteron_cl_control_zyteron_packages_contracts_dist_index_clientevent, users_eduardoavila_desktop_zyteron_cl_control_zyteron_packages_contracts_dist_index_clientportalsettings, Client360(), ClientTab, healthLabel(), initials(), statusLabel() (+3 more)
+### Community 5 - "client-domain.test.ts"
+Cohesion: 0.09
+Nodes (20): eventService(), ClientEventsService, Injectable, ClientsModule, Module, ContactsController, managers, readers (+12 more)
 
-### Community 10 - "new-client-wizard.tsx"
-Cohesion: 0.21
-Nodes (8): initial, NewClientWizard(), submit(), Review(), serviceCatalog, steps, isValidRut(), normalizeRut()
+### Community 6 - "packages_contracts_dist_index"
+Cohesion: 0.16
+Nodes (17): managers, readers, validateContract(), transitions, cleanSearch(), createServerSupabase(), pageBounds(), packages_contracts_dist_index (+9 more)
 
-### Community 11 - "client-hub.tsx"
-Cohesion: 0.21
-Nodes (10): users_eduardoavila_desktop_zyteron_cl_control_zyteron_packages_contracts_dist_index_client, users_eduardoavila_desktop_zyteron_cl_control_zyteron_packages_contracts_dist_index_clientlistresponse, ClientResults(), emptyResponse, healthLabel(), initials(), metricConfig, statusLabel() (+2 more)
+### Community 7 - "@nestjs/common"
+Cohesion: 0.11
+Nodes (17): AuthController, AuthModule, Controller, Get, Module, RoleGuard, Injectable, Public() (+9 more)
+
+### Community 8 - "client-services.service.ts"
+Cohesion: 0.10
+Nodes (18): ClientServicesController, managers, readers, Body, Controller, Get, Param, Patch (+10 more)
+
+### Community 9 - "clients-api.ts"
+Cohesion: 0.20
+Nodes (12): ClientPatch, InitialContact, InitialService, apiHeaders(), request(), request(), packages_contracts_dist_index_client, packages_contracts_dist_index_clientcontact (+4 more)
+
+### Community 10 - ".publish"
+Cohesion: 0.11
+Nodes (16): ClientRenewalsController, managers, readers, RenewalsController, Body, Controller, Get, Param (+8 more)
 
 ### Community 12 - "react"
-Cohesion: 0.24
-Nodes (3): react, DataTable(), EmptyState()
+Cohesion: 0.11
+Nodes (16): apps_web_src_app_globals, metadata, AccessContext, AccessContextValue, PermissionGate(), DataTable(), EmptyState(), NotificationCenter() (+8 more)
 
-### Community 13 - "useAccess"
-Cohesion: 0.17
-Nodes (6): useAccess(), Contacts(), PortalPanel(), SettingsPanel(), ClientHub(), PermissionGate()
+### Community 13 - "module-page.tsx"
+Cohesion: 0.08
+Nodes (4): RoleGuard(), FilterBar(), StatusBadge(), ModulePage()
 
 ### Community 14 - "web/package.json"
-Cohesion: 0.18
-Nodes (10): @supabase/supabase-js, @types/node, @zyteron/contracts, react-dom, @types/react, @types/react-dom, vitest, name (+2 more)
+Cohesion: 0.06
+Nodes (33): nextConfig, dependencies, lucide-react, next, @next/env, react, react-dom, @supabase/supabase-js (+25 more)
 
-### Community 15 - "main.ts"
-Cohesion: 0.18
-Nodes (8): AppModule, Module, dotenv, @nestjs/core, @next/env, ref_node_path, reflect-metadata, nextConfig
+### Community 15 - "api/package.json"
+Cohesion: 0.05
+Nodes (37): dependencies, dotenv, @nestjs/common, @nestjs/core, @nestjs/platform-express, reflect-metadata, rxjs, @supabase/supabase-js (+29 more)
 
-### Community 16 - "client-provider-ports.ts"
-Cohesion: 0.18
-Nodes (4): clientProviderPorts, ElectronicSignatureProvider, PaymentProvider, TaxDocumentProvider
+### Community 16 - "20260930120000_complete_client_domain.sql"
+Cohesion: 0.09
+Nodes (26): public.client_assignments, public.client_portal_users, public.client_services, public.clients, public.sync_client_domain_renewal, public.sync_renewal_notification_schedule, client_contracts_sync_renewal, client_domain_audit_client_idx (+18 more)
 
-### Community 17 - "Santiago Date & Time"
-Cohesion: 0.33
-Nodes (9): ActivityTimeline(), Services(), save(), dateFormatter, formatDate(), formatDateTime(), formatTime(), timeFormatter (+1 more)
+### Community 17 - "client-domain-api.ts"
+Cohesion: 0.10
+Nodes (26): ContractCenter(), ContractDetail(), transition(), upload(), empty, money(), sha256(), downloadCsv() (+18 more)
 
-### Community 18 - "API Package"
+### Community 18 - "client-360.tsx"
+Cohesion: 0.13
+Nodes (20): ActivityTimeline(), Client360(), ClientContracts(), ClientRenewals(), ClientTab, formatMoney(), healthLabel(), initials() (+12 more)
+
+### Community 19 - "20260930070000_client_360.sql"
+Cohesion: 0.14
+Nodes (25): auth.users, business_event_outbox_pending_idx, client_assignments_user_idx, client_contacts_client_idx, client_contacts_one_primary, client_events_timeline_idx, client_services_client_idx, client_services_renewal_idx (+17 more)
+
+### Community 22 - "package.json"
+Cohesion: 0.09
+Nodes (21): devDependencies, eslint, @eslint/js, globals, typescript-eslint, engines, node, name (+13 more)
+
+### Community 23 - "contact-directory.tsx"
+Cohesion: 0.15
+Nodes (9): ContactDirectory(), emptySummary, groupItems(), types, contactsDirectoryApi, packages_contracts_dist_index_clientcontactdirectoryitem, packages_contracts_dist_index_contactdirectorysummary, packages_contracts_dist_index_contacttype (+1 more)
+
+### Community 24 - "useAccess"
+Cohesion: 0.10
+Nodes (12): useAccess(), Contacts(), PortalPanel(), SettingsPanel(), archive(), ContactCard(), ContactForm(), ContractForm() (+4 more)
+
+### Community 25 - "client-integrations.service.ts"
+Cohesion: 0.11
+Nodes (10): clientDomainModules, clientProviderPorts, ElectronicSignatureProvider, PaymentProvider, TaxDocumentProvider, FinanceController, FinanceModule, Controller (+2 more)
+
+### Community 26 - "emptyDomain"
+Cohesion: 0.14
+Nodes (12): DevelopmentController, Controller, Get, emptyDomain(), HrController, Controller, Get, TasksController (+4 more)
+
+### Community 29 - "app.module.ts"
+Cohesion: 0.13
+Nodes (14): ClientServicesModule, Module, ContactsModule, Module, ContractsModule, Module, CrmModule, Module (+6 more)
+
+### Community 30 - "control-dashboard 2.tsx"
+Cohesion: 0.15
+Nodes (10): fallbackRecords, money, stageLabels, stages, ControlDashboard(), money, packages_contracts_dist_index_commercialrecord, packages_contracts_dist_index_pipelinestage (+2 more)
+
+### Community 32 - "new-client-wizard.tsx"
 Cohesion: 0.20
-Nodes (9): typescript, vitest, name, private, type, version, @nestjs/cli, @nestjs/platform-express (+1 more)
+Nodes (10): initial, NewClientWizard(), submit(), Review(), serviceCatalog, steps, clientsApi, isValidRut() (+2 more)
 
-### Community 19 - "API Dependencies"
+### Community 33 - "renewal-center.tsx"
+Cohesion: 0.24
+Nodes (13): countdown(), empty, groupItems(), label(), money(), RenewalCalendar(), RenewalCard(), RenewalCenter() (+5 more)
+
+### Community 34 - "Zyteron Control"
+Cohesion: 0.13
+Nodes (13): ADR-001: primer vertical de Zyteron Control, Contexto, Decisión, Estado, Límites de esta iteración, Próximos hitos, Clientes / Client 360, Estado actual (+5 more)
+
+### Community 35 - "crm.controller.ts"
+Cohesion: 0.18
+Nodes (8): CrmController, Body, Controller, Get, Post, CrmService, Injectable, packages_contracts_dist_index_createcommercialrecord
+
+### Community 36 - "compilerOptions"
+Cohesion: 0.14
+Nodes (13): compilerOptions, emitDecoratorMetadata, experimentalDecorators, module, moduleResolution, outDir, rootDir, strictPropertyInitialization (+5 more)
+
+### Community 37 - "compilerOptions"
+Cohesion: 0.14
+Nodes (13): compilerOptions, allowJs, incremental, jsx, lib, module, noEmit, paths (+5 more)
+
+### Community 38 - "contracts/package.json"
+Cohesion: 0.14
+Nodes (13): devDependencies, typescript, exports, typescript, main, name, private, scripts (+5 more)
+
+### Community 39 - "client-hub.tsx"
+Cohesion: 0.21
+Nodes (8): ClientHub(), ClientResults(), emptyResponse, healthLabel(), initials(), metricConfig, statusLabel(), ViewMode
+
+### Community 40 - "compilerOptions"
+Cohesion: 0.20
+Nodes (9): compilerOptions, declaration, module, moduleResolution, outDir, rootDir, extends, include (+1 more)
+
+### Community 41 - "commercial-pipeline.tsx"
+Cohesion: 0.28
+Nodes (4): CommercialPipeline(), money, stages, PageHeader()
+
+### Community 42 - "module-content.ts"
+Cohesion: 0.28
+Nodes (6): getModuleDescriptor(), groupContent, ModuleDescriptor, enterpriseNavigation, NavigationGroup, NavigationItem
+
+### Community 43 - "compilerOptions"
 Cohesion: 0.22
-Nodes (9): dependencies, dotenv, @nestjs/common, @nestjs/core, @nestjs/platform-express, reflect-metadata, rxjs, @supabase/supabase-js (+1 more)
+Nodes (8): compilerOptions, esModuleInterop, forceConsistentCasingInFileNames, moduleResolution, noUncheckedIndexedAccess, skipLibCheck, strict, target
 
-### Community 20 - "Authentication Guard"
+### Community 44 - "UsersController"
 Cohesion: 0.25
-Nodes (5): RoleGuard, Injectable, PUBLIC_ROUTE, REQUIRED_ROLES, users_eduardoavila_desktop_zyteron_cl_control_zyteron_packages_contracts_dist_index_roles
+Nodes (5): Controller, Get, Injectable, UsersController, UsersDirectoryService
 
-### Community 21 - "clients.dto.ts"
-Cohesion: 0.57
-Nodes (5): parsePagination(), validateCreateClient(), isValidChileanRut(), normalizeRut(), users_eduardoavila_desktop_zyteron_cl_control_zyteron_packages_contracts_dist_index_clientstatuses
-
-### Community 22 - "dependencies"
-Cohesion: 0.25
-Nodes (8): dependencies, lucide-react, next, @next/env, react, react-dom, @supabase/supabase-js, @zyteron/contracts
-
-### Community 23 - "next"
+### Community 45 - "audits.module.ts"
 Cohesion: 0.29
-Nodes (3): next, web_src_app_globals, metadata
+Nodes (5): AuditsController, AuditsModule, Controller, Get, Module
 
-### Community 24 - "scripts"
-Cohesion: 0.33
-Nodes (6): scripts, build, dev, start, test, typecheck
+### Community 46 - "documents.module.ts"
+Cohesion: 0.29
+Nodes (5): DocumentsController, DocumentsModule, Controller, Get, Module
 
-### Community 25 - "Public"
+### Community 47 - "incidents.module.ts"
+Cohesion: 0.29
+Nodes (5): IncidentsController, IncidentsModule, Controller, Get, Module
+
+### Community 48 - "monitoring.module.ts"
+Cohesion: 0.29
+Nodes (5): MonitoringController, MonitoringModule, Controller, Get, Module
+
+### Community 49 - "notifications.module.ts"
+Cohesion: 0.29
+Nodes (5): NotificationsController, NotificationsModule, Controller, Get, Module
+
+### Community 50 - "permissions.module.ts"
+Cohesion: 0.29
+Nodes (5): PermissionsController, PermissionsModule, Controller, Get, Module
+
+### Community 51 - "projects.module.ts"
+Cohesion: 0.29
+Nodes (5): ProjectsController, ProjectsModule, Controller, Get, Module
+
+### Community 52 - "quotes.module.ts"
+Cohesion: 0.29
+Nodes (5): QuotesController, QuotesModule, Controller, Get, Module
+
+### Community 54 - "reports.module.ts"
+Cohesion: 0.29
+Nodes (5): ReportsController, ReportsModule, Controller, Get, Module
+
+### Community 55 - "roles.module.ts"
+Cohesion: 0.29
+Nodes (5): RolesController, RolesModule, Controller, Get, Module
+
+### Community 56 - "security.module.ts"
+Cohesion: 0.29
+Nodes (5): SecurityController, SecurityModule, Controller, Get, Module
+
+### Community 57 - "settings.module.ts"
+Cohesion: 0.29
+Nodes (5): SettingsController, SettingsModule, Controller, Get, Module
+
+### Community 58 - "support.module.ts"
+Cohesion: 0.29
+Nodes (5): SupportController, SupportModule, Controller, Get, Module
+
+### Community 59 - "vault.module.ts"
+Cohesion: 0.29
+Nodes (5): Controller, Get, Module, VaultController, VaultModule
+
+### Community 60 - "work-orders.module.ts"
+Cohesion: 0.29
+Nodes (5): Controller, Get, Module, WorkOrdersController, WorkOrdersModule
+
+### Community 62 - "ADR-002 — Renovaciones materializadas"
 Cohesion: 0.40
-Nodes (4): Public(), HealthController, Controller, Get
+Nodes (4): ADR-002 — Renovaciones materializadas, Decisión, Integridad, Motivo
 
-### Community 26 - "devDependencies"
-Cohesion: 0.33
-Nodes (6): devDependencies, @types/node, @types/react, @types/react-dom, typescript, vitest
-
-### Community 27 - "scripts"
-Cohesion: 0.33
-Nodes (6): scripts, build, dev, start, test, typecheck
-
-### Community 28 - "devDependencies"
+### Community 63 - "Q: ¿Cuál es el primer vertical funcional para iniciar Zyteron Control?"
 Cohesion: 0.40
-Nodes (5): devDependencies, @nestjs/cli, @types/node, typescript, vitest
+Nodes (4): Answer, Outcome, Q: ¿Cuál es el primer vertical funcional para iniciar Zyteron Control?, Source Nodes
 
-### Community 31 - "nest-cli.json"
+### Community 64 - "Q: ¿Qué arquitectura y postura de seguridad exige el arranque?"
+Cohesion: 0.40
+Nodes (4): Answer, Outcome, Q: ¿Qué arquitectura y postura de seguridad exige el arranque?, Source Nodes
+
+### Community 65 - "Q: ¿Cómo se conectan los dominios, permisos y rutas empresariales?"
+Cohesion: 0.40
+Nodes (4): Answer, Outcome, Q: ¿Cómo se conectan los dominios, permisos y rutas empresariales?, Source Nodes
+
+### Community 66 - "Q: ¿Cómo conecta Client 360 con los dominios empresariales?"
+Cohesion: 0.40
+Nodes (4): Answer, Outcome, Q: ¿Cómo conecta Client 360 con los dominios empresariales?, Source Nodes
+
+### Community 67 - "Q: ¿Qué puertos externos prepara Client 360 sin simular integraciones?"
+Cohesion: 0.40
+Nodes (4): Answer, Outcome, Q: ¿Qué puertos externos prepara Client 360 sin simular integraciones?, Source Nodes
+
+### Community 68 - "Q: ¿Qué directorio raíz y comandos de build/start requiere Render para desplegar la aplicación web Next.js dentro de este monorepo pnpm?"
+Cohesion: 0.40
+Nodes (4): Answer, Outcome, Q: ¿Qué directorio raíz y comandos de build/start requiere Render para desplegar la aplicación web Next.js dentro de este monorepo pnpm?, Source Nodes
+
+### Community 69 - "Q: ¿Por qué Render muestra Failed to fetch y CORS al llamar localhost:4000 desde zyteroncontrol.onrender.com?"
+Cohesion: 0.40
+Nodes (4): Answer, Outcome, Q: ¿Por qué Render muestra Failed to fetch y CORS al llamar localhost:4000 desde zyteroncontrol.onrender.com?, Source Nodes
+
+### Community 70 - "Q: ¿Por qué Zyteron Control necesita dos servicios en Render?"
+Cohesion: 0.40
+Nodes (4): Answer, Outcome, Q: ¿Por qué Zyteron Control necesita dos servicios en Render?, Source Nodes
+
+### Community 71 - "Q: ¿Qué causa el 500 en GET /api/clients del despliegue Render si /api/health responde 200 y CORS ya es correcto?"
+Cohesion: 0.40
+Nodes (4): Answer, Outcome, Q: ¿Qué causa el 500 en GET /api/clients del despliegue Render si /api/health responde 200 y CORS ya es correcto?, Source Nodes
+
+### Community 72 - "Q: ¿Por qué POST /api/clients devuelve 500 en producción mientras GET /api/clients funciona y la lista sigue vacía?"
+Cohesion: 0.40
+Nodes (4): Answer, Outcome, Q: ¿Por qué POST /api/clients devuelve 500 en producción mientras GET /api/clients funciona y la lista sigue vacía?, Source Nodes
+
+### Community 73 - "Q: ¿Por qué aparecen alertas de UUID después de desplegar el wizard corregido?"
+Cohesion: 0.40
+Nodes (4): Answer, Outcome, Q: ¿Por qué aparecen alertas de UUID después de desplegar el wizard corregido?, Source Nodes
+
+### Community 74 - "Q: ¿Por qué sólo funciona Todos los clientes y las demás secciones del menú devuelven Internal server error?"
+Cohesion: 0.40
+Nodes (4): Answer, Outcome, Q: ¿Por qué sólo funciona Todos los clientes y las demás secciones del menú devuelven Internal server error?, Source Nodes
+
+### Community 75 - "nest-cli.json"
 Cohesion: 0.50
 Nodes (3): collection, $schema, sourceRoot
 
-### Community 32 - ".index"
+### Community 76 - "next-env.d.ts"
 Cohesion: 0.50
-Nodes (3): AuditsController, Controller, Get
-
-### Community 33 - "AuthController"
-Cohesion: 0.50
-Nodes (3): AuthController, Controller, Get
-
-### Community 34 - ".index"
-Cohesion: 0.50
-Nodes (3): DevelopmentController, Controller, Get
-
-### Community 35 - ".index"
-Cohesion: 0.50
-Nodes (3): DocumentsController, Controller, Get
-
-### Community 36 - ".index"
-Cohesion: 0.50
-Nodes (3): FinanceController, Controller, Get
-
-### Community 37 - ".index"
-Cohesion: 0.50
-Nodes (3): HrController, Controller, Get
-
-### Community 38 - ".index"
-Cohesion: 0.50
-Nodes (3): IncidentsController, Controller, Get
-
-### Community 39 - ".index"
-Cohesion: 0.50
-Nodes (3): MonitoringController, Controller, Get
-
-### Community 40 - ".index"
-Cohesion: 0.50
-Nodes (3): NotificationsController, Controller, Get
-
-### Community 41 - ".index"
-Cohesion: 0.50
-Nodes (3): PermissionsController, Controller, Get
-
-### Community 42 - ".index"
-Cohesion: 0.50
-Nodes (3): ProjectsController, Controller, Get
-
-### Community 43 - ".index"
-Cohesion: 0.50
-Nodes (3): QuotesController, Controller, Get
-
-### Community 44 - ".index"
-Cohesion: 0.50
-Nodes (3): ReportsController, Controller, Get
-
-### Community 45 - ".index"
-Cohesion: 0.50
-Nodes (3): RolesController, Controller, Get
-
-### Community 46 - ".index"
-Cohesion: 0.50
-Nodes (3): SecurityController, Controller, Get
-
-### Community 47 - ".index"
-Cohesion: 0.50
-Nodes (3): SettingsController, Controller, Get
-
-### Community 48 - ".index"
-Cohesion: 0.50
-Nodes (3): SupportController, Controller, Get
-
-### Community 49 - ".index"
-Cohesion: 0.50
-Nodes (3): TasksController, Controller, Get
-
-### Community 50 - ".index"
-Cohesion: 0.50
-Nodes (3): Controller, Get, UsersController
-
-### Community 51 - ".index"
-Cohesion: 0.50
-Nodes (3): Controller, Get, VaultController
-
-### Community 52 - ".index"
-Cohesion: 0.50
-Nodes (3): Controller, Get, WorkOrdersController
-
-### Community 53 - "next-env.d.ts"
-Cohesion: 0.50
-Nodes (3): NOTE: This file should not be edited, web_next_types_root_params_d, web_next_types_routes_d
+Nodes (3): NOTE: This file should not be edited, apps_web_next_types_root_params_d, apps_web_next_types_routes_d
 
 ## Knowledge Gaps
-- **106 isolated node(s):** `ViewMode`, `AccessContextValue`, `RoleProfile`, `ModuleDescriptor`, `NavigationGroup` (+101 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 267 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **9 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **264 isolated node(s):** `$schema`, `collection`, `sourceRoot`, `name`, `version` (+259 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 502 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **27 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `RequireRoles()` connect `Client API & Policies` to `ext_packages_contracts_dist_index_js`, `clients.service.ts`, `emptyDomain`, `client-integrations.service.ts`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`?**
-  _High betweenness centrality (0.166) - this node is a cross-community bridge._
-- **Why does `@nestjs/common` connect `emptyDomain` to `ext_packages_contracts_dist_index_js`, `app.module.ts`, `clients.service.ts`, `client-integrations.service.ts`, `API Package`, `Authentication Guard`, `clients.dto.ts`, `Public`?**
-  _High betweenness centrality (0.142) - this node is a cross-community bridge._
-- **Why does `lucide-react` connect `enterprise-shell.tsx` to `module-page.tsx`, `ext_packages_contracts_dist_index_js`, `client-360.tsx`, `new-client-wizard.tsx`, `client-hub.tsx`, `web/package.json`?**
-  _High betweenness centrality (0.076) - this node is a cross-community bridge._
-- **What connects `ViewMode`, `AccessContextValue`, `RoleProfile` to the rest of the system?**
-  _106 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `Client API & Policies` be split into smaller, more focused modules?**
-  _Cohesion score 0.0694579681921454 - nodes in this community are weakly interconnected._
-- **Should `module-page.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.06755260243632337 - nodes in this community are weakly interconnected._
-- **Should `ext_packages_contracts_dist_index_js` be split into smaller, more focused modules?**
-  _Cohesion score 0.08108108108108109 - nodes in this community are weakly interconnected._
+- **Why does `RequireRoles()` connect `RequireRoles` to `ContractsRepository`, `clients.module.ts`, `client-domain.test.ts`, `packages_contracts_dist_index`, `@nestjs/common`, `client-services.service.ts`, `.publish`, `client-integrations.service.ts`, `emptyDomain`, `crm.controller.ts`, `UsersController`, `audits.module.ts`, `documents.module.ts`, `incidents.module.ts`, `monitoring.module.ts`, `notifications.module.ts`, `permissions.module.ts`, `projects.module.ts`, `quotes.module.ts`, `reports.module.ts`, `roles.module.ts`, `security.module.ts`, `settings.module.ts`, `support.module.ts`, `vault.module.ts`, `work-orders.module.ts`?**
+  _High betweenness centrality (0.158) - this node is a cross-community bridge._
+- **Why does `@nestjs/common` connect `@nestjs/common` to `clients.module.ts`, `client-domain.test.ts`, `packages_contracts_dist_index`, `client-services.service.ts`, `clients-api.ts`, `.publish`, `api/package.json`, `client-integrations.service.ts`, `emptyDomain`, `app.module.ts`, `control-dashboard 2.tsx`, `crm.controller.ts`, `audits.module.ts`, `documents.module.ts`, `incidents.module.ts`, `monitoring.module.ts`, `notifications.module.ts`, `permissions.module.ts`, `projects.module.ts`, `quotes.module.ts`, `reports.module.ts`, `roles.module.ts`, `security.module.ts`, `settings.module.ts`, `support.module.ts`, `vault.module.ts`, `work-orders.module.ts`?**
+  _High betweenness centrality (0.085) - this node is a cross-community bridge._
+- **Why does `ClientsRepository` connect `RequireRoles` to `clients-api.ts`, `clients.module.ts`, `client-domain.test.ts`?**
+  _High betweenness centrality (0.036) - this node is a cross-community bridge._
+- **What connects `$schema`, `collection`, `sourceRoot` to the rest of the system?**
+  _264 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `RequireRoles` be split into smaller, more focused modules?**
+  _Cohesion score 0.0695970695970696 - nodes in this community are weakly interconnected._
+- **Should `ContractsRepository` be split into smaller, more focused modules?**
+  _Cohesion score 0.08065458796025717 - nodes in this community are weakly interconnected._
+- **Should `index.ts` be split into smaller, more focused modules?**
+  _Cohesion score 0.047619047619047616 - nodes in this community are weakly interconnected._

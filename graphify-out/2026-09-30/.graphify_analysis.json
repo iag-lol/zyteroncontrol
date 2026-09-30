@@ -914,17 +914,17 @@
   "questions": [
     {
       "type": "bridge_node",
-      "question": "Why does `RequireRoles()` connect `Client API & Policies` to `ext_packages_contracts_dist_index_js`, `clients.service.ts`, `emptyDomain`, `client-integrations.service.ts`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`?",
+      "question": "Why does `RequireRoles()` connect `Client API & Policies` to `CRM Domain`, `Client Domain Services`, `Shared Backend Domains`, `Client Cross-Domain Integrations`, `Audits Backend`, `Development Backend`, `Documents Backend`, `Finance Backend`, `HR Backend`, `Incidents Backend`, `Monitoring Backend`, `Notifications Backend`, `Permissions Backend`, `Projects Backend`, `Quotes Backend`, `Reports Backend`, `Roles Backend`, `Security Backend`, `Settings Backend`, `Support Backend`, `Tasks Backend`, `Users Backend`, `Secure Vault Backend`, `Work Orders Backend`?",
       "why": "High betweenness centrality (0.166) - this node is a cross-community bridge."
     },
     {
       "type": "bridge_node",
-      "question": "Why does `@nestjs/common` connect `emptyDomain` to `ext_packages_contracts_dist_index_js`, `app.module.ts`, `clients.service.ts`, `client-integrations.service.ts`, `API Package`, `Authentication Guard`, `clients.dto.ts`, `Public`?",
+      "question": "Why does `@nestjs/common` connect `Shared Backend Domains` to `CRM Domain`, `Platform Module Registry`, `Client Domain Services`, `Client Cross-Domain Integrations`, `API Package`, `Authentication Guard`, `Client Validation & RUT`, `Public Health Endpoint`?",
       "why": "High betweenness centrality (0.142) - this node is a cross-community bridge."
     },
     {
       "type": "bridge_node",
-      "question": "Why does `lucide-react` connect `enterprise-shell.tsx` to `module-page.tsx`, `ext_packages_contracts_dist_index_js`, `client-360.tsx`, `new-client-wizard.tsx`, `client-hub.tsx`, `web/package.json`?",
+      "question": "Why does `lucide-react` connect `Enterprise Shell & Search` to `Generic Module UI`, `CRM Domain`, `Client 360 UI`, `Client Onboarding Wizard`, `Client Portfolio Hub`, `Web Package`?",
       "why": "High betweenness centrality (0.076) - this node is a cross-community bridge."
     },
     {
@@ -939,12 +939,12 @@
     },
     {
       "type": "low_cohesion",
-      "question": "Should `module-page.tsx` be split into smaller, more focused modules?",
+      "question": "Should `Generic Module UI` be split into smaller, more focused modules?",
       "why": "Cohesion score 0.06755260243632337 - nodes in this community are weakly interconnected."
     },
     {
       "type": "low_cohesion",
-      "question": "Should `ext_packages_contracts_dist_index_js` be split into smaller, more focused modules?",
+      "question": "Should `CRM Domain` be split into smaller, more focused modules?",
       "why": "Cohesion score 0.08108108108108109 - nodes in this community are weakly interconnected."
     }
   ]
