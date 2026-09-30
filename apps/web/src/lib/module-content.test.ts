@@ -14,4 +14,11 @@ describe("contenido modular", () => {
     expect(descriptor.group).toBe("operations");
     expect(descriptor.title).toBe("Releases");
   });
+
+  it("resuelve las secciones agregadas de clientes sin tratarlas como clientes individuales", () => {
+    expect(getModuleDescriptor("/clients/contacts").title).toBe("Contactos");
+    expect(getModuleDescriptor("/clients/contracts").title).toBe("Contratos");
+    expect(getModuleDescriptor("/clients/services").title).toBe("Servicios contratados");
+    expect(getModuleDescriptor("/clients/renewals").title).toBe("Renovaciones");
+  });
 });
