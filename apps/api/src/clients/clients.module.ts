@@ -10,6 +10,6 @@ import { ClientsService } from "./clients.service.js";
 @Module({
   controllers: [ClientsController],
   providers: [ClientsRepository, ClientsService, ClientsPolicy, ClientEventsService, ClientHealthService, ClientIntegrationsService],
-  exports: [ClientsService, ClientsPolicy, ClientHealthService, ClientIntegrationsService],
+  exports: [ClientsService, ClientsPolicy, ClientEventsService, ClientHealthService, ClientIntegrationsService],
 })
 export class ClientsModule {}

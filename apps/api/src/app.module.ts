@@ -25,6 +25,10 @@ import { VaultModule } from "./vault/vault.module.js";
 import { ReportsModule } from "./reports/reports.module.js";
 import { SettingsModule } from "./settings/settings.module.js";
 import { SupportModule } from "./support/support.module.js";
+import { ContactsModule } from "./contacts/contacts.module.js";
+import { ContractsModule } from "./contracts/contracts.module.js";
+import { ClientServicesModule } from "./client-services/client-services.module.js";
+import { RenewalsModule } from "./renewals/renewals.module.js";
 
 @Module({
   imports: [
@@ -34,6 +38,10 @@ import { SupportModule } from "./support/support.module.js";
     RolesModule,
     PermissionsModule,
     ClientsModule,
+    ContactsModule,
+    ContractsModule,
+    ClientServicesModule,
+    RenewalsModule,
     QuotesModule,
     WorkOrdersModule,
     ProjectsModule,

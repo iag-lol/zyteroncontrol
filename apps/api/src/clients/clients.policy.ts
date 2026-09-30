@@ -3,8 +3,11 @@ import type { Role } from "@zyteron/contracts";
 
 export const clientPermissions = [
   "client.view", "client.create", "client.edit", "client.archive", "client.assign", "client.export",
-  "client.contacts.manage", "client.services.manage", "client.finance.view", "client.monitoring.view",
-  "client.audits.view", "client.portal.manage",
+  "client.contacts.view", "client.contacts.manage",
+  "client.contracts.view", "client.contracts.create", "client.contracts.edit", "client.contracts.approve", "client.contracts.sign_request",
+  "client.services.view", "client.services.manage", "client.services.activate", "client.services.suspend",
+  "client.renewals.view", "client.renewals.manage", "client.renewals.convert", "client.renewals.complete",
+  "client.finance.view", "client.monitoring.view", "client.audits.view", "client.portal.manage",
 ] as const;
 
 @Injectable()

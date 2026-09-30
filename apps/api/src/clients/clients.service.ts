@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import type { ClientContact, ClientService, CreateClientInput } from "@zyteron/contracts";
+import type { CreateClientInput } from "@zyteron/contracts";
 import { ClientEventsService } from "./client-events.service.js";
 import { ClientHealthService } from "./client-health.service.js";
 import { ClientIntegrationsService } from "./client-integrations.service.js";
@@ -22,7 +22,8 @@ export class ClientsService {
   async get(id: string) {
     const client = await this.repository.findById(id);
     if (!client) throw new NotFoundException("Cliente no encontrado.");
-    return client;
+    const health = this.health.evaluate(await this.repository.domainHealthSignals(id));
+    return { ...client, health: health.status, healthFactors: health.factors };
   }
   async create(input: CreateClientInput) {
     const valid = validateCreateClient(input);
@@ -56,12 +57,12 @@ export class ClientsService {
       integrations: this.integrations.describe() };
   }
   async contacts(id: string) { await this.get(id); return this.repository.contactsFor(id); }
-  async addContact(id: string, input: Omit<ClientContact, "id" | "clientId" | "createdAt">) {
+  async addContact(id: string, input: NonNullable<CreateClientInput["primaryContact"]>) {
     await this.get(id); const contact = await this.repository.addContact(id, input);
     await this.events.publish(id, "CONTACT_ADDED", "Contacto agregado", contact.name); return contact;
   }
   async services(id: string) { await this.get(id); return this.repository.servicesFor(id); }
-  async addService(id: string, input: Omit<ClientService, "id" | "clientId">) {
+  async addService(id: string, input: NonNullable<CreateClientInput["initialServices"]>[number]) {
     await this.get(id); const service = await this.repository.addService(id, input);
     await this.events.publish(id, "SERVICE_ACTIVATED", "Servicio agregado", service.serviceName); return service;
   }
@@ -74,4 +75,5 @@ export class ClientsService {
     await this.events.publish(id, settings.enabled ? "CLIENT_PORTAL_ENABLED" : "CLIENT_PORTAL_UPDATED", settings.enabled ? "Portal Cliente habilitado" : "Configuración de portal actualizada");
     return settings;
   }
+  auditExport(domain:string){const allowed=["contacts","contracts","services","renewals"];if(!allowed.includes(domain))throw new NotFoundException("Dominio de exportación no válido.");return this.repository.addAudit("EXPORT",domain.toUpperCase(),null,null,{domain});}
 }

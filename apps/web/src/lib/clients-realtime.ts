@@ -8,6 +8,10 @@ export function subscribeToClient(clientId: string, onChange: () => void) {
   const supabase = createClient(url, anonKey);
   const channel = supabase.channel(`private:client:${clientId}`, { config: { private: true } })
     .on("postgres_changes", { event: "*", schema: "public", table: "clients", filter: `id=eq.${clientId}` }, onChange)
+    .on("postgres_changes", { event: "*", schema: "public", table: "client_contacts", filter: `client_id=eq.${clientId}` }, onChange)
+    .on("postgres_changes", { event: "*", schema: "public", table: "client_contracts", filter: `client_id=eq.${clientId}` }, onChange)
+    .on("postgres_changes", { event: "*", schema: "public", table: "client_services", filter: `client_id=eq.${clientId}` }, onChange)
+    .on("postgres_changes", { event: "*", schema: "public", table: "client_renewals", filter: `client_id=eq.${clientId}` }, onChange)
     .on("postgres_changes", { event: "INSERT", schema: "public", table: "client_events", filter: `client_id=eq.${clientId}` }, onChange)
     .subscribe();
 

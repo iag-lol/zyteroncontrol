@@ -48,8 +48,8 @@ export function NewClientWizard() {
         clientLeadId: undefined,
         developmentLeadId: undefined,
         rut: normalizeRut(form.rut), billingRut: form.billingRut ? normalizeRut(form.billingRut) : undefined,
-        primaryContact: { ...contact, department: null, isPrimary: true, billingContact: true, technicalContact: false, commercialContact: true, portalAccess: false, status: "ACTIVE" },
-        initialServices: services.map((name) => ({ serviceId: name.toLowerCase().replaceAll(" ", "-"), serviceName: name, contractId: null, startDate: today, renewalDate: null, billingFrequency: null, price: null, currency: form.currency ?? "CLP", status: "PENDING", responsibleUserId: null, sla: null, notes: null })),
+        primaryContact: { ...contact, department: null, isPrimary: true, billingContact: true, technicalContact: false, commercialContact: true, portalAccess: false, status: "ACTIVE", contactTypes: ["PRINCIPAL", "COMERCIAL", "FACTURACION"], notes: null },
+        initialServices: services.map((name) => ({ serviceId: name.toLowerCase().replaceAll(" ", "-"), catalogServiceId: null, serviceName: name, contractId: null, projectId: null, startDate: today, renewalDate: null, endDate: null, billingFrequency: null, agreedPrice: null, currency: form.currency ?? "CLP", status: "PENDING_ACTIVATION", responsibleUserId: null, technicalOwnerId: null, sla: null, notes: null, portalVisible: false })),
       });
       router.push(`/clients/${client.id}`);
     } catch (reason) { setError(reason instanceof Error ? reason.message : "No fue posible crear el cliente."); }

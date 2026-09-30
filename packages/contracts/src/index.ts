@@ -22,6 +22,14 @@ export const roles = [
 
 export type Role = (typeof roles)[number];
 
+export interface UserDirectoryItem {
+  id: string;
+  email: string;
+  name: string;
+  role: Role | null;
+  active: boolean;
+}
+
 export interface CommercialRecord {
   id: string;
   company: string;
@@ -113,24 +121,169 @@ export interface ClientContact {
   commercialContact: boolean;
   portalAccess: boolean;
   status: "ACTIVE" | "INACTIVE";
+  contactTypes: ContactType[];
+  notes: string | null;
+  portalStatus: PortalAccessStatus;
   createdAt: string;
+  updatedAt: string;
+  archivedAt: string | null;
 }
+
+export interface ClientContactDirectoryItem extends ClientContact {
+  clientName: string;
+  clientRut: string;
+}
+
+export interface ContactDirectorySummary {
+  total: number;
+  primary: number;
+  commercial: number;
+  technical: number;
+  billing: number;
+  portal: number;
+  withoutEmail: number;
+  withoutPhone: number;
+}
+
+export interface ContactMutationResult {
+  item: ClientContactDirectoryItem;
+  duplicateWarnings: string[];
+}
+
+export const contactTypes = ["PRINCIPAL", "COMERCIAL", "TECNICO", "FACTURACION", "LEGAL", "GERENCIA", "OPERACIONES", "SOPORTE", "PORTAL"] as const;
+export type ContactType = (typeof contactTypes)[number];
+export type PortalAccessStatus = "PENDING_INVITATION" | "INVITED" | "ACTIVE" | "DISABLED";
+
+export interface ServiceCatalogItem {
+  id: string;
+  name: string;
+  code: string;
+  category: string;
+  description: string | null;
+  defaultPrice: number | null;
+  currency: string;
+  billingType: BillingFrequency;
+  active: boolean;
+  requiresProject: boolean;
+  requiresMonitoring: boolean;
+  requiresSupport: boolean;
+  requiresRenewal: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const billingFrequencies = ["ONE_TIME", "MONTHLY", "QUARTERLY", "SEMIANNUAL", "ANNUAL", "CUSTOM"] as const;
+export type BillingFrequency = (typeof billingFrequencies)[number];
+export const clientServiceStatuses = ["QUOTED", "PENDING_ACTIVATION", "ACTIVE", "SUSPENDED", "PENDING_RENEWAL", "CANCELLED", "EXPIRED"] as const;
+export type ClientServiceStatus = (typeof clientServiceStatuses)[number];
 
 export interface ClientService {
   id: string;
   clientId: string;
   serviceId: string;
+  catalogServiceId: string | null;
   serviceName: string;
   contractId: string | null;
+  projectId: string | null;
   startDate: string;
+  activationDate: string | null;
   renewalDate: string | null;
-  billingFrequency: string | null;
-  price: number | null;
+  endDate: string | null;
+  billingFrequency: BillingFrequency | null;
+  agreedPrice: number | null;
   currency: string;
-  status: "PENDING" | "ACTIVE" | "SUSPENDED" | "CANCELLED" | "EXPIRED";
+  status: ClientServiceStatus;
   responsibleUserId: string | null;
+  technicalOwnerId: string | null;
   sla: string | null;
   notes: string | null;
+  portalVisible: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const contractStatuses = ["DRAFT", "IN_REVIEW", "PENDING_SIGNATURE", "SIGNED", "ACTIVE", "EXPIRING", "EXPIRED", "TERMINATED", "CANCELLED"] as const;
+export type ContractStatus = (typeof contractStatuses)[number];
+export type SignatureStatus = "NOT_CONFIGURED" | "DRAFT" | "REQUESTED" | "VIEWED" | "SIGNED" | "REJECTED" | "EXPIRED" | "CANCELLED";
+
+export interface ClientContract {
+  id: string;
+  contractNumber: string;
+  clientId: string;
+  clientName: string | null;
+  name: string;
+  description: string | null;
+  contractType: string;
+  status: ContractStatus;
+  startDate: string | null;
+  endDate: string | null;
+  renewalType: "NONE" | "MANUAL" | "AUTOMATIC";
+  renewalNoticeDays: number;
+  billingFrequency: BillingFrequency | null;
+  currency: string;
+  subtotal: number;
+  tax: number;
+  total: number;
+  signedAt: string | null;
+  responsibleUserId: string | null;
+  signatureStatus: SignatureStatus;
+  signatureProvider: string | null;
+  signatureRequestId: string | null;
+  documentHash: string | null;
+  portalVisible: boolean;
+  version: number;
+  parentContractId: string | null;
+  createdAt: string;
+  updatedAt: string;
+  archivedAt: string | null;
+}
+
+export interface ContractVersion {
+  id: string;
+  contractId: string;
+  versionNumber: number;
+  versionKind: "CONTRACT" | "ANNEX";
+  title: string;
+  storagePath: string | null;
+  documentHash: string | null;
+  mimeType: string | null;
+  sizeBytes: number | null;
+  createdAt: string;
+}
+
+export const renewalStatuses = ["UPCOMING", "CONTACT_REQUIRED", "CONTACTED", "NEGOTIATING", "RENEWED", "NOT_RENEWED", "CANCELLED", "EXPIRED"] as const;
+export type RenewalStatus = (typeof renewalStatuses)[number];
+export type RenewalSourceType = "CONTRACT" | "SERVICE" | "HOSTING" | "DOMAIN" | "MAINTENANCE" | "LICENSE" | "SUBSCRIPTION" | "SUPPORT" | "AUDIT";
+
+export interface ClientRenewal {
+  id: string;
+  clientId: string;
+  clientName: string | null;
+  sourceType: RenewalSourceType;
+  sourceId: string;
+  title: string;
+  renewalDate: string;
+  noticeDate: string | null;
+  assignedTo: string | null;
+  status: RenewalStatus;
+  estimatedValue: number | null;
+  currency: string;
+  autoRenew: boolean;
+  notes: string | null;
+  opportunityId: string | null;
+  outcome: string | null;
+  completedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PagedResponse<T, S = Record<string, number | null>> {
+  items: T[];
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+  summary: S;
 }
 
 export interface ClientEvent {
@@ -171,8 +324,8 @@ export interface CreateClientInput {
   paymentTerms?: string;
   creditDays?: number;
   currency?: string;
-  primaryContact?: Omit<ClientContact, "id" | "clientId" | "createdAt">;
-  initialServices?: Array<Omit<ClientService, "id" | "clientId">>;
+  primaryContact?: Omit<ClientContact, "id" | "clientId" | "createdAt" | "updatedAt" | "archivedAt" | "portalStatus" | "contactTypes" | "notes"> & Partial<Pick<ClientContact, "contactTypes" | "notes">>;
+  initialServices?: Array<Omit<ClientService, "id" | "clientId" | "activationDate" | "createdAt" | "updatedAt">>;
 }
 
 export interface ClientPortfolioSummary {

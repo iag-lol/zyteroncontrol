@@ -4,6 +4,8 @@ import type { Client, ClientContact, ClientEvent, ClientListResponse, ClientPort
 import { randomUUID } from "node:crypto";
 
 type ClientPatch = Partial<Omit<Client, "id" | "createdAt" | "health" | "healthFactors">>;
+type InitialContact = NonNullable<CreateClientInput["primaryContact"]>;
+type InitialService = NonNullable<CreateClientInput["initialServices"]>[number];
 
 @Injectable()
 export class ClientsRepository {
@@ -51,6 +53,32 @@ export class ClientsRepository {
       return data ? this.fromRow(data) : undefined;
     }
     return this.clients.get(id);
+  }
+
+  async domainHealthSignals(clientId: string) {
+    if (!this.supabase) {
+      const services = this.services.get(clientId) ?? [];
+      return { totalContracts:0, expiredContracts:0, totalServices:services.length, suspendedServices:services.filter((item)=>item.status==="SUSPENDED").length, totalRenewals:0, overdueRenewals:0 };
+    }
+    const today = new Date().toISOString().slice(0, 10);
+    const [contracts, expiredContracts, services, suspendedServices, renewals, overdueRenewals] = await Promise.all([
+      this.supabase.from("client_contracts").select("id", { count:"exact", head:true }).eq("client_id", clientId).is("archived_at", null),
+      this.supabase.from("client_contracts").select("id", { count:"exact", head:true }).eq("client_id", clientId).is("archived_at", null).or(`status.eq.EXPIRED,end_date.lt.${today}`),
+      this.supabase.from("client_services").select("id", { count:"exact", head:true }).eq("client_id", clientId),
+      this.supabase.from("client_services").select("id", { count:"exact", head:true }).eq("client_id", clientId).eq("status", "SUSPENDED"),
+      this.supabase.from("client_renewals").select("id", { count:"exact", head:true }).eq("client_id", clientId),
+      this.supabase.from("client_renewals").select("id", { count:"exact", head:true }).eq("client_id", clientId).lt("renewal_date", today).not("status", "in", "(RENEWED,NOT_RENEWED,CANCELLED)"),
+    ]);
+    const error = [contracts, expiredContracts, services, suspendedServices, renewals, overdueRenewals].find((result) => result.error)?.error;
+    if (error) throw error;
+    return {
+      totalContracts: contracts.count ?? 0,
+      expiredContracts: expiredContracts.count ?? 0,
+      totalServices: services.count ?? 0,
+      suspendedServices: suspendedServices.count ?? 0,
+      totalRenewals: renewals.count ?? 0,
+      overdueRenewals: overdueRenewals.count ?? 0,
+    };
   }
 
   async create(input: CreateClientInput, health: Client["health"], healthFactors: Client["healthFactors"]) {
@@ -101,8 +129,9 @@ export class ClientsRepository {
     return this.contacts.get(clientId) ?? [];
   }
 
-  async addContact(clientId: string, input: Omit<ClientContact, "id" | "clientId" | "createdAt">) {
-    const contact: ClientContact = { ...input, id: randomUUID(), clientId, createdAt: new Date().toISOString() };
+  async addContact(clientId: string, input: InitialContact) {
+    const now = new Date().toISOString();
+    const contact: ClientContact = { ...input, contactTypes: input.contactTypes ?? [], notes: input.notes ?? null, id: randomUUID(), clientId, portalStatus: input.portalAccess ? "PENDING_INVITATION" : "DISABLED", createdAt: now, updatedAt: now, archivedAt: null };
     if (this.supabase) {
       const { data, error } = await this.supabase.from("client_contacts").insert(this.contactToRow(contact)).select("*").single();
       if (error) throw error;
@@ -122,8 +151,9 @@ export class ClientsRepository {
     return this.services.get(clientId) ?? [];
   }
 
-  async addService(clientId: string, input: Omit<ClientService, "id" | "clientId">) {
-    const service: ClientService = { ...input, id: randomUUID(), clientId };
+  async addService(clientId: string, input: InitialService) {
+    const now = new Date().toISOString();
+    const service: ClientService = { ...input, id: randomUUID(), clientId, activationDate: null, createdAt: now, updatedAt: now };
     if (this.supabase) {
       const { data, error } = await this.supabase.from("client_services").insert(this.serviceToRow(service)).select("*").single();
       if (error) throw error;
@@ -152,10 +182,18 @@ export class ClientsRepository {
       }).select("*").single();
       if (error) throw error;
       await this.supabase.from("business_event_outbox").insert({ aggregate_type: "CLIENT", aggregate_id: created.clientId, event_type: created.type, payload: created });
+      await this.addAudit(created.type, "CLIENT_DOMAIN_EVENT", created.id, created.clientId, created.metadata);
       return this.eventFromRow(data);
     }
     this.events.set(created.clientId, [created, ...(this.events.get(created.clientId) ?? [])]);
     return created;
+  }
+
+  async addAudit(action:string,entityType:string,entityId:string|null,clientId:string|null,metadata:Record<string,unknown>={}) {
+    if (!this.supabase) return { action,entityType,entityId,clientId,metadata };
+    const { error } = await this.supabase.from("client_domain_audit_events").insert({ client_id:clientId,actor_id:null,action,entity_type:entityType,entity_id:entityId,metadata });
+    if (error) throw error;
+    return { action,entityType,entityId,clientId,metadata };
   }
 
   async portalFor(clientId: string): Promise<ClientPortalSettings> {
@@ -220,10 +258,10 @@ export class ClientsRepository {
     billingRut:"billing_rut",billingActivity:"billing_activity",billingAddress:"billing_address",dteEmail:"dte_email",paymentTerms:"payment_terms",
     creditDays:"credit_days",currency:"currency",paymentCustomerReference:"payment_customer_reference",archivedAt:"archived_at",updatedAt:"updated_at",
   }; for (const [key,value] of Object.entries(patch)) if (key in map) row[map[key]!] = value; row.updated_at = new Date().toISOString(); return row; }
-  private contactFromRow(row: Record<string, any>): ClientContact { return { id:row.id,clientId:row.client_id,name:row.name,position:row.position,department:row.department,email:row.email,phone:row.phone,whatsapp:row.whatsapp,isPrimary:row.is_primary,billingContact:row.billing_contact,technicalContact:row.technical_contact,commercialContact:row.commercial_contact,portalAccess:row.portal_access,status:row.status,createdAt:row.created_at }; }
-  private contactToRow(c: ClientContact) { return { id:c.id,client_id:c.clientId,name:c.name,position:c.position,department:c.department,email:c.email,phone:c.phone,whatsapp:c.whatsapp,is_primary:c.isPrimary,billing_contact:c.billingContact,technical_contact:c.technicalContact,commercial_contact:c.commercialContact,portal_access:c.portalAccess,status:c.status,created_at:c.createdAt }; }
-  private serviceFromRow(row: Record<string, any>): ClientService { return { id:row.id,clientId:row.client_id,serviceId:row.service_id,serviceName:row.service_name,contractId:row.contract_id,startDate:row.start_date,renewalDate:row.renewal_date,billingFrequency:row.billing_frequency,price:row.price === null ? null : Number(row.price),currency:row.currency,status:row.status,responsibleUserId:row.responsible_user_id,sla:row.sla,notes:row.notes }; }
-  private serviceToRow(s: ClientService) { return { id:s.id,client_id:s.clientId,service_id:s.serviceId,service_name:s.serviceName,contract_id:s.contractId,start_date:s.startDate,renewal_date:s.renewalDate,billing_frequency:s.billingFrequency,price:s.price,currency:s.currency,status:s.status,responsible_user_id:s.responsibleUserId,sla:s.sla,notes:s.notes }; }
+  private contactFromRow(row: Record<string, any>): ClientContact { return { id:row.id,clientId:row.client_id,name:row.name,position:row.position,department:row.department,email:row.email,phone:row.phone,whatsapp:row.whatsapp,isPrimary:row.is_primary,billingContact:row.billing_contact,technicalContact:row.technical_contact,commercialContact:row.commercial_contact,portalAccess:row.portal_access,status:row.status,contactTypes:row.contact_types??[],notes:row.notes,portalStatus:row.portal_status??"DISABLED",createdAt:row.created_at,updatedAt:row.updated_at??row.created_at,archivedAt:row.archived_at??null }; }
+  private contactToRow(c: ClientContact) { return { id:c.id,client_id:c.clientId,name:c.name,position:c.position,department:c.department,email:c.email,phone:c.phone,whatsapp:c.whatsapp,is_primary:c.isPrimary,billing_contact:c.billingContact,technical_contact:c.technicalContact,commercial_contact:c.commercialContact,portal_access:c.portalAccess,status:c.status,contact_types:c.contactTypes,notes:c.notes,portal_status:c.portalStatus,created_at:c.createdAt,updated_at:c.updatedAt,archived_at:c.archivedAt }; }
+  private serviceFromRow(row: Record<string, any>): ClientService { return { id:row.id,clientId:row.client_id,catalogServiceId:row.catalog_service_id??null,serviceId:row.service_id,serviceName:row.service_name,contractId:row.contract_id,projectId:row.project_id??null,startDate:row.start_date,activationDate:row.activation_date??null,renewalDate:row.renewal_date,endDate:row.end_date??null,billingFrequency:row.billing_type??row.billing_frequency,agreedPrice:row.agreed_price===null||row.agreed_price===undefined?null:Number(row.agreed_price),currency:row.currency,status:row.status==="PENDING"?"PENDING_ACTIVATION":row.status,responsibleUserId:row.responsible_user_id,technicalOwnerId:row.technical_owner_id??null,sla:row.sla,notes:row.notes,portalVisible:row.portal_visible??false,createdAt:row.created_at,updatedAt:row.updated_at??row.created_at }; }
+  private serviceToRow(s: ClientService) { return { id:s.id,client_id:s.clientId,catalog_service_id:s.catalogServiceId,service_id:s.serviceId,service_name:s.serviceName,contract_id:s.contractId,project_id:s.projectId,start_date:s.startDate,activation_date:s.activationDate,renewal_date:s.renewalDate,end_date:s.endDate,billing_frequency:s.billingFrequency,billing_type:s.billingFrequency,agreed_price:s.agreedPrice,currency:s.currency,status:s.status,responsible_user_id:s.responsibleUserId,technical_owner_id:s.technicalOwnerId,sla:s.sla,notes:s.notes,portal_visible:s.portalVisible,created_at:s.createdAt,updated_at:s.updatedAt }; }
   private eventFromRow(row: Record<string, any>): ClientEvent { return { id:row.id,clientId:row.client_id,type:row.event_type,title:row.title,description:row.description,actorId:row.actor_id,visibility:row.visibility,metadata:row.metadata ?? {},occurredAt:row.occurred_at }; }
   private emptyPortal(clientId: string): ClientPortalSettings { return { clientId,enabled:false,projectsVisible:false,documentsVisible:false,invoicesVisible:false,ticketsVisible:false,monitoringVisible:false,auditsVisible:false,updatedAt:new Date().toISOString() }; }
   private portalFromRow(row: Record<string, any>): ClientPortalSettings { return { clientId:row.client_id,enabled:row.enabled,projectsVisible:row.projects_visible,documentsVisible:row.documents_visible,invoicesVisible:row.invoices_visible,ticketsVisible:row.tickets_visible,monitoringVisible:row.monitoring_visible,auditsVisible:row.audits_visible,updatedAt:row.updated_at }; }

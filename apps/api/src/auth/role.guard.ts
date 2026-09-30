@@ -6,13 +6,14 @@ import {
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { roles, type Role } from "@zyteron/contracts";
+import { createServerSupabase } from "../domain/server-supabase.js";
 import { PUBLIC_ROUTE, REQUIRED_ROLES } from "./roles.decorator.js";
 
 @Injectable()
 export class RoleGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
 
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(PUBLIC_ROUTE, [
       context.getHandler(),
       context.getClass(),
@@ -20,17 +21,24 @@ export class RoleGuard implements CanActivate {
 
     if (isPublic) return true;
 
-    if (process.env.AUTH_MODE !== "development") {
-      throw new UnauthorizedException(
-        "Supabase Auth aún no está configurado. Acceso denegado.",
-      );
-    }
-
     const request = context.switchToHttp().getRequest<{
       headers: Record<string, string | string[] | undefined>;
     }>();
-    const rawRole = request.headers["x-zyteron-role"];
-    const role = Array.isArray(rawRole) ? rawRole[0] : rawRole;
+    let role: string | undefined;
+    if (process.env.AUTH_MODE === "development") {
+      const rawRole = request.headers["x-zyteron-role"];
+      role = Array.isArray(rawRole) ? rawRole[0] : rawRole;
+    } else {
+      const authorization = request.headers.authorization;
+      const rawAuthorization = Array.isArray(authorization) ? authorization[0] : authorization;
+      const token = rawAuthorization?.startsWith("Bearer ") ? rawAuthorization.slice(7) : undefined;
+      const supabase = createServerSupabase();
+      if (!token || !supabase) throw new UnauthorizedException("Sesión Supabase ausente o inválida.");
+      const { data, error } = await supabase.auth.getUser(token);
+      if (error || !data.user) throw new UnauthorizedException("Sesión Supabase ausente o inválida.");
+      const rawRole = data.user.app_metadata.role ?? data.user.user_metadata.role;
+      role = typeof rawRole === "string" ? rawRole : undefined;
+    }
 
     if (!role || !roles.includes(role as Role)) {
       throw new UnauthorizedException("Rol de desarrollo ausente o inválido.");

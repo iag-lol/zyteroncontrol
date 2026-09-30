@@ -3,14 +3,15 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Archive, ArrowLeft, BriefcaseBusiness, Building2, CalendarClock, CircleDollarSign, ContactRound, FileStack, Globe2, MonitorCheck, MoreHorizontal, Plus, Receipt, Settings, ShieldCheck, TicketCheck, Upload, Wrench } from "lucide-react";
-import type { Client, ClientContact, ClientEvent, ClientPortalSettings, ClientService } from "@zyteron/contracts";
+import type { Client, ClientContact, ClientContract, ClientEvent, ClientPortalSettings, ClientRenewal, ClientService } from "@zyteron/contracts";
 import { useAccess } from "@/components/access-context";
+import { contractsApi, renewalsApi } from "@/lib/client-domain-api";
 import { clientsApi } from "@/lib/clients-api";
 import { subscribeToClient } from "@/lib/clients-realtime";
 import { formatDate, formatDateTime, toIsoDate } from "@/lib/date-time";
 
 const tabs = [
-  ["summary", "Resumen"], ["contacts", "Contactos"], ["commercial", "Comercial"], ["services", "Servicios"],
+  ["summary", "Resumen"], ["contacts", "Contactos"], ["commercial", "Comercial"], ["contracts", "Contratos"], ["services", "Servicios"], ["renewals", "Renovaciones"],
   ["projects", "Proyectos"], ["work-orders", "OT"], ["documents", "Documentos"], ["finance", "Finanzas"],
   ["support", "Soporte"], ["monitoring", "Monitoreo"], ["audits", "Auditorías"], ["activity", "Actividad"],
   ["portal", "Portal cliente"], ["settings", "Configuración"],
@@ -21,7 +22,9 @@ export function Client360({ id, initialTab = "summary" }: { id: string; initialT
   const { role } = useAccess();
   const [client, setClient] = useState<Client | null>(null);
   const [contacts, setContacts] = useState<ClientContact[]>([]);
+  const [contracts, setContracts] = useState<ClientContract[]>([]);
   const [services, setServices] = useState<ClientService[]>([]);
+  const [renewals, setRenewals] = useState<ClientRenewal[]>([]);
   const [activity, setActivity] = useState<ClientEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -29,8 +32,23 @@ export function Client360({ id, initialTab = "summary" }: { id: string; initialT
   const canManage = ["GERENTE_GENERAL", "EJECUTIVA_VENTAS", "COMERCIAL"].includes(role);
   const visibleTabs = useMemo(() => tabs.filter(([key]) => key !== "finance" || ["GERENTE_GENERAL", "FINANZAS"].includes(role)), [role]);
 
-  const refresh = () => Promise.all([clientsApi.get(role, id), clientsApi.contacts(role, id), clientsApi.services(role, id), clientsApi.activity(role, id)])
-    .then(([clientData, contactData, serviceData, activityData]) => { setClient(clientData); setContacts(contactData); setServices(serviceData); setActivity(activityData); })
+  const refresh = () => Promise.all([
+    clientsApi.get(role, id),
+    clientsApi.contacts(role, id),
+    contractsApi.list(role, new URLSearchParams({ clientId: id, pageSize: "100" })),
+    clientsApi.services(role, id),
+    renewalsApi.list(role, new URLSearchParams({ clientId: id, pageSize: "100" })),
+    clientsApi.activity(role, id),
+  ])
+    .then(([clientData, contactData, contractData, serviceData, renewalData, activityData]) => {
+      setClient(clientData);
+      setContacts(contactData);
+      setContracts(contractData.items);
+      setServices(serviceData);
+      setRenewals(renewalData.items);
+      setActivity(activityData);
+      setError("");
+    })
     .catch((reason: Error) => setError(reason.message)).finally(() => setLoading(false));
   useEffect(() => {
     setLoading(true);
@@ -60,10 +78,12 @@ export function Client360({ id, initialTab = "summary" }: { id: string; initialT
     </div>
     <nav className="clientTabs" aria-label="Secciones del cliente">{visibleTabs.map(([key, label]) => <Link className={tab === key ? "active" : ""} href={`/clients/${id}/${key}`} key={key}>{label}</Link>)}</nav>
     <section className="clientTabContent">
-      {tab === "summary" ? <Summary client={client} contacts={contacts} services={services} activity={activity}/> : null}
+      {tab === "summary" ? <Summary client={client} contacts={contacts} contracts={contracts} services={services} renewals={renewals} activity={activity}/> : null}
       {tab === "contacts" ? <Contacts clientId={id} contacts={contacts} roleCanManage={canManage} onCreated={refresh}/> : null}
       {tab === "commercial" ? <Commercial clientId={id}/> : null}
+      {tab === "contracts" ? <ClientContracts clientId={id} contracts={contracts}/> : null}
       {tab === "services" ? <Services clientId={id} services={services} roleCanManage={canManage} onCreated={refresh}/> : null}
+      {tab === "renewals" ? <ClientRenewals clientId={id} renewals={renewals}/> : null}
       {tab === "projects" ? <DomainPanel icon={Building2} title="Proyectos del cliente" description="Avance, responsables, hitos e incidencias provienen del dominio Projects." action={{ href: `/projects?clientId=${id}`, label: "Crear proyecto" }} empty="No hay proyectos activos para este cliente."/> : null}
       {tab === "work-orders" ? <DomainPanel icon={BriefcaseBusiness} title="Órdenes de trabajo" description="OT comerciales y operacionales vinculadas por client_id." action={{ href: `/work-orders?clientId=${id}`, label: "Crear OT" }} empty="No hay órdenes de trabajo para este cliente."/> : null}
       {tab === "documents" ? <DomainPanel icon={FileStack} title="Documentos y versiones" description="Storage privado en clients/{clientId}/ con clasificación y trazabilidad." action={{ href: `/documents/clients?clientId=${id}`, label: "Subir documento" }} empty="No hay documentos asociados a este cliente."/> : null}
@@ -78,11 +98,14 @@ export function Client360({ id, initialTab = "summary" }: { id: string; initialT
   </main>;
 }
 
-function Summary({ client, contacts, services, activity }: { client: Client; contacts: ClientContact[]; services: ClientService[]; activity: ClientEvent[] }) {
+function Summary({ client, contacts, contracts, services, renewals, activity }: { client: Client; contacts: ClientContact[]; contracts: ClientContract[]; services: ClientService[]; renewals: ClientRenewal[]; activity: ClientEvent[] }) {
+  const nextRenewal = [...renewals].filter((item) => !["RENEWED", "NOT_RENEWED", "CANCELLED"].includes(item.status)).sort((a, b) => a.renewalDate.localeCompare(b.renewalDate))[0];
   return <div className="clientSummaryGrid">
-    <section className="relationshipPanel"><div className="panelHeading"><span>Relación Zyteron</span><h2>Contexto del cliente</h2></div><dl><div><dt>Empresa</dt><dd>{client.legalName}</dd></div><div><dt>Giro</dt><dd>{client.businessActivity || "Sin información"}</dd></div><div><dt>Ubicación</dt><dd>{[client.commune, client.region, client.country].filter(Boolean).join(", ")}</dd></div><div><dt>Contacto principal</dt><dd>{contacts.find((item) => item.isPrimary)?.name || "Sin contacto principal"}</dd></div><div><dt>Próximo compromiso</dt><dd>Sin compromiso registrado</dd></div></dl></section>
+    <section className="relationshipPanel"><div className="panelHeading"><span>Relación Zyteron</span><h2>Contexto del cliente</h2></div><dl><div><dt>Empresa</dt><dd>{client.legalName}</dd></div><div><dt>Giro</dt><dd>{client.businessActivity || "Sin información"}</dd></div><div><dt>Ubicación</dt><dd>{[client.commune, client.region, client.country].filter(Boolean).join(", ")}</dd></div><div><dt>Contacto principal</dt><dd>{contacts.find((item) => item.isPrimary)?.name || "Sin contacto principal"}</dd></div><div><dt>Próximo compromiso</dt><dd>{nextRenewal ? `${nextRenewal.title} · ${formatDate(`${nextRenewal.renewalDate}T12:00:00Z`)}` : "Sin compromiso registrado"}</dd></div></dl></section>
     <section className="healthPanel"><div className="panelHeading"><span>Client Health</span><h2>{healthLabel(client.health)}</h2></div><p>El estado no se calcula hasta disponer de señales suficientes.</p><div className="healthFactors">{client.healthFactors.map((factor) => <div key={factor.key}><span className={factor.available ? "available" : ""}/><strong>{factor.label}</strong><small>{factor.reason}</small></div>)}</div></section>
     <section className="snapshotPanel services"><div className="panelHeading"><span>Servicios</span><h2>{services.filter((item) => item.status === "ACTIVE").length} activos</h2></div>{services.length ? services.slice(0, 3).map((service) => <p key={service.id}><strong>{service.serviceName}</strong><span>{service.status}</span></p>) : <EmptyLine text="No hay servicios contratados."/>}</section>
+    <section className="snapshotPanel contracts"><div className="panelHeading"><span>Contratos</span><h2>{contracts.filter((item) => item.status === "ACTIVE").length} activos</h2></div>{contracts.length ? contracts.slice(0, 3).map((contract) => <p key={contract.id}><strong>{contract.name}</strong><span>{contract.status}</span></p>) : <EmptyLine text="No hay contratos registrados."/>}</section>
+    <section className="snapshotPanel renewals"><div className="panelHeading"><span>Renovaciones</span><h2>{renewals.filter((item) => !["RENEWED", "NOT_RENEWED", "CANCELLED"].includes(item.status)).length} abiertas</h2></div>{renewals.length ? renewals.slice(0, 3).map((renewal) => <p key={renewal.id}><strong>{renewal.title}</strong><span>{formatDate(`${renewal.renewalDate}T12:00:00Z`)}</span></p>) : <EmptyLine text="No hay renovaciones registradas."/>}</section>
     <section className="snapshotPanel projects"><div className="panelHeading"><span>Operación</span><h2>Proyectos y OT</h2></div><EmptyLine text="No hay proyectos activos ni OT abiertas."/></section>
     <section className="snapshotPanel finance"><div className="panelHeading"><span>Finanzas</span><h2>Snapshot financiero</h2></div><EmptyLine text="Finance aún no entrega saldos para este cliente."/></section>
     <section className="snapshotPanel risk"><div className="panelHeading"><span>Soporte y monitoreo</span><h2>Situación operacional</h2></div><EmptyLine text="No hay tickets ni incidentes registrados."/></section>
@@ -92,14 +115,28 @@ function Summary({ client, contacts, services, activity }: { client: Client; con
 
 function Contacts({ clientId, contacts, roleCanManage, onCreated }: { clientId: string; contacts: ClientContact[]; roleCanManage: boolean; onCreated: () => Promise<unknown> }) {
   const { role } = useAccess(); const [open, setOpen] = useState(false); const [saving, setSaving] = useState(false); const [form, setForm] = useState({ name:"",email:"",position:"",phone:"",whatsapp:"" });
-  async function save() { setSaving(true); await clientsApi.addContact(role, clientId, { ...form, department:null,isPrimary:!contacts.length,billingContact:false,technicalContact:false,commercialContact:true,portalAccess:false,status:"ACTIVE" }).then(() => { setOpen(false); void onCreated(); }).finally(() => setSaving(false)); }
+  async function save() { setSaving(true); await clientsApi.addContact(role, clientId, { ...form, department:null,isPrimary:!contacts.length,billingContact:false,technicalContact:false,commercialContact:true,portalAccess:false,status:"ACTIVE",contactTypes:!contacts.length?["PRINCIPAL","COMERCIAL"]:["COMERCIAL"],notes:null }).then(() => { setOpen(false); void onCreated(); }).finally(() => setSaving(false)); }
   return <div className="clientSection"><div className="clientSectionHeader"><div><span>Personas y responsabilidades</span><h2>Contactos</h2><p>Contactos comerciales, técnicos, de facturación y acceso futuro al portal.</p></div>{roleCanManage ? <button onClick={() => setOpen((value) => !value)}><Plus size={15}/> Agregar contacto</button> : null}</div>{open ? <div className="inlineClientForm"><input placeholder="Nombre *" value={form.name} onChange={(event) => setForm({ ...form, name:event.target.value })}/><input placeholder="Cargo" value={form.position} onChange={(event) => setForm({ ...form, position:event.target.value })}/><input placeholder="Email *" value={form.email} onChange={(event) => setForm({ ...form, email:event.target.value })}/><input placeholder="Teléfono" value={form.phone} onChange={(event) => setForm({ ...form, phone:event.target.value })}/><input placeholder="WhatsApp" value={form.whatsapp} onChange={(event) => setForm({ ...form, whatsapp:event.target.value })}/><button disabled={saving || !form.name || !form.email} onClick={save}>{saving ? "Guardando…" : "Guardar contacto"}</button></div> : null}<div className="contactGrid">{contacts.length ? contacts.map((contact) => <article key={contact.id}><span className="contactAvatar">{contact.name.split(" ").map((word) => word[0]).slice(0,2).join("")}</span><div><h3>{contact.name}{contact.isPrimary ? <b>Principal</b> : null}</h3><p>{contact.position || "Cargo no informado"}</p><a href={`mailto:${contact.email}`}>{contact.email}</a><small>{contact.phone || "Sin teléfono"}</small></div></article>) : <EmptyLine text="No hay contactos asociados a este cliente."/>}</div></div>;
 }
 
 function Services({ clientId, services, roleCanManage, onCreated }: { clientId:string; services:ClientService[]; roleCanManage:boolean; onCreated:() => Promise<unknown> }) {
   const { role } = useAccess(); const [open,setOpen]=useState(false); const [saving,setSaving]=useState(false); const [name,setName]=useState(""); const [date,setDate]=useState("");
-  async function save(){ const startDate=toIsoDate(date); if(!startDate)return; setSaving(true); await clientsApi.addService(role,clientId,{serviceId:name.toLowerCase().replaceAll(" ","-"),serviceName:name,contractId:null,startDate,renewalDate:null,billingFrequency:null,price:null,currency:"CLP",status:"PENDING",responsibleUserId:null,sla:null,notes:null}).then(()=>{setOpen(false);void onCreated();}).finally(()=>setSaving(false)); }
+  async function save(){ const startDate=toIsoDate(date); if(!startDate)return; setSaving(true); await clientsApi.addService(role,clientId,{serviceId:name.toLowerCase().replaceAll(" ","-"),catalogServiceId:null,serviceName:name,contractId:null,projectId:null,startDate,renewalDate:null,endDate:null,billingFrequency:null,agreedPrice:null,currency:"CLP",status:"PENDING_ACTIVATION",responsibleUserId:null,technicalOwnerId:null,sla:null,notes:null,portalVisible:false}).then(()=>{setOpen(false);void onCreated();}).finally(()=>setSaving(false)); }
   return <div className="clientSection"><div className="clientSectionHeader"><div><span>Catálogo contratado</span><h2>Servicios</h2><p>Vigencia, facturación, responsable, SLA y próxima renovación.</p></div>{roleCanManage?<button onClick={()=>setOpen((value)=>!value)}><Plus size={15}/> Agregar servicio</button>:null}</div>{open?<div className="inlineClientForm compact"><input placeholder="Nombre del servicio *" value={name} onChange={(event)=>setName(event.target.value)}/><input placeholder="Inicio DD-MM-AAAA *" value={date} onChange={(event)=>setDate(event.target.value)}/><button disabled={saving||!name||!toIsoDate(date)} onClick={save}>{saving?"Guardando…":"Guardar servicio"}</button></div>:null}<div className="serviceCards">{services.length?services.map((service)=><article key={service.id}><div><Wrench size={18}/><span className={`serviceStatus ${service.status.toLowerCase()}`}>{service.status}</span></div><h3>{service.serviceName}</h3><dl><div><dt>Inicio</dt><dd>{formatDate(`${service.startDate}T12:00:00Z`)}</dd></div><div><dt>Renovación</dt><dd>{service.renewalDate?formatDate(`${service.renewalDate}T12:00:00Z`):"Sin fecha"}</dd></div><div><dt>SLA</dt><dd>{service.sla||"No definido"}</dd></div></dl></article>):<EmptyLine text="No hay servicios contratados para este cliente."/>}</div></div>;
+}
+
+function ClientContracts({ clientId, contracts }: { clientId: string; contracts: ClientContract[] }) {
+  return <div className="clientSection">
+    <div className="clientSectionHeader"><div><span>Contract Management</span><h2>Contratos del cliente</h2><p>Vigencia, valor, firma y renovación desde un único registro contractual.</p></div><Link href={`/clients/contracts?clientId=${clientId}`}><FileStack size={15}/> Abrir centro de contratos</Link></div>
+    <div className="serviceCards">{contracts.length ? contracts.map((contract) => <article key={contract.id}><div><FileStack size={18}/><span className={`serviceStatus ${contract.status.toLowerCase()}`}>{contract.status}</span></div><h3>{contract.name}</h3><dl><div><dt>Número</dt><dd>{contract.contractNumber}</dd></div><div><dt>Vigencia</dt><dd>{contract.startDate ? formatDate(`${contract.startDate}T12:00:00Z`) : "Sin inicio"} — {contract.endDate ? formatDate(`${contract.endDate}T12:00:00Z`) : "Indefinida"}</dd></div><div><dt>Total</dt><dd>{formatMoney(contract.total, contract.currency)}</dd></div></dl></article>) : <EmptyLine text="No hay contratos asociados a este cliente."/>}</div>
+  </div>;
+}
+
+function ClientRenewals({ clientId, renewals }: { clientId: string; renewals: ClientRenewal[] }) {
+  return <div className="clientSection">
+    <div className="clientSectionHeader"><div><span>Renewal Control Center</span><h2>Renovaciones del cliente</h2><p>Fechas críticas, contacto, negociación y resultado conservan trazabilidad.</p></div><Link href={`/clients/renewals?clientId=${clientId}`}><CalendarClock size={15}/> Abrir centro de renovaciones</Link></div>
+    <div className="serviceCards">{renewals.length ? renewals.map((renewal) => <article key={renewal.id}><div><CalendarClock size={18}/><span className={`serviceStatus ${renewal.status.toLowerCase()}`}>{renewal.status}</span></div><h3>{renewal.title}</h3><dl><div><dt>Fecha</dt><dd>{formatDate(`${renewal.renewalDate}T12:00:00Z`)}</dd></div><div><dt>Origen</dt><dd>{renewal.sourceType}</dd></div><div><dt>Valor estimado</dt><dd>{renewal.estimatedValue === null ? "—" : formatMoney(renewal.estimatedValue, renewal.currency)}</dd></div></dl></article>) : <EmptyLine text="No hay renovaciones asociadas a este cliente."/>}</div>
+  </div>;
 }
 
 function Commercial({ clientId }: { clientId:string }) { return <div className="commercialClientView"><section><span>Pipeline del cliente</span><h2>Relación comercial</h2><p>Oportunidades, cotizaciones, ventas y seguimientos se consultan desde CRM utilizando este client_id.</p><div><Link href={`/crm/opportunities?clientId=${clientId}`}><Plus size={15}/> Nueva oportunidad</Link><Link href={`/crm/quotes?clientId=${clientId}`}><Receipt size={15}/> Nueva cotización</Link></div></section><div className="clientEmpty compact"><BriefcaseBusiness size={22}/><h3>Sin actividad comercial vinculada</h3><p>No hay oportunidades ni cotizaciones para este cliente.</p></div></div>; }
@@ -118,6 +155,7 @@ function PortalPanel({client}:{client:Client}){
 }
 function SettingsPanel({client,roleCanManage,onUpdated}:{client:Client;roleCanManage:boolean;onUpdated:()=>Promise<unknown>}){const {role}=useAccess();const [status,setStatus]=useState(client.status);const [saving,setSaving]=useState(false);async function save(){setSaving(true);await clientsApi.update(role,client.id,{status}).then(()=>void onUpdated()).finally(()=>setSaving(false));}async function archive(){if(!window.confirm("¿Archivar este cliente? Mantendrá todo su historial empresarial."))return;setSaving(true);await clientsApi.archive(role,client.id).then(()=>void onUpdated()).finally(()=>setSaving(false));}return <div className="clientSettings"><section><Settings size={22}/><div><h2>Configuración del cliente</h2><p>Estado, clasificación y preferencias auditables.</p></div></section><label>Estado<select disabled={!roleCanManage} value={status} onChange={(event)=>setStatus(event.target.value as Client["status"])}><option value="ACTIVE">Activo</option><option value="ONBOARDING">Onboarding</option><option value="INACTIVE">Inactivo</option><option value="ARCHIVED">Archivado</option></select></label><button disabled={!roleCanManage||saving||status===client.status} onClick={save}>Guardar cambios</button><div className="dangerZone"><Archive size={19}/><span><strong>Archivar cliente</strong><p>No elimina registros ni relaciones históricas.</p></span><button disabled={role!=="GERENTE_GENERAL"||saving||client.status==="ARCHIVED"} onClick={archive}>Archivar</button></div></div>;}
 function EmptyLine({text}:{text:string}){return <div className="clientInlineEmpty"><span>✓</span><p>{text}</p></div>;}
+function formatMoney(value:number,currency:string){return new Intl.NumberFormat("es-CL",{style:"currency",currency,maximumFractionDigits:currency==="CLP"?0:2}).format(value);}
 function Client360Skeleton(){return <main className="client360"><div className="clientSkeleton detail">{Array.from({length:8},(_,index)=><span key={index}/>)}</div></main>;}
 function initials(client:Client){return(client.tradeName||client.legalName).split(" ").slice(0,2).map((word)=>word[0]).join("").toUpperCase();}
 function statusLabel(status:Client["status"]){return({ACTIVE:"Activo",ONBOARDING:"Onboarding",INACTIVE:"Inactivo",ARCHIVED:"Archivado"})[status];}

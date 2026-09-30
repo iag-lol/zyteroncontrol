@@ -34,7 +34,7 @@ describe("Client 360 service", () => {
 
   it("agrega servicios y mantiene health explicable", async () => {
     const client = await service.create({ legalName: "Fenice SpA", rut: "18.866.264-1", country: "Chile" });
-    await service.addService(client.id, { serviceId: "hosting", serviceName: "Hosting", contractId: null, startDate: "2026-09-30", renewalDate: null, billingFrequency: "ANNUAL", price: null, currency: "CLP", status: "PENDING", responsibleUserId: null, sla: null, notes: null });
+    await service.addService(client.id, { serviceId: "hosting", catalogServiceId: null, serviceName: "Hosting", contractId: null, projectId: null, startDate: "2026-09-30", renewalDate: null, endDate: null, billingFrequency: "ANNUAL", agreedPrice: null, currency: "CLP", status: "PENDING_ACTIVATION", responsibleUserId: null, technicalOwnerId: null, sla: null, notes: null, portalVisible: false });
     expect(await service.services(client.id)).toHaveLength(1);
     expect(client.healthFactors.every((factor) => factor.reason.length > 0)).toBe(true);
   });
