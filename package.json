@@ -1,0 +1,22 @@
+{
+  "name": "zyteron-control",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.17.1",
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "scripts": {
+    "dev": "pnpm --parallel --filter @zyteron/api --filter @zyteron/web dev",
+    "build": "pnpm --filter @zyteron/contracts build && pnpm --filter @zyteron/api build && pnpm --filter @zyteron/web build",
+    "typecheck": "pnpm --filter @zyteron/contracts typecheck && pnpm --filter @zyteron/api typecheck && pnpm --filter @zyteron/web typecheck",
+    "test": "pnpm --filter @zyteron/api --filter @zyteron/web test",
+    "lint": "eslint apps packages"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.11.0",
+    "globals": "^17.12.0",
+    "typescript-eslint": "^8.71.0"
+  }
+}

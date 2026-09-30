@@ -1,0 +1,214 @@
+{
+  "generated_at": "2026-09-30T05:06:43.857794+00:00",
+  "nodes": {
+    "texto_pegado_backend_nestjs": {
+      "code_fingerprint": "648316257989174f72073f0ea49166c2d852d2c5a21b90bf300f7cff2cb743e8",
+      "label": "Backend Node.js TypeScript NestJS",
+      "last": "2026-09-30T05:06:43.822519+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T05:06:43.822519+00:00",
+          "outcome": "useful",
+          "q": "¿Qué arquitectura y postura de seguridad exige el arranque?"
+        }
+      ],
+      "score": 0.999999991,
+      "source_file": "Texto pegado.txt",
+      "status": "tentative",
+      "uses": 1
+    },
+    "texto_pegado_cotizacion": {
+      "code_fingerprint": "648316257989174f72073f0ea49166c2d852d2c5a21b90bf300f7cff2cb743e8",
+      "label": "Cotización",
+      "last": "2026-09-30T05:06:43.786664+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T05:06:43.786664+00:00",
+          "outcome": "useful",
+          "q": "¿Cuál es el primer vertical funcional para iniciar Zyteron Control?"
+        }
+      ],
+      "score": 0.999999981,
+      "source_file": "Texto pegado.txt",
+      "status": "tentative",
+      "uses": 1
+    },
+    "texto_pegado_crm": {
+      "code_fingerprint": "648316257989174f72073f0ea49166c2d852d2c5a21b90bf300f7cff2cb743e8",
+      "label": "CRM",
+      "last": "2026-09-30T05:06:43.786664+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T05:06:43.786664+00:00",
+          "outcome": "useful",
+          "q": "¿Cuál es el primer vertical funcional para iniciar Zyteron Control?"
+        }
+      ],
+      "score": 0.999999981,
+      "source_file": "Texto pegado.txt",
+      "status": "tentative",
+      "uses": 1
+    },
+    "texto_pegado_deny_by_default": {
+      "code_fingerprint": "648316257989174f72073f0ea49166c2d852d2c5a21b90bf300f7cff2cb743e8",
+      "label": "Deny by Default",
+      "last": "2026-09-30T05:06:43.822519+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T05:06:43.822519+00:00",
+          "outcome": "useful",
+          "q": "¿Qué arquitectura y postura de seguridad exige el arranque?"
+        }
+      ],
+      "score": 0.999999991,
+      "source_file": "Texto pegado.txt",
+      "status": "tentative",
+      "uses": 1
+    },
+    "texto_pegado_frontend_nextjs": {
+      "code_fingerprint": "648316257989174f72073f0ea49166c2d852d2c5a21b90bf300f7cff2cb743e8",
+      "label": "Frontend Next.js TypeScript",
+      "last": "2026-09-30T05:06:43.822519+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T05:06:43.822519+00:00",
+          "outcome": "useful",
+          "q": "¿Qué arquitectura y postura de seguridad exige el arranque?"
+        }
+      ],
+      "score": 0.999999991,
+      "source_file": "Texto pegado.txt",
+      "status": "tentative",
+      "uses": 1
+    },
+    "texto_pegado_frontend_no_confiable": {
+      "code_fingerprint": "648316257989174f72073f0ea49166c2d852d2c5a21b90bf300f7cff2cb743e8",
+      "label": "El Frontend es un Entorno No Confiable",
+      "last": "2026-09-30T05:06:43.822519+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T05:06:43.822519+00:00",
+          "outcome": "useful",
+          "q": "¿Qué arquitectura y postura de seguridad exige el arranque?"
+        }
+      ],
+      "score": 0.999999991,
+      "source_file": "Texto pegado.txt",
+      "status": "tentative",
+      "uses": 1
+    },
+    "texto_pegado_lead": {
+      "code_fingerprint": "648316257989174f72073f0ea49166c2d852d2c5a21b90bf300f7cff2cb743e8",
+      "label": "Lead",
+      "last": "2026-09-30T05:06:43.786664+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T05:06:43.786664+00:00",
+          "outcome": "useful",
+          "q": "¿Cuál es el primer vertical funcional para iniciar Zyteron Control?"
+        }
+      ],
+      "score": 0.999999981,
+      "source_file": "Texto pegado.txt",
+      "status": "tentative",
+      "uses": 1
+    },
+    "texto_pegado_oportunidad": {
+      "code_fingerprint": "648316257989174f72073f0ea49166c2d852d2c5a21b90bf300f7cff2cb743e8",
+      "label": "Oportunidad",
+      "last": "2026-09-30T05:06:43.786664+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T05:06:43.786664+00:00",
+          "outcome": "useful",
+          "q": "¿Cuál es el primer vertical funcional para iniciar Zyteron Control?"
+        }
+      ],
+      "score": 0.999999981,
+      "source_file": "Texto pegado.txt",
+      "status": "tentative",
+      "uses": 1
+    },
+    "texto_pegado_orden_trabajo": {
+      "code_fingerprint": "648316257989174f72073f0ea49166c2d852d2c5a21b90bf300f7cff2cb743e8",
+      "label": "Orden de Trabajo",
+      "last": "2026-09-30T05:06:43.786664+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T05:06:43.786664+00:00",
+          "outcome": "useful",
+          "q": "¿Cuál es el primer vertical funcional para iniciar Zyteron Control?"
+        }
+      ],
+      "score": 0.999999981,
+      "source_file": "Texto pegado.txt",
+      "status": "tentative",
+      "uses": 1
+    },
+    "texto_pegado_portal_cliente": {
+      "code_fingerprint": "648316257989174f72073f0ea49166c2d852d2c5a21b90bf300f7cff2cb743e8",
+      "label": "Portal Cliente",
+      "last": "2026-09-30T05:06:43.786664+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T05:06:43.786664+00:00",
+          "outcome": "useful",
+          "q": "¿Cuál es el primer vertical funcional para iniciar Zyteron Control?"
+        }
+      ],
+      "score": 0.999999981,
+      "source_file": "Texto pegado.txt",
+      "status": "tentative",
+      "uses": 1
+    },
+    "texto_pegado_postgresql_flexible_server": {
+      "code_fingerprint": "648316257989174f72073f0ea49166c2d852d2c5a21b90bf300f7cff2cb743e8",
+      "label": "Azure Database for PostgreSQL Flexible Server",
+      "last": "2026-09-30T05:06:43.822519+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T05:06:43.822519+00:00",
+          "outcome": "useful",
+          "q": "¿Qué arquitectura y postura de seguridad exige el arranque?"
+        }
+      ],
+      "score": 0.999999991,
+      "source_file": "Texto pegado.txt",
+      "status": "tentative",
+      "uses": 1
+    },
+    "texto_pegado_proyecto": {
+      "code_fingerprint": "648316257989174f72073f0ea49166c2d852d2c5a21b90bf300f7cff2cb743e8",
+      "label": "Proyecto",
+      "last": "2026-09-30T05:06:43.786664+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T05:06:43.786664+00:00",
+          "outcome": "useful",
+          "q": "¿Cuál es el primer vertical funcional para iniciar Zyteron Control?"
+        }
+      ],
+      "score": 0.999999981,
+      "source_file": "Texto pegado.txt",
+      "status": "tentative",
+      "uses": 1
+    },
+    "texto_pegado_rbac_abac": {
+      "code_fingerprint": "648316257989174f72073f0ea49166c2d852d2c5a21b90bf300f7cff2cb743e8",
+      "label": "Autorización RBAC y ABAC",
+      "last": "2026-09-30T05:06:43.822519+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T05:06:43.822519+00:00",
+          "outcome": "useful",
+          "q": "¿Qué arquitectura y postura de seguridad exige el arranque?"
+        }
+      ],
+      "score": 0.999999991,
+      "source_file": "Texto pegado.txt",
+      "status": "tentative",
+      "uses": 1
+    }
+  },
+  "version": 1
+}
