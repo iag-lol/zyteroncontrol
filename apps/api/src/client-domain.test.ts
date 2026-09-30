@@ -115,6 +115,15 @@ describe("migración final del dominio Clientes", () => {
     expect(sql).toContain("array[90,60,30,15,7,1]");
   });
 
+  it("retira la restricción antigua antes de migrar los estados de servicios", () => {
+    const dropConstraint = sql.indexOf("drop constraint if exists client_services_status_check");
+    const migrateLegacyStatus = sql.indexOf("set status = 'PENDING_ACTIVATION' where status = 'PENDING'");
+
+    expect(dropConstraint).toBeGreaterThan(-1);
+    expect(migrateLegacyStatus).toBeGreaterThan(-1);
+    expect(dropConstraint).toBeLessThan(migrateLegacyStatus);
+  });
+
   it("publica solamente los cuatro agregados en Realtime", () => {
     expect(sql).toContain("array['client_contacts','client_contracts','client_services','client_renewals']");
     expect(sql).toContain("supabase_realtime");

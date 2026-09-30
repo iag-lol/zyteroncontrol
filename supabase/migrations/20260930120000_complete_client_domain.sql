@@ -167,8 +167,8 @@ values
 on conflict (code) do nothing;
 
 alter table public.client_services alter column status drop default;
-update public.client_services set status = 'PENDING_ACTIVATION' where status = 'PENDING';
 alter table public.client_services drop constraint if exists client_services_status_check;
+update public.client_services set status = 'PENDING_ACTIVATION' where status = 'PENDING';
 alter table public.client_services add constraint client_services_status_check
   check (status in ('QUOTED','PENDING_ACTIVATION','ACTIVE','SUSPENDED','PENDING_RENEWAL','CANCELLED','EXPIRED'));
 alter table public.client_services alter column status set default 'PENDING_ACTIVATION';
