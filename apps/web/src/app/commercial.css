@@ -1,3 +1,926 @@
-.salesWorkspace{max-width:1680px;margin:auto;padding:28px 32px 70px;background:radial-gradient(circle at 100% 0,#f0eefa 0,transparent 28%)}.salesHeader{display:flex;align-items:flex-end;justify-content:space-between;gap:20px}.salesHeader>div:first-child>span,.domainModal>div>span{color:#6947b8;font-size:9px;font-weight:900;letter-spacing:.15em;text-transform:uppercase}.salesHeader h1{margin:6px 0 5px;font-size:37px;letter-spacing:-.055em}.salesHeader p{margin:0;color:var(--muted);font-size:11px}.salesHeader>div:last-child{display:flex;gap:7px}.salesHeader button{min-height:39px;padding:0 13px;display:flex;align-items:center;gap:7px;border:1px solid #ddd8eb;border-radius:9px;background:#fff;font-size:10px;font-weight:850;cursor:pointer}.salesPrimary,.salesHeader .salesPrimary{color:#fff!important;border-color:#5a34a3!important;background:#5a34a3!important}.salesTabs{margin:19px 0 14px;padding:5px;display:flex;gap:3px;overflow:auto;border:1px solid #e1ddeb;border-radius:12px;background:#fff}.salesTabs a{padding:9px 11px;border-radius:8px;color:#716a7d;text-decoration:none;white-space:nowrap;font-size:9px;font-weight:800}.salesTabs a.active{color:#fff;background:#5a34a3}.salesError,.salesNotice{padding:11px 13px;border:1px solid #efb9b4;border-radius:9px;color:#922c23;background:#ffebe8;font-size:10px}.salesNotice{display:flex;justify-content:space-between;color:#3f3268;border-color:#cfc5eb;background:#f2edff}.salesNotice button{border:0;background:transparent}.salesLoading{min-height:380px;display:grid;place-items:center;color:#736d7e;font-size:11px}.salesHero{min-height:205px;padding:30px 34px;display:flex;align-items:flex-end;justify-content:space-between;gap:30px;border-radius:18px;color:#fff;background:radial-gradient(circle at 85% 10%,#f0ae5140,transparent 34%),linear-gradient(125deg,#241544,#56319a 62%,#865224)}.salesHero small{color:#d9cef3;font-size:8px;font-weight:900;letter-spacing:.15em}.salesHero h2{max-width:700px;margin:10px 0 8px;font-size:34px;letter-spacing:-.05em}.salesHero p{margin:0;color:#ddd4ee;font-size:11px}.salesHero>a{padding:11px 13px;display:flex;align-items:center;gap:8px;border-radius:9px;color:#241544;background:#f5b854;text-decoration:none;font-size:10px;font-weight:900}.salesMetricGrid{margin:12px 0;display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.salesMetricGrid a{min-height:105px;padding:16px;display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:start;border:1px solid #e2deea;border-radius:13px;color:#261d36;background:#fff;text-decoration:none}.salesMetricGrid a>svg:first-child{color:#6947b8}.salesMetricGrid span{color:#777080;font-size:9px}.salesMetricGrid strong{grid-column:1/3;font-size:24px}.salesCommandGrid{display:grid;grid-template-columns:.8fr 1.2fr;gap:10px}.salesCommandGrid>article{padding:20px;border:1px solid #e2deea;border-radius:15px;background:#fff}.salesCommandGrid article>header{display:flex;justify-content:space-between}.salesCommandGrid header span{color:#6947b8;font-size:8px;font-weight:900;text-transform:uppercase}.salesCommandGrid h3{margin:5px 0 15px}.salesCommandGrid dl{margin:0}.salesCommandGrid dl>div{padding:10px 0;display:flex;justify-content:space-between;border-bottom:1px solid #eeeaf2;font-size:10px}.salesCommandGrid dd{font-weight:900}.salesActivity>div{padding:9px 0;display:grid;grid-template-columns:8px 1fr auto;gap:9px;border-bottom:1px solid #eeeaf2}.salesActivity i{width:6px;height:6px;margin-top:5px;border-radius:99px;background:#7955be}.salesActivity span{display:grid}.salesActivity strong{font-size:9px}.salesActivity small,.salesActivity time{color:var(--muted);font-size:8px}.leadInbox,.salesPipeline,.followUpAgenda{display:grid;gap:8px;overflow:auto}.leadInbox,.salesPipeline{grid-template-columns:repeat(8,minmax(215px,1fr))}.followUpAgenda{grid-template-columns:repeat(4,minmax(245px,1fr))}.leadInbox>article,.salesPipeline>article,.followUpAgenda>article{min-height:430px;padding:9px;border:1px solid #dfdbe8;border-radius:12px;background:#f7f5fa}.leadInbox>article>header,.salesPipeline>article>header,.followUpAgenda>article>header{padding:5px 4px 10px;display:flex;justify-content:space-between;color:#5e566c;font-size:8px;font-weight:900}.leadInbox header b,.salesPipeline header b,.followUpAgenda header b{min-width:20px;height:20px;display:grid;place-items:center;border-radius:99px;background:#fff}.leadCard,.opportunityCard,.followUpCard{margin-bottom:7px;padding:13px;border:1px solid #e1ddea;border-radius:10px;background:#fff}.leadCard small,.opportunityCard small,.followUpCard>span{color:#7454b4;font-size:7px;font-weight:900;text-transform:uppercase}.leadCard h3,.opportunityCard h3,.followUpCard h3{margin:6px 0 3px;font-size:11px}.leadCard p,.opportunityCard p,.followUpCard p,.followUpCard time{margin:3px 0;color:var(--muted);font-size:8px}.leadCard footer,.quoteGrid footer{margin-top:10px;padding-top:8px;display:flex;gap:5px;flex-wrap:wrap;border-top:1px solid #eeeaf2}.leadCard button,.followUpCard button,.quoteGrid button{padding:6px 7px;display:flex;align-items:center;gap:4px;border:1px solid #ddd6ea;border-radius:6px;color:#52338b;background:#fff;font-size:7px;font-weight:800}.opportunityCard{position:relative;padding-left:28px;cursor:grab}.opportunityCard>svg{position:absolute;left:9px;top:13px}.opportunityCard>strong{display:block;margin:8px 0;color:#51338a}.opportunityCard label{display:grid;gap:3px;color:var(--muted);font-size:7px}.opportunityCard select{padding:6px;border:1px solid #e1ddea;border-radius:6px}.salesList,.quoteGrid,.goalGrid{display:grid;gap:8px}.salesList article{min-height:77px;padding:12px 15px;display:grid;grid-template-columns:39px 1fr auto auto;gap:13px;align-items:center;border:1px solid #e1ddea;border-radius:12px;background:#fff}.salesListMark{width:37px;height:37px;display:grid;place-items:center;border-radius:10px;color:#6947b8;background:#f0ebfa}.salesList small,.salesList p{margin:0;color:var(--muted);font-size:8px}.salesList h3{margin:4px 0;font-size:11px}.salesList>article>strong{color:#51338a}.salesList>article>span{padding:5px 7px;border-radius:99px;background:#f0ebfa;font-size:8px}.quoteGrid,.goalGrid{grid-template-columns:repeat(3,1fr)}.quoteGrid>article,.goalGrid article{padding:17px;border:1px solid #dfd9e9;border-radius:13px;background:#fff}.quoteGrid header{display:flex;justify-content:space-between}.quoteGrid header small{color:#6b4bad;font-size:8px;font-weight:900}.quoteGrid h3{margin:5px 0}.quoteGrid header>span{height:max-content;padding:4px 6px;border-radius:99px;color:#563494;background:#f0ebfa;font-size:7px;font-weight:900}.quoteGrid>article>p,.goalGrid p{color:var(--muted);font-size:9px}.quoteGrid>article>strong{font-size:22px}.quoteGrid button:disabled{opacity:.45}.salesStrip{margin-bottom:10px;padding:17px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;border-radius:14px;color:#fff;background:linear-gradient(120deg,#29174d,#6741ac)}.salesStrip div{display:grid;gap:5px}.salesStrip small{color:#d4c9e9;font-size:8px}.salesStrip strong{font-size:22px}.goalGrid svg{color:#6947b8}.goalGrid small{display:block;margin-top:10px;color:var(--muted);font-size:8px}.goalGrid h3{margin:5px 0 12px}.goalGrid article>div{height:7px;border-radius:99px;background:#eeeaf3}.goalGrid i{display:block;height:100%;background:#6e48b5}.salesEmpty{min-height:100px;display:grid;place-content:center;justify-items:center;text-align:center;color:var(--muted)}.salesEmpty>span{width:27px;height:27px;display:grid;place-items:center;border-radius:99px;color:#6947b8;background:#efeafa}.salesEmpty strong{margin-top:7px;color:var(--ink);font-size:10px}.salesEmpty p{max-width:300px;margin:4px 0;font-size:8px}.salesForm{display:grid;grid-template-columns:1fr 1fr;gap:11px}.salesForm label{display:grid;gap:5px;color:#736b7d;font-size:8px;font-weight:850;text-transform:uppercase}.salesForm label.wide,.salesForm footer,.quoteReview{grid-column:1/-1}.salesForm input,.salesForm select,.salesForm textarea{min-height:38px;padding:9px;border:1px solid #ddd7e7;border-radius:8px}.salesForm textarea{min-height:86px}.salesForm footer{padding-top:12px;display:flex;justify-content:flex-end;gap:7px;border-top:1px solid #eeeaf2}.salesForm footer button{min-height:37px;padding:0 12px;border:1px solid #ddd7e7;border-radius:8px;background:#fff;font-size:9px;font-weight:850}.quoteSteps{margin-bottom:18px;display:grid;grid-template-columns:repeat(8,1fr);gap:4px}.quoteSteps span{height:25px;display:grid;place-items:center;border-radius:7px;color:#8a8294;background:#f1eff4;font-size:8px;font-weight:900}.quoteSteps .active{color:#fff;background:#5a34a3}.quoteSteps .done{color:#4f367c;background:#e2d6f7}.quoteReview{padding:16px;border-radius:10px;background:#f7f4fc}
-.salesQuickActions{margin:12px 0;display:flex;align-items:center;gap:7px;flex-wrap:wrap}.salesQuickActions span{margin-right:3px;color:#6f6878;font-size:8px;font-weight:900;text-transform:uppercase}.salesQuickActions a{padding:7px 10px;border:1px solid #dcd5e8;border-radius:8px;color:#51338a;background:#fff;text-decoration:none;font-size:8px;font-weight:850}.followUpActions{margin-top:8px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}.handoffIntro{margin:0 0 10px;padding:22px 24px;display:flex;align-items:center;justify-content:space-between;gap:20px;border:1px solid #ddd6ec;border-radius:15px;background:linear-gradient(120deg,#fff,#f1ebfb)}.handoffIntro small{color:#6947b8;font-size:8px;font-weight:900;letter-spacing:.12em}.handoffIntro h2{margin:6px 0;font-size:21px}.handoffIntro p{max-width:720px;margin:0;color:var(--muted);font-size:9px;line-height:1.6}.handoffIntro button{min-height:38px;padding:0 13px;display:flex;align-items:center;gap:6px;border:0;border-radius:8px;font-size:9px;font-weight:900;white-space:nowrap}
-@media(max-width:1100px){.salesMetricGrid{grid-template-columns:1fr 1fr}.salesCommandGrid{grid-template-columns:1fr}.quoteGrid,.goalGrid{grid-template-columns:1fr 1fr}}@media(max-width:720px){.salesWorkspace{padding:20px 13px 50px}.salesHeader h1{font-size:28px}.salesHeader p{display:none}.salesHero{min-height:250px;padding:24px;align-items:flex-start;flex-direction:column}.salesMetricGrid,.quoteGrid,.goalGrid{grid-template-columns:1fr}.salesPipeline,.leadInbox{display:flex}.salesPipeline>article,.leadInbox>article{min-width:82vw}.followUpAgenda{grid-template-columns:1fr}.salesList article{grid-template-columns:36px 1fr}.salesForm{grid-template-columns:1fr}.salesForm label.wide,.salesForm footer,.quoteReview{grid-column:1}.salesTabs{position:sticky;top:75px;z-index:4}.handoffIntro{align-items:flex-start;flex-direction:column}}
+.salesWorkspace {
+  --sales-deep: #123f31;
+  --sales-deeper: #0a2f24;
+  --sales-green: var(--green);
+  --sales-lime: var(--green-bright);
+  --sales-soft: var(--green-soft);
+  --sales-line: #d7e3dc;
+  --sales-column: #f3f7f4;
+  max-width: 1680px;
+  margin: auto;
+  padding: 28px 32px 70px;
+  background: radial-gradient(circle at 100% 0, rgba(185, 244, 74, .12), transparent 30%);
+}
+
+.salesHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.salesHeader > div:first-child > span,
+.domainModal > div > span {
+  color: var(--sales-green);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+.salesHeader h1 {
+  margin: 6px 0 5px;
+  font-size: 37px;
+  letter-spacing: -.055em;
+}
+
+.salesHeader p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.salesHeader > div:last-child {
+  display: flex;
+  gap: 7px;
+}
+
+.salesHeader button {
+  min-height: 39px;
+  padding: 0 13px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--sales-line);
+  border-radius: 9px;
+  color: var(--ink);
+  background: #fff;
+  font-size: 10px;
+  font-weight: 850;
+  cursor: pointer;
+  transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+}
+
+.salesHeader button:hover {
+  border-color: #8db5a4;
+  box-shadow: 0 6px 18px rgba(13, 91, 67, .08);
+  transform: translateY(-1px);
+}
+
+.salesPrimary,
+.salesHeader .salesPrimary {
+  color: #fff !important;
+  border-color: var(--sales-green) !important;
+  background: var(--sales-green) !important;
+}
+
+.salesPrimary:hover,
+.salesHeader .salesPrimary:hover {
+  background: #0a4936 !important;
+}
+
+.salesTabs {
+  margin: 19px 0 14px;
+  padding: 5px;
+  display: flex;
+  gap: 3px;
+  overflow: auto;
+  border: 1px solid var(--sales-line);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 18px rgba(18, 63, 49, .035);
+}
+
+.salesTabs a {
+  padding: 9px 11px;
+  border-radius: 8px;
+  color: #627069;
+  text-decoration: none;
+  white-space: nowrap;
+  font-size: 9px;
+  font-weight: 800;
+  transition: color .16s ease, background .16s ease;
+}
+
+.salesTabs a:hover {
+  color: var(--sales-green);
+  background: var(--sales-soft);
+}
+
+.salesTabs a.active {
+  color: #fff;
+  background: var(--sales-green);
+}
+
+.salesError,
+.salesNotice {
+  padding: 11px 13px;
+  border: 1px solid #efb9b4;
+  border-radius: 9px;
+  color: #922c23;
+  background: #ffebe8;
+  font-size: 10px;
+}
+
+.salesNotice {
+  display: flex;
+  justify-content: space-between;
+  color: #174f3c;
+  border-color: #c8dfd3;
+  background: var(--sales-soft);
+}
+
+.salesNotice button {
+  border: 0;
+  color: var(--sales-green);
+  background: transparent;
+}
+
+.salesLoading {
+  min-height: 380px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.salesHero {
+  min-height: 205px;
+  padding: 30px 34px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 30px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 18px;
+  color: #fff;
+  background:
+    radial-gradient(circle at 86% 5%, rgba(185, 244, 74, .26), transparent 31%),
+    linear-gradient(125deg, var(--sales-deeper), var(--sales-green) 68%, #267358);
+  box-shadow: 0 18px 45px rgba(18, 63, 49, .13);
+}
+
+.salesHero small {
+  color: var(--sales-lime);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .15em;
+}
+
+.salesHero h2 {
+  max-width: 700px;
+  margin: 10px 0 8px;
+  font-size: 34px;
+  letter-spacing: -.05em;
+}
+
+.salesHero p {
+  margin: 0;
+  color: #bfd4ca;
+  font-size: 11px;
+}
+
+.salesHero > a {
+  padding: 11px 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 9px;
+  color: #173c30;
+  background: var(--sales-lime);
+  text-decoration: none;
+  font-size: 10px;
+  font-weight: 900;
+  box-shadow: 0 8px 22px rgba(8, 34, 25, .18);
+}
+
+.salesMetricGrid {
+  margin: 12px 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 9px;
+}
+
+.salesMetricGrid a {
+  min-height: 105px;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 9px;
+  align-items: start;
+  border: 1px solid var(--sales-line);
+  border-radius: 13px;
+  color: var(--ink);
+  background: #fff;
+  text-decoration: none;
+  box-shadow: 0 4px 16px rgba(18, 63, 49, .025);
+  transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+}
+
+.salesMetricGrid a:hover {
+  border-color: #9bbdac;
+  box-shadow: 0 10px 28px rgba(18, 63, 49, .08);
+  transform: translateY(-2px);
+}
+
+.salesMetricGrid a > svg:first-child {
+  color: var(--sales-green);
+}
+
+.salesMetricGrid span {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.salesMetricGrid strong {
+  grid-column: 1 / 3;
+  font-size: 24px;
+}
+
+.salesCommandGrid {
+  display: grid;
+  grid-template-columns: .8fr 1.2fr;
+  gap: 10px;
+}
+
+.salesCommandGrid > article {
+  padding: 20px;
+  border: 1px solid var(--sales-line);
+  border-radius: 15px;
+  background: #fff;
+}
+
+.salesCommandGrid article > header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.salesCommandGrid header span {
+  color: var(--sales-green);
+  font-size: 8px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.salesCommandGrid h3 {
+  margin: 5px 0 15px;
+}
+
+.salesCommandGrid dl {
+  margin: 0;
+}
+
+.salesCommandGrid dl > div {
+  padding: 10px 0;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #e8eeea;
+  font-size: 10px;
+}
+
+.salesCommandGrid dd {
+  color: var(--sales-deep);
+  font-weight: 900;
+}
+
+.salesActivity > div {
+  padding: 9px 0;
+  display: grid;
+  grid-template-columns: 8px 1fr auto;
+  gap: 9px;
+  border-bottom: 1px solid #e8eeea;
+}
+
+.salesActivity i {
+  width: 6px;
+  height: 6px;
+  margin-top: 5px;
+  border-radius: 99px;
+  background: var(--sales-green);
+  box-shadow: 0 0 0 4px var(--sales-soft);
+}
+
+.salesActivity span {
+  display: grid;
+}
+
+.salesActivity strong {
+  font-size: 9px;
+}
+
+.salesActivity small,
+.salesActivity time {
+  color: var(--muted);
+  font-size: 8px;
+}
+
+.leadInbox,
+.salesPipeline,
+.followUpAgenda {
+  display: grid;
+  gap: 8px;
+  overflow: auto;
+}
+
+.leadInbox,
+.salesPipeline {
+  grid-template-columns: repeat(8, minmax(215px, 1fr));
+}
+
+.followUpAgenda {
+  grid-template-columns: repeat(4, minmax(245px, 1fr));
+}
+
+.leadInbox > article,
+.salesPipeline > article,
+.followUpAgenda > article {
+  min-height: 430px;
+  padding: 9px;
+  border: 1px solid var(--sales-line);
+  border-radius: 12px;
+  background: var(--sales-column);
+}
+
+.leadInbox > article > header,
+.salesPipeline > article > header,
+.followUpAgenda > article > header {
+  padding: 5px 4px 10px;
+  display: flex;
+  justify-content: space-between;
+  color: #52645c;
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.leadInbox header b,
+.salesPipeline header b,
+.followUpAgenda header b {
+  min-width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border-radius: 99px;
+  color: var(--sales-green);
+  background: #fff;
+}
+
+.leadCard,
+.opportunityCard,
+.followUpCard {
+  margin-bottom: 7px;
+  padding: 13px;
+  border: 1px solid var(--sales-line);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(18, 63, 49, .035);
+}
+
+.leadCard small,
+.opportunityCard small,
+.followUpCard > span {
+  color: var(--sales-green);
+  font-size: 7px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.leadCard h3,
+.opportunityCard h3,
+.followUpCard h3 {
+  margin: 6px 0 3px;
+  font-size: 11px;
+}
+
+.leadCard p,
+.opportunityCard p,
+.followUpCard p,
+.followUpCard time {
+  margin: 3px 0;
+  color: var(--muted);
+  font-size: 8px;
+}
+
+.leadCard footer,
+.quoteGrid footer {
+  margin-top: 10px;
+  padding-top: 8px;
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  border-top: 1px solid #e8eeea;
+}
+
+.leadCard button,
+.followUpCard button,
+.quoteGrid button {
+  padding: 6px 7px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #cfe0d7;
+  border-radius: 6px;
+  color: var(--sales-green);
+  background: #fff;
+  font-size: 7px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.leadCard button:hover,
+.followUpCard button:hover,
+.quoteGrid button:hover:not(:disabled) {
+  background: var(--sales-soft);
+}
+
+.opportunityCard {
+  position: relative;
+  padding-left: 28px;
+  cursor: grab;
+}
+
+.opportunityCard > svg {
+  position: absolute;
+  left: 9px;
+  top: 13px;
+  color: #6c8278;
+}
+
+.opportunityCard > strong {
+  display: block;
+  margin: 8px 0;
+  color: var(--sales-green);
+}
+
+.opportunityCard label {
+  display: grid;
+  gap: 3px;
+  color: var(--muted);
+  font-size: 7px;
+}
+
+.opportunityCard select {
+  padding: 6px;
+  border: 1px solid var(--sales-line);
+  border-radius: 6px;
+  outline: none;
+}
+
+.opportunityCard select:focus {
+  border-color: var(--sales-green);
+}
+
+.salesList,
+.quoteGrid,
+.goalGrid {
+  display: grid;
+  gap: 8px;
+}
+
+.salesList article {
+  min-height: 77px;
+  padding: 12px 15px;
+  display: grid;
+  grid-template-columns: 39px 1fr auto auto;
+  gap: 13px;
+  align-items: center;
+  border: 1px solid var(--sales-line);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.salesListMark {
+  width: 37px;
+  height: 37px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  color: var(--sales-green);
+  background: var(--sales-soft);
+}
+
+.salesList small,
+.salesList p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 8px;
+}
+
+.salesList h3 {
+  margin: 4px 0;
+  font-size: 11px;
+}
+
+.salesList > article > strong {
+  color: var(--sales-green);
+}
+
+.salesList > article > span {
+  padding: 5px 7px;
+  border-radius: 99px;
+  color: #245943;
+  background: var(--sales-soft);
+  font-size: 8px;
+}
+
+.quoteGrid,
+.goalGrid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.quoteGrid > article,
+.goalGrid article {
+  padding: 17px;
+  border: 1px solid var(--sales-line);
+  border-radius: 13px;
+  background: #fff;
+}
+
+.quoteGrid header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.quoteGrid header small {
+  color: var(--sales-green);
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.quoteGrid h3 {
+  margin: 5px 0;
+}
+
+.quoteGrid header > span {
+  height: max-content;
+  padding: 4px 6px;
+  border-radius: 99px;
+  color: #245943;
+  background: var(--sales-soft);
+  font-size: 7px;
+  font-weight: 900;
+}
+
+.quoteGrid > article > p,
+.goalGrid p {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.quoteGrid > article > strong {
+  font-size: 22px;
+}
+
+.quoteGrid button:disabled {
+  opacity: .45;
+}
+
+.salesStrip {
+  margin-bottom: 10px;
+  padding: 17px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  border-radius: 14px;
+  color: #fff;
+  background:
+    radial-gradient(circle at 90% 0, rgba(185, 244, 74, .2), transparent 36%),
+    linear-gradient(120deg, var(--sales-deeper), var(--sales-green));
+}
+
+.salesStrip div {
+  display: grid;
+  gap: 5px;
+}
+
+.salesStrip small {
+  color: #bad0c7;
+  font-size: 8px;
+}
+
+.salesStrip strong {
+  color: var(--sales-lime);
+  font-size: 22px;
+}
+
+.goalGrid svg {
+  color: var(--sales-green);
+}
+
+.goalGrid small {
+  display: block;
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 8px;
+}
+
+.goalGrid h3 {
+  margin: 5px 0 12px;
+}
+
+.goalGrid article > div {
+  height: 7px;
+  border-radius: 99px;
+  background: #e3ece7;
+}
+
+.goalGrid i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--sales-green), #53a276);
+}
+
+.salesEmpty {
+  min-height: 100px;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  text-align: center;
+  color: var(--muted);
+}
+
+.salesEmpty > span {
+  width: 27px;
+  height: 27px;
+  display: grid;
+  place-items: center;
+  border-radius: 99px;
+  color: var(--sales-green);
+  background: var(--sales-soft);
+}
+
+.salesEmpty strong {
+  margin-top: 7px;
+  color: var(--ink);
+  font-size: 10px;
+}
+
+.salesEmpty p {
+  max-width: 300px;
+  margin: 4px 0;
+  font-size: 8px;
+}
+
+.salesForm {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 11px;
+}
+
+.salesForm label {
+  display: grid;
+  gap: 5px;
+  color: #627069;
+  font-size: 8px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.salesForm label.wide,
+.salesForm footer,
+.quoteReview {
+  grid-column: 1 / -1;
+}
+
+.salesForm input,
+.salesForm select,
+.salesForm textarea {
+  min-height: 38px;
+  padding: 9px;
+  border: 1px solid var(--sales-line);
+  border-radius: 8px;
+  color: var(--ink);
+  background: #fff;
+  outline: none;
+}
+
+.salesForm input:focus,
+.salesForm select:focus,
+.salesForm textarea:focus {
+  border-color: #75a28f;
+  box-shadow: 0 0 0 3px rgba(13, 91, 67, .08);
+}
+
+.salesForm textarea {
+  min-height: 86px;
+}
+
+.salesForm footer {
+  padding-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 7px;
+  border-top: 1px solid #e8eeea;
+}
+
+.salesForm footer button {
+  min-height: 37px;
+  padding: 0 12px;
+  border: 1px solid var(--sales-line);
+  border-radius: 8px;
+  background: #fff;
+  font-size: 9px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.quoteSteps {
+  margin-bottom: 18px;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 4px;
+}
+
+.quoteSteps span {
+  height: 25px;
+  display: grid;
+  place-items: center;
+  border-radius: 7px;
+  color: #76827c;
+  background: #eef2ef;
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.quoteSteps .active {
+  color: #fff;
+  background: var(--sales-green);
+}
+
+.quoteSteps .done {
+  color: #173c30;
+  background: #dff2c8;
+}
+
+.quoteReview {
+  padding: 16px;
+  border: 1px solid #dbe8e0;
+  border-radius: 10px;
+  background: #f4f9f5;
+}
+
+.salesQuickActions {
+  margin: 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.salesQuickActions span {
+  margin-right: 3px;
+  color: #65736c;
+  font-size: 8px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.salesQuickActions a {
+  padding: 7px 10px;
+  border: 1px solid #cfe0d7;
+  border-radius: 8px;
+  color: var(--sales-green);
+  background: #fff;
+  text-decoration: none;
+  font-size: 8px;
+  font-weight: 850;
+}
+
+.salesQuickActions a:hover {
+  background: var(--sales-soft);
+}
+
+.followUpActions {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.handoffIntro {
+  margin: 0 0 10px;
+  padding: 22px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border: 1px solid #d4e4db;
+  border-radius: 15px;
+  background: linear-gradient(120deg, #fff, var(--sales-soft));
+}
+
+.handoffIntro small {
+  color: var(--sales-green);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .12em;
+}
+
+.handoffIntro h2 {
+  margin: 6px 0;
+  font-size: 21px;
+}
+
+.handoffIntro p {
+  max-width: 720px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 9px;
+  line-height: 1.6;
+}
+
+.handoffIntro button {
+  min-height: 38px;
+  padding: 0 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 8px;
+  font-size: 9px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+@media (max-width: 1100px) {
+  .salesMetricGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .salesCommandGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .quoteGrid,
+  .goalGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .salesWorkspace {
+    padding: 20px 13px 50px;
+  }
+
+  .salesHeader h1 {
+    font-size: 28px;
+  }
+
+  .salesHeader p {
+    display: none;
+  }
+
+  .salesHero {
+    min-height: 250px;
+    padding: 24px;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .salesMetricGrid,
+  .quoteGrid,
+  .goalGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .salesPipeline,
+  .leadInbox {
+    display: flex;
+  }
+
+  .salesPipeline > article,
+  .leadInbox > article {
+    min-width: 82vw;
+  }
+
+  .followUpAgenda {
+    grid-template-columns: 1fr;
+  }
+
+  .salesList article {
+    grid-template-columns: 36px 1fr;
+  }
+
+  .salesForm {
+    grid-template-columns: 1fr;
+  }
+
+  .salesForm label.wide,
+  .salesForm footer,
+  .quoteReview {
+    grid-column: 1;
+  }
+
+  .salesTabs {
+    position: sticky;
+    top: 75px;
+    z-index: 4;
+  }
+
+  .handoffIntro {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
