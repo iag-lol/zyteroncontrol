@@ -12,6 +12,6 @@ import { SupportAttachmentService, SupportCatalogService, SupportChannelService,
   imports:[OperationsModule,DevelopmentModule,DocumentsModule],
   controllers:[SupportController,SupportKnowledgeController,ClientSupportController,SupportRelationsController],
   providers:[SupportRepository,SupportSlaEngine,SupportCatalogService,SupportSlaService,SupportTicketService,SupportAttachmentService,SupportKnowledgeService,SupportChannelService,SupportReadService,SupportCopilotProvider,DeferredMailSupportProvider,{provide:SupportChannelProvider,useExisting:DeferredMailSupportProvider}],
-  exports:[SupportReadService],
+  exports:[SupportReadService,SupportTicketService,SupportCatalogService],
 })
 export class SupportModule {}

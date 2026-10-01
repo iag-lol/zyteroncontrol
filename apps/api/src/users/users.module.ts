@@ -29,7 +29,7 @@ class UsersController {
   constructor(private readonly directory: UsersDirectoryService) {}
 
   @Get("directory")
-  @RequireRoles("GERENTE_GENERAL", "JEFE_VENTAS", "EJECUTIVA_VENTAS", "COMERCIAL", "JEFE_DESARROLLO", "TECH_LEAD", "QA", "SOPORTE_TECNICO")
+  @RequireRoles("GERENTE_GENERAL", "JEFE_VENTAS", "EJECUTIVA_VENTAS", "COMERCIAL", "JEFE_DESARROLLO", "TECH_LEAD", "QA", "SOPORTE_TECNICO", "RRHH")
   listDirectory() { return this.directory.list(); }
 }
 
