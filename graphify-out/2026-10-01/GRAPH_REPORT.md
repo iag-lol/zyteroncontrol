@@ -1,12 +1,12 @@
 # Graph Report - CONTROL ZYTERON  (2026-10-01)
 
 ## Corpus Check
-- 196 files · ~46,825 words
+- 196 files · ~47,124 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 6 file(s) not represented in the graph (top: .css 3, (none) 2, .example 1)
 
 ## Summary
-- 1953 nodes · 4753 edges · 134 communities (90 shown, 44 thin omitted)
+- 1956 nodes · 4756 edges · 126 communities (85 shown, 41 thin omitted)
 - Extraction: 91% EXTRACTED · 9% INFERRED · 0% AMBIGUOUS · INFERRED: 434 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
@@ -21,11 +21,11 @@
 - ext_packages_contracts_dist_index_js
 - index.ts
 - client-domain.test.ts
-- pageBounds
+- ContactsRepository
 - CommercialRepository
-- AuthController
+- auth.module.ts
 - ClientServicesRepository
-- commercial.repository.ts
+- useAccess
 - RenewalsRepository
 - users_eduardoavila_desktop_zyteron_cl_control_zyteron_packages_contracts_dist_index_client
 - enterprise-shell.tsx
@@ -33,7 +33,7 @@
 - web/package.json
 - api/package.json
 - 20260930120000_complete_client_domain.sql
-- useAccess
+- client-domain-api.ts
 - client-360.tsx
 - 20260930070000_client_360.sql
 - users_eduardoavila_desktop_zyteron_cl_control_zyteron_packages_contracts_dist_index_roles
@@ -43,15 +43,15 @@
 - SalesService
 - LeadsService
 - @nestjs/common
-- OpportunitiesService
-- server-supabase.ts
+- OpportunitiesController
+- users.module.ts
 - .index
-- control-dashboard 2.tsx
+- commercial-pipeline.tsx
 - QuotesService
 - new-client-wizard.tsx
 - renewal-center.tsx
 - Zyteron Control
-- packages_contracts_dist_index
+- crm.controller.ts
 - compilerOptions
 - compilerOptions
 - contracts/package.json
@@ -65,16 +65,16 @@
 - .index
 - actor
 - .index
-- contracts.service.ts
+- contracts.module.ts
 - .index
 - .index
-- commercial.module.ts
+- packages_contracts_dist_index
 - web_next_types_root_params_d
 - .index
 - .index
 - .index
 - .index
-- quotes.service.ts
+- ClientsController
 - .index
 - .index
 - ADR-002 — Renovaciones materializadas
@@ -110,35 +110,29 @@
 - web_next_types_routes_d
 - web_src_app_globals
 - FollowUpsService
-- OperationsService
+- ClientsService
 - module-page.tsx
 - OperationsRepository
-- CommercialService
-- optionalUuid
-- .list
+- CommercialController
+- .updatePortal
 - .index
 - .index
 - .index
+- pageBounds
 - AGENTS.md
-- RenewalsService
-- required
+- RenewalsModule
+- control-dashboard.tsx
 - now
 - operations-workspace.tsx
+- OperationsModule
 - ClientContact
-- CommissionsController
-- commercial.test.ts
-- relationName
+- TasksModule
+- ref_vitest
 - module-content.ts
-- dependencies
-- commercial-pipeline.tsx
-- devDependencies
-- scripts
-- .index
-- HealthController
 - .index
 - .index
 - .index
-- next.config.ts
+- .index
 
 ## God Nodes (most connected - your core abstractions)
 1. `RequireRoles()` - 226 edges
@@ -155,8 +149,8 @@
 ## Surprising Connections (you probably didn't know these)
 - `save()` --indirect_call--> `date()`  [INFERRED]
   apps/web/src/components/clients/client-360.tsx → apps/api/src/commercial/quote-document.service.ts
-- `request()` --calls--> `apiHeaders()`  [EXTRACTED]
-  apps/web/src/lib/clients-api.ts → apps/web/src/lib/api-auth.ts
+- `Milestones()` --calls--> `formatDate()`  [EXTRACTED]
+  apps/web/src/components/operations/operations-workspace.tsx → apps/web/src/lib/date-time.ts
 - `eventService()` --calls--> `ClientsRepository`  [EXTRACTED]
   apps/api/src/client-domain.test.ts → apps/api/src/clients/clients.repository.ts
 - `Client360()` --calls--> `useAccess()`  [EXTRACTED]
@@ -167,15 +161,11 @@
 ## Import Cycles
 - None detected.
 
-## Communities (134 total, 44 thin omitted)
-
-### Community 0 - "ClientsRepository"
-Cohesion: 0.06
-Nodes (12): ClientsController, Body, Controller, Get, Param, Patch, Post, Query (+4 more)
+## Communities (126 total, 41 thin omitted)
 
 ### Community 1 - "ContractsRepository"
-Cohesion: 0.08
-Nodes (14): ClientContractsController, ContractsController, Body, Controller, Get, Param, Patch, Post (+6 more)
+Cohesion: 0.05
+Nodes (27): clientProviderPorts, ElectronicSignatureProvider, PaymentProvider, TaxDocumentProvider, ClientContractsController, ContractsController, managers, readers (+19 more)
 
 ### Community 3 - "index.ts"
 Cohesion: 0.02
@@ -183,55 +173,55 @@ Nodes (93): billingFrequencies, BillingFrequency, ChangeRequest, Client, ClientC
 
 ### Community 4 - "client-domain.test.ts"
 Cohesion: 0.12
-Nodes (19): eventService(), ClientEventsService, Injectable, ClientDomainHealthSignals, ClientHealthService, Injectable, ClientIntegrationsService, Injectable (+11 more)
+Nodes (15): eventService(), ClientEventsService, Injectable, ClientDomainHealthSignals, ClientHealthService, Injectable, ClientIntegrationsService, Injectable (+7 more)
 
-### Community 5 - "pageBounds"
-Cohesion: 0.08
-Nodes (16): page(), ContactsController, Body, Controller, Get, Param, Patch, Post (+8 more)
+### Community 5 - "ContactsRepository"
+Cohesion: 0.09
+Nodes (20): ContactsController, managers, readers, Body, Controller, Get, Param, Patch (+12 more)
 
 ### Community 6 - "CommercialRepository"
-Cohesion: 0.09
+Cohesion: 0.08
 Nodes (3): CommercialRepository, now(), Injectable
 
-### Community 7 - "AuthController"
-Cohesion: 0.50
-Nodes (3): AuthController, Controller, Get
+### Community 7 - "auth.module.ts"
+Cohesion: 0.18
+Nodes (9): AuthController, AuthModule, Controller, Get, Module, Public(), HealthController, Controller (+1 more)
 
 ### Community 8 - "ClientServicesRepository"
-Cohesion: 0.09
-Nodes (14): ClientServicesController, Body, Controller, Get, Param, Patch, Post, Query (+6 more)
+Cohesion: 0.07
+Nodes (21): ClientServicesController, managers, readers, Body, Controller, Get, Param, Patch (+13 more)
 
-### Community 9 - "commercial.repository.ts"
-Cohesion: 0.21
-Nodes (13): PageInput, roles, base(), commercialApi, Page, request(), packages_contracts_dist_index_commercialevent, packages_contracts_dist_index_commission (+5 more)
+### Community 9 - "useAccess"
+Cohesion: 0.09
+Nodes (15): useAccess(), Contacts(), PortalPanel(), SettingsPanel(), archive(), ContactCard(), ContactDirectory(), ContactForm() (+7 more)
 
 ### Community 10 - "RenewalsRepository"
-Cohesion: 0.09
-Nodes (11): ClientRenewalsController, RenewalsController, Body, Controller, Get, Param, Patch, Post (+3 more)
+Cohesion: 0.08
+Nodes (20): ClientRenewalsController, managers, readers, RenewalsController, Body, Controller, Get, Param (+12 more)
 
 ### Community 12 - "enterprise-shell.tsx"
-Cohesion: 0.11
-Nodes (15): apps_web_src_app_globals, metadata, AccessContext, AccessContextValue, PermissionGate(), EmptyState(), NotificationCenter(), EnterpriseShell() (+7 more)
+Cohesion: 0.09
+Nodes (18): apps_web_src_app_globals, metadata, AccessContext, AccessContextValue, PermissionGate(), RoleGuard(), EmptyState(), NotificationCenter() (+10 more)
 
 ### Community 14 - "web/package.json"
-Cohesion: 0.17
-Nodes (11): @supabase/supabase-js, @types/node, typescript, vitest, @zyteron/contracts, name, private, version (+3 more)
+Cohesion: 0.06
+Nodes (33): nextConfig, dependencies, lucide-react, next, @next/env, react, react-dom, @supabase/supabase-js (+25 more)
 
 ### Community 15 - "api/package.json"
 Cohesion: 0.05
-Nodes (36): dependencies, dotenv, @nestjs/common, @nestjs/core, @nestjs/platform-express, reflect-metadata, rxjs, @supabase/supabase-js (+28 more)
+Nodes (37): dependencies, dotenv, @nestjs/common, @nestjs/core, @nestjs/platform-express, reflect-metadata, rxjs, @supabase/supabase-js (+29 more)
 
 ### Community 16 - "20260930120000_complete_client_domain.sql"
 Cohesion: 0.09
 Nodes (26): public.client_assignments, public.client_portal_users, public.client_services, public.clients, public.sync_client_domain_renewal, public.sync_renewal_notification_schedule, client_contracts_sync_renewal, client_domain_audit_client_idx (+18 more)
 
-### Community 17 - "useAccess"
-Cohesion: 0.06
-Nodes (42): useAccess(), Contacts(), PortalPanel(), ContactCard(), ContactDirectory(), ContactForm(), emptySummary, groupItems() (+34 more)
+### Community 17 - "client-domain-api.ts"
+Cohesion: 0.08
+Nodes (31): ContractCenter(), ContractDetail(), transition(), upload(), empty, money(), sha256(), downloadCsv() (+23 more)
 
 ### Community 18 - "client-360.tsx"
-Cohesion: 0.13
-Nodes (15): Client360(), ClientContracts(), ClientOperations(), ClientRenewals(), ClientTab, Commercial(), formatMoney(), healthLabel() (+7 more)
+Cohesion: 0.10
+Nodes (24): ClientPatch, InitialContact, InitialService, Client360(), ClientContracts(), ClientOperations(), ClientRenewals(), ClientTab (+16 more)
 
 ### Community 19 - "20260930070000_client_360.sql"
 Cohesion: 0.14
@@ -242,40 +232,44 @@ Cohesion: 0.09
 Nodes (21): devDependencies, eslint, @eslint/js, globals, typescript-eslint, engines, node, name (+13 more)
 
 ### Community 23 - "RequireRoles"
-Cohesion: 0.11
-Nodes (26): RequireRoles(), DeliverablesController, deliveryRoles, DeploymentsController, HeadersMap, managerRoles, MilestonesController, OperationsController (+18 more)
+Cohesion: 0.05
+Nodes (30): RequireRoles(), optionalUuid(), required(), DeliverablesController, deliveryRoles, DeploymentsController, HeadersMap, managerRoles (+22 more)
 
 ### Community 24 - "SalesService"
-Cohesion: 0.12
-Nodes (8): HandoffsController, SalesController, SalesGoalsController, Controller, Get, Query, SalesService, Injectable
+Cohesion: 0.08
+Nodes (9): SalesController, Body, Get, Headers, Param, Post, Query, SalesService (+1 more)
 
 ### Community 25 - "LeadsService"
-Cohesion: 0.14
+Cohesion: 0.13
 Nodes (11): LeadsController, Body, Controller, Get, Headers, Param, Patch, Post (+3 more)
 
 ### Community 26 - "@nestjs/common"
-Cohesion: 0.08
-Nodes (44): AuditsModule, Module, AuthModule, Module, Public(), clientDomainModules, DevelopmentModule, Module (+36 more)
-
-### Community 27 - "OpportunitiesService"
-Cohesion: 0.14
-Nodes (11): OpportunitiesController, Body, Controller, Get, Headers, Param, Patch, Post (+3 more)
-
-### Community 28 - "server-supabase.ts"
 Cohesion: 0.09
-Nodes (22): RoleGuard, Injectable, PUBLIC_ROUTE, REQUIRED_ROLES, ClientsModule, Module, managers, readers (+14 more)
+Nodes (39): AuditsModule, Module, clientDomainModules, DevelopmentModule, Module, DocumentsModule, Module, emptyDomain() (+31 more)
+
+### Community 27 - "OpportunitiesController"
+Cohesion: 0.16
+Nodes (9): OpportunitiesController, Body, Controller, Get, Headers, Param, Patch, Post (+1 more)
+
+### Community 28 - "users.module.ts"
+Cohesion: 0.18
+Nodes (7): RoleGuard, Injectable, PUBLIC_ROUTE, REQUIRED_ROLES, Module, UsersModule, packages_contracts_dist_index_roles
 
 ### Community 29 - ".index"
 Cohesion: 0.50
 Nodes (3): HrController, Controller, Get
 
-### Community 30 - "control-dashboard 2.tsx"
-Cohesion: 0.16
-Nodes (9): fallbackRecords, money, stageLabels, stages, ControlDashboard(), money, packages_contracts_dist_index_commercialrecord, packages_contracts_dist_index_pipelinestage (+1 more)
+### Community 30 - "commercial-pipeline.tsx"
+Cohesion: 0.15
+Nodes (10): CommercialPipeline(), money, stages, fallbackRecords, money, stageLabels, stages, PageHeader() (+2 more)
+
+### Community 31 - "QuotesService"
+Cohesion: 0.14
+Nodes (5): clip(), date(), money(), QuotesService, Injectable
 
 ### Community 32 - "new-client-wizard.tsx"
 Cohesion: 0.22
-Nodes (9): initial, NewClientWizard(), submit(), Review(), serviceCatalog, steps, clientsApi, isValidRut() (+1 more)
+Nodes (9): initial, NewClientWizard(), submit(), Review(), serviceCatalog, steps, isValidRut(), normalizeRut() (+1 more)
 
 ### Community 33 - "renewal-center.tsx"
 Cohesion: 0.15
@@ -285,9 +279,9 @@ Nodes (17): countdown(), empty, groupItems(), label(), money(), RenewalActions()
 Cohesion: 0.13
 Nodes (13): ADR-001: primer vertical de Zyteron Control, Contexto, Decisión, Estado, Límites de esta iteración, Próximos hitos, Clientes / Client 360, Estado actual (+5 more)
 
-### Community 35 - "packages_contracts_dist_index"
-Cohesion: 0.10
-Nodes (20): managers, readers, ClientServicesModule, Module, CrmController, Body, Controller, Get (+12 more)
+### Community 35 - "crm.controller.ts"
+Cohesion: 0.15
+Nodes (11): CrmController, Body, Controller, Get, Post, CrmModule, Module, CrmService (+3 more)
 
 ### Community 36 - "compilerOptions"
 Cohesion: 0.14
@@ -302,19 +296,19 @@ Cohesion: 0.14
 Nodes (13): devDependencies, typescript, exports, typescript, main, name, private, scripts (+5 more)
 
 ### Community 39 - "client-hub.tsx"
-Cohesion: 0.15
-Nodes (12): ClientHub(), ClientResults(), emptyResponse, healthLabel(), initials(), metricConfig, statusLabel(), ViewMode (+4 more)
+Cohesion: 0.21
+Nodes (8): ClientHub(), ClientResults(), emptyResponse, healthLabel(), initials(), metricConfig, statusLabel(), ViewMode
 
 ### Community 40 - "compilerOptions"
 Cohesion: 0.20
 Nodes (9): compilerOptions, declaration, module, moduleResolution, outDir, rootDir, extends, include (+1 more)
 
 ### Community 41 - "commercial-workspace.tsx"
-Cohesion: 0.07
-Nodes (38): sections, sections, ActivityTimeline(), Services(), save(), CatalogItem, Command(), CommercialWorkspace() (+30 more)
+Cohesion: 0.08
+Nodes (31): sections, sections, ActivityTimeline(), Services(), save(), CatalogItem, Command(), CommercialWorkspace() (+23 more)
 
 ### Community 42 - "clients.dto.ts"
-Cohesion: 0.50
+Cohesion: 0.42
 Nodes (6): optionalUuid(), parsePagination(), validateCreateClient(), isValidChileanRut(), normalizeRut(), packages_contracts_dist_index_clientstatuses
 
 ### Community 43 - "compilerOptions"
@@ -334,16 +328,16 @@ Cohesion: 0.50
 Nodes (3): FinanceController, Controller, Get
 
 ### Community 47 - "actor"
-Cohesion: 0.26
-Nodes (9): actor(), CommercialQuotesController, roles, Body, Controller, Headers, Param, Patch (+1 more)
+Cohesion: 0.20
+Nodes (10): actor(), CommercialQuotesController, Body, Controller, Get, Headers, Param, Patch (+2 more)
 
 ### Community 48 - ".index"
 Cohesion: 0.50
 Nodes (3): MonitoringController, Controller, Get
 
-### Community 49 - "contracts.service.ts"
-Cohesion: 0.09
-Nodes (17): clientProviderPorts, ElectronicSignatureProvider, PaymentProvider, TaxDocumentProvider, managers, readers, validateContract(), ContractsModule (+9 more)
+### Community 49 - "contracts.module.ts"
+Cohesion: 0.25
+Nodes (6): ClientServicesModule, Module, ClientsModule, Module, ContractsModule, Module
 
 ### Community 50 - ".index"
 Cohesion: 0.50
@@ -353,9 +347,9 @@ Nodes (3): PermissionsController, Controller, Get
 Cohesion: 0.50
 Nodes (3): ProjectsController, Controller, Get
 
-### Community 52 - "commercial.module.ts"
-Cohesion: 0.17
-Nodes (13): CommercialModule, Module, pageQuery(), scopedPageQuery(), uuidPattern, roles, readers, roles (+5 more)
+### Community 52 - "packages_contracts_dist_index"
+Cohesion: 0.07
+Nodes (47): roles, CommercialModule, Module, PageInput, CommercialService, Injectable, pageQuery(), scopedPageQuery() (+39 more)
 
 ### Community 54 - ".index"
 Cohesion: 0.50
@@ -373,9 +367,9 @@ Nodes (3): SecurityController, Controller, Get
 Cohesion: 0.50
 Nodes (3): SettingsController, Controller, Get
 
-### Community 58 - "quotes.service.ts"
-Cohesion: 0.15
-Nodes (13): MailMessage, MailProviderService, Injectable, clip(), date(), escapePdf(), money(), QuoteDocumentService (+5 more)
+### Community 58 - "ClientsController"
+Cohesion: 0.21
+Nodes (5): ClientsController, Controller, Get, Param, Query
 
 ### Community 59 - ".index"
 Cohesion: 0.50
@@ -446,20 +440,20 @@ Cohesion: 0.50
 Nodes (3): NOTE: This file should not be edited, apps_web_next_types_root_params_d, apps_web_next_types_routes_d
 
 ### Community 95 - "FollowUpsService"
-Cohesion: 0.14
+Cohesion: 0.16
 Nodes (11): FollowUpsController, Body, Controller, Get, Headers, Param, Patch, Post (+3 more)
 
-### Community 96 - "OperationsService"
-Cohesion: 0.16
-Nodes (3): OperationsPageInput, OperationsService, Injectable
-
 ### Community 97 - "module-page.tsx"
-Cohesion: 0.21
-Nodes (5): RoleGuard(), DataTable(), FilterBar(), StatusBadge(), lucide-react
+Cohesion: 0.20
+Nodes (3): DataTable(), FilterBar(), StatusBadge()
 
-### Community 99 - "CommercialService"
-Cohesion: 0.13
-Nodes (8): CommercialController, roles, Controller, Get, Query, CommercialService, Injectable, packages_contracts_dist_index_commercialsummary
+### Community 99 - "CommercialController"
+Cohesion: 0.17
+Nodes (4): CommercialController, Controller, Get, Query
+
+### Community 102 - ".updatePortal"
+Cohesion: 0.21
+Nodes (3): Body, Patch, Post
 
 ### Community 103 - ".index"
 Cohesion: 0.50
@@ -473,49 +467,29 @@ Nodes (3): QuotesController, Controller, Get
 Cohesion: 0.50
 Nodes (3): SupportController, Controller, Get
 
-### Community 108 - "RenewalsService"
-Cohesion: 0.19
-Nodes (11): managers, readers, RenewalInput, validateRenewal(), RenewalsModule, Module, RenewalsService, Injectable (+3 more)
+### Community 106 - "pageBounds"
+Cohesion: 0.18
+Nodes (4): page(), cleanSearch(), pageBounds(), page()
+
+### Community 109 - "control-dashboard.tsx"
+Cohesion: 0.40
+Nodes (3): ControlDashboard(), money, packages_contracts_dist_index_pipelinesummary
 
 ### Community 111 - "operations-workspace.tsx"
-Cohesion: 0.06
-Nodes (32): commercialRoles, managerRoles, operationsRoles, projectTransitions, taskTransitions, workTransitions, emptySummary, OperationsSection (+24 more)
+Cohesion: 0.05
+Nodes (41): commercialRoles, managerRoles, OperationsActor, operationsRoles, projectTransitions, taskTransitions, workTransitions, manager (+33 more)
 
-### Community 116 - "CommissionsController"
-Cohesion: 0.19
-Nodes (5): CommissionsController, Body, Headers, Param, Post
-
-### Community 117 - "commercial.test.ts"
-Cohesion: 0.33
-Nodes (5): OperationsActor, manager, ref_node_fs, ref_node_path, ref_vitest
+### Community 117 - "ref_vitest"
+Cohesion: 0.60
+Nodes (3): ref_node_fs, ref_node_path, ref_vitest
 
 ### Community 119 - "module-content.ts"
 Cohesion: 0.28
 Nodes (6): getModuleDescriptor(), groupContent, ModuleDescriptor, enterpriseNavigation, NavigationGroup, NavigationItem
 
-### Community 120 - "dependencies"
-Cohesion: 0.25
-Nodes (8): dependencies, lucide-react, next, @next/env, react, react-dom, @supabase/supabase-js, @zyteron/contracts
-
-### Community 122 - "commercial-pipeline.tsx"
-Cohesion: 0.33
-Nodes (4): CommercialPipeline(), money, stages, PageHeader()
-
-### Community 123 - "devDependencies"
-Cohesion: 0.33
-Nodes (6): devDependencies, @types/node, @types/react, @types/react-dom, typescript, vitest
-
-### Community 124 - "scripts"
-Cohesion: 0.33
-Nodes (6): scripts, build, dev, start, test, typecheck
-
 ### Community 125 - ".index"
 Cohesion: 0.50
 Nodes (3): DevelopmentController, Controller, Get
-
-### Community 126 - "HealthController"
-Cohesion: 0.50
-Nodes (3): HealthController, Controller, Get
 
 ### Community 127 - ".index"
 Cohesion: 0.50
@@ -531,23 +505,23 @@ Nodes (3): TasksController, Controller, Get
 
 ## Knowledge Gaps
 - **350 isolated node(s):** `$schema`, `collection`, `sourceRoot`, `name`, `version` (+345 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 670 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **44 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 673 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **41 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `RequireRoles()` connect `RequireRoles` to `ClientsRepository`, `ContractsRepository`, `.index`, `.index`, `client-domain.test.ts`, `pageBounds`, `ClientServicesRepository`, `commercial.repository.ts`, `RenewalsRepository`, `SalesService`, `LeadsService`, `@nestjs/common`, `OpportunitiesService`, `server-supabase.ts`, `.index`, `packages_contracts_dist_index`, `UsersController`, `.index`, `.index`, `actor`, `.index`, `contracts.service.ts`, `.index`, `.index`, `commercial.module.ts`, `.index`, `.index`, `.index`, `.index`, `.index`, `.index`, `FollowUpsService`, `CommercialService`, `.list`, `.index`, `.index`, `.index`, `RenewalsService`, `CommissionsController`, `.index`, `.index`?**
+- **Why does `RequireRoles()` connect `RequireRoles` to `.index`, `ContractsRepository`, `.index`, `client-domain.test.ts`, `ContactsRepository`, `ClientServicesRepository`, `RenewalsRepository`, `SalesService`, `LeadsService`, `@nestjs/common`, `OpportunitiesController`, `users.module.ts`, `.index`, `crm.controller.ts`, `UsersController`, `.index`, `.index`, `actor`, `.index`, `.index`, `.index`, `packages_contracts_dist_index`, `.index`, `.index`, `.index`, `.index`, `ClientsController`, `.index`, `.index`, `FollowUpsService`, `CommercialController`, `.updatePortal`, `.index`, `.index`, `.index`, `.index`, `.index`?**
   _High betweenness centrality (0.209) - this node is a cross-community bridge._
-- **Why does `@nestjs/common` connect `@nestjs/common` to `packages_contracts_dist_index`, `client-domain.test.ts`, `CommercialService`, `commercial.repository.ts`, `clients.dto.ts`, `RenewalsService`, `api/package.json`, `actor`, `contracts.service.ts`, `operations-workspace.tsx`, `commercial.module.ts`, `commercial.test.ts`, `RequireRoles`, `quotes.service.ts`, `server-supabase.ts`?**
-  _High betweenness centrality (0.078) - this node is a cross-community bridge._
-- **Why does `CommercialRepository` connect `CommercialRepository` to `CommercialService`, `pageBounds`, `.list`, `commercial.repository.ts`, `commercial.module.ts`, `CommissionsController`, `commercial.test.ts`, `SalesService`, `LeadsService`, `quotes.service.ts`, `OpportunitiesService`, `QuotesService`, `FollowUpsService`?**
+- **Why does `@nestjs/common` connect `@nestjs/common` to `ContractsRepository`, `crm.controller.ts`, `client-domain.test.ts`, `ContactsRepository`, `auth.module.ts`, `ClientServicesRepository`, `clients.dto.ts`, `RenewalsRepository`, `api/package.json`, `operations-workspace.tsx`, `contracts.module.ts`, `client-360.tsx`, `packages_contracts_dist_index`, `RequireRoles`, `users.module.ts`?**
+  _High betweenness centrality (0.079) - this node is a cross-community bridge._
+- **Why does `CommercialRepository` connect `CommercialRepository` to `CommercialController`, `pageBounds`, `actor`, `packages_contracts_dist_index`, `SalesService`, `LeadsService`, `OpportunitiesController`, `FollowUpsService`, `QuotesService`?**
   _High betweenness centrality (0.050) - this node is a cross-community bridge._
 - **What connects `$schema`, `collection`, `sourceRoot` to the rest of the system?**
   _350 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `ClientsRepository` be split into smaller, more focused modules?**
-  _Cohesion score 0.06142728093947606 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.12561576354679804 - nodes in this community are weakly interconnected._
 - **Should `ContractsRepository` be split into smaller, more focused modules?**
-  _Cohesion score 0.08065458796025717 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.0526006464883926 - nodes in this community are weakly interconnected._
 - **Should `index.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.02127659574468085 - nodes in this community are weakly interconnected._
