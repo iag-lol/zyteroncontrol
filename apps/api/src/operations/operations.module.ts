@@ -9,6 +9,6 @@ import { OperationsService } from "./operations.service.js";
 @Module({
   controllers: [OperationsController, WorkOrdersController, ProjectsController, TasksController, MilestonesController, WorklogsController, DeliverablesController, DeploymentsController],
   providers: [OperationsRepository, OperationsService],
-  exports: [OperationsService],
+  exports: [OperationsService, OperationsRepository],
 })
 export class OperationsModule {}
