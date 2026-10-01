@@ -68,3 +68,10 @@ function ProjectBody({ projectId }: { projectId: string }) {
     {creating ? <CreateMonitorModal presetProjectId={projectId} onClose={() => setCreating(false)} onCreated={async () => { setCreating(false); await query.reload(); }} /> : null}
   </section>;
 }
+
+const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+/** Se monta desde la ruta /projects/[id], debajo del Project 360 de Operaciones, sin editar sus secciones. */
+export function ProjectMonitoringSlot({ projectId }: { projectId: string }) {
+  if (!uuidPattern.test(projectId)) return null;
+  return <div className="relProjectSlot"><ProjectMonitoringPanel projectId={projectId} /></div>;
+}

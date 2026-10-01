@@ -231,8 +231,10 @@
 .relInboxPanel article small{color:var(--rel-muted);font-size:10px}
 
 .relEmbed{display:grid;gap:12px}
+.relProjectSlot{margin-top:-64px;padding:0 42px 80px;background:#f4f6f3}
+.relProjectSlot>.relEmbed{margin-top:0!important}
 .relEmbed .relPanel{border-radius:14px}
 
 @media(max-width:1200px){.relKpis{grid-template-columns:repeat(3,minmax(0,1fr))}.relGrid.command{grid-template-columns:1fr}.relSslLanes{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:900px){.relGrid.two,.relGrid.three{grid-template-columns:1fr}.relStrip{grid-template-columns:1fr}.relForm fieldset{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:640px){.relShell{padding:18px 14px 60px}.relHead{flex-direction:column;align-items:flex-start}.relHead h1{font-size:26px}.relKpis{grid-template-columns:repeat(2,minmax(0,1fr))}.relForm,.relForm fieldset{grid-template-columns:1fr}.relBanner{grid-template-columns:1fr}.relClock{text-align:left}.relFacts{grid-template-columns:1fr}.relStream article{grid-template-columns:78px 10px 1fr}.relSslLanes{grid-template-columns:repeat(2,minmax(0,1fr))}.relHeadActions{justify-content:flex-start}}
+@media(max-width:640px){.relProjectSlot{padding:0 14px 55px;margin-top:-40px}.relShell{padding:18px 14px 60px}.relHead{flex-direction:column;align-items:flex-start}.relHead h1{font-size:26px}.relKpis{grid-template-columns:repeat(2,minmax(0,1fr))}.relForm,.relForm fieldset{grid-template-columns:1fr}.relBanner{grid-template-columns:1fr}.relClock{text-align:left}.relFacts{grid-template-columns:1fr}.relStream article{grid-template-columns:78px 10px 1fr}.relSslLanes{grid-template-columns:repeat(2,minmax(0,1fr))}.relHeadActions{justify-content:flex-start}}
