@@ -1,0 +1,30 @@
+import { BadRequestException } from "@nestjs/common";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+import { beforeEach,describe,expect,it } from "vitest";
+import { CommercialRepository } from "./commercial.repository.js";
+import { FollowUpsService } from "./followups.service.js";
+import { LeadsService } from "./leads.service.js";
+import { OpportunitiesService } from "./opportunities.service.js";
+import { QuoteDocumentService } from "./quote-document.service.js";
+import { calculateQuote,QuotesService } from "./quotes.service.js";
+
+const actor="33333333-3333-4333-8333-333333333333";
+describe("Sales Operations Center",()=>{
+  let repository:CommercialRepository;
+  beforeEach(()=>{delete process.env.SUPABASE_URL;delete process.env.SUPABASE_SERVICE_ROLE_KEY;repository=new CommercialRepository();});
+
+  it("crea lead, advierte duplicado y lo convierte en oportunidad",async()=>{const leads=new LeadsService(repository);const first=await leads.create({companyName:"Empresa Uno",contactName:"Ana",email:"ana@empresa.cl",interest:"Web"},actor);expect(first.warnings).toEqual([]);const duplicate=await leads.create({companyName:"Empresa Uno",contactName:"Otra",email:"ana@empresa.cl"},actor);expect(duplicate.warnings[0]).toContain("duplicado");await leads.qualify(first.item.id,actor);const opportunity=await leads.convert(first.item.id,{estimatedValue:1000000},actor);expect(opportunity.leadId).toBe(first.item.id);expect((await leads.get(first.item.id)).status).toBe("CONVERTED");});
+
+  it("registra movimiento de pipeline y exige motivo para perder",async()=>{const opportunities=new OpportunitiesService(repository);const lead=await repository.createLead({companyName:"Acme",contactName:"A",email:"a@acme.cl"});const opportunity=await opportunities.create({leadId:lead.id,company:"Acme",name:"Portal",estimatedValue:500000,currency:"CLP"},actor);const lost=(await repository.stages()).find((s)=>s.kind==="LOST")!;await expect(opportunities.changeStage(opportunity.id,lost.id,null,actor)).rejects.toBeInstanceOf(BadRequestException);expect((await opportunities.changeStage(opportunity.id,lost.id,"Competencia",actor)).status).toBe("LOST");});
+
+  it("identifica seguimientos vencidos y registra su resultado",async()=>{const service=new FollowUpsService(repository);const lead=await repository.createLead({companyName:"Acme",contactName:"A",email:"a@acme.cl"});const item=await service.create({leadId:lead.id,title:"Llamar",type:"CALL",scheduledAt:"2020-01-01T12:00:00.000Z"},actor);expect((await service.list({page:1,pageSize:25,status:"OVERDUE"})).items[0]?.status).toBe("OVERDUE");expect((await service.complete(item.id,"Cliente interesado",actor)).status).toBe("COMPLETED");});
+
+  it("calcula neto e IVA sin mezclar descuentos",()=>{expect(calculateQuote([{quantity:2,unitPrice:100000,discountPercent:10,taxable:true}],19)).toEqual({subtotal:200000,discountTotal:20000,netAmount:180000,taxRate:19,taxAmount:34200,totalAmount:214200});});
+
+  it("crea cotización, aprueba y genera PDF con hash",async()=>{const opportunity=await repository.createOpportunity({leadId:(await repository.createLead({companyName:"Acme",contactName:"A",email:"a@acme.cl"})).id,company:"Acme",name:"Web",estimatedValue:200000,currency:"CLP"});const mail={send:async()=>({provider:"TEST",messageId:"msg-1"})};const service=new QuotesService(repository,new QuoteDocumentService(),mail as never,{create:async()=>({id:"client"}),get:async()=>({id:"client"})}as never,{create:async()=>({id:"contract"})}as never);const quote=await service.create({opportunityId:opportunity.id,leadId:opportunity.leadId,companyName:"Acme",contactEmail:"a@acme.cl",currency:"CLP",validUntil:"2027-01-01",items:[{description:"Sitio web",quantity:1,unitPrice:200000,discountPercent:0,taxable:true}]},actor);expect(quote.quoteNumber).toMatch(/^COT-\d{4}-\d{6}$/);await service.submit(quote.id,actor);await service.approve(quote.id,actor);const preview=await service.preview(quote.id);expect(Buffer.from(preview.contentBase64,"base64").subarray(0,4).toString()).toBe("%PDF");const generated=await service.generatePdf(quote.id,actor);expect(generated.hash).toMatch(/^[a-f0-9]{64}$/);});
+
+  it("acepta y convierte a OT de forma idempotente",async()=>{const lead=await repository.createLead({companyName:"Acme",contactName:"A",email:"a@acme.cl"});const opportunity=await repository.createOpportunity({leadId:lead.id,company:"Acme",name:"Web",estimatedValue:100,currency:"CLP"});const quote=await repository.createQuote({leadId:lead.id,opportunityId:opportunity.id,companyName:"Acme",status:"SENT",currency:"CLP",subtotal:100,discountTotal:0,netAmount:100,taxRate:19,taxAmount:19,totalAmount:119},[{id:"",quoteId:"",catalogServiceId:null,description:"Web",quantity:1,unitPrice:100,discountPercent:0,taxable:true,subtotal:100}]);const sale1=await repository.acceptQuote(quote.id,actor,"accept-1"),sale2=await repository.acceptQuote(quote.id,actor,"accept-1");expect(sale2.id).toBe(sale1.id);const ot1=await repository.convertQuoteToWorkOrder(quote.id,actor,"ot-1",null),ot2=await repository.convertQuoteToWorkOrder(quote.id,actor,"ot-2",null);expect(ot2.workOrderId).toBe(ot1.workOrderId);expect(ot2.created).toBe(false);});
+});
+
+describe("migración Comercial",()=>{const sql=readFileSync(resolve(process.cwd(),"../../supabase/migrations/20260930160000_commercial_sales_operations.sql"),"utf8");it("usa secuencia segura, transacciones idempotentes y outbox",()=>{expect(sql).toContain("sales_quote_number_seq");expect(sql).toContain("accept_sales_quote");expect(sql).toContain("commercial_idempotency_keys");expect(sql).toContain("business_event_outbox");});it("habilita RLS y Realtime en agregados comerciales",()=>{expect(sql).toContain("'leads','opportunities','follow_ups','quotes','sales','sales_handoffs'");expect(sql).toContain("enable row level security");expect(sql).toContain("supabase_realtime");});it("declara permisos y almacenamiento privado",()=>{expect(sql).toContain("quote.discount.override");expect(sql).toContain("'commercial-documents','commercial-documents',false");});});

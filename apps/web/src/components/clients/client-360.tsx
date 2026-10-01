@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Archive, ArrowLeft, BriefcaseBusiness, Building2, CalendarClock, CircleDollarSign, ContactRound, FileStack, Globe2, MonitorCheck, MoreHorizontal, Plus, Receipt, Settings, ShieldCheck, TicketCheck, Upload, Wrench } from "lucide-react";
-import type { Client, ClientContact, ClientContract, ClientEvent, ClientPortalSettings, ClientRenewal, ClientService } from "@zyteron/contracts";
+import type { Client, ClientContact, ClientContract, ClientEvent, ClientPortalSettings, ClientRenewal, ClientService, Sale, SalesFollowUp, SalesOpportunity, SalesQuote } from "@zyteron/contracts";
 import { useAccess } from "@/components/access-context";
 import { contractsApi, renewalsApi } from "@/lib/client-domain-api";
 import { clientsApi } from "@/lib/clients-api";
 import { subscribeToClient } from "@/lib/clients-realtime";
 import { formatDate, formatDateTime, toIsoDate } from "@/lib/date-time";
+import { commercialApi } from "@/lib/commercial-api";
 
 const tabs = [
   ["summary", "Resumen"], ["contacts", "Contactos"], ["commercial", "Comercial"], ["contracts", "Contratos"], ["services", "Servicios"], ["renewals", "Renovaciones"],
@@ -66,7 +67,7 @@ export function Client360({ id, initialTab = "summary" }: { id: string; initialT
       <div className="clientOwnership"><span><small>Ejecutiva</small><strong>{client.accountExecutiveId || "Sin asignar"}</strong></span><span><small>Responsable técnico</small><strong>{client.developmentLeadId || "Sin asignar"}</strong></span></div>
     </header>
     <div className="clientActionBar">
-      <Link href={`/crm/quotes?clientId=${id}`}><Receipt size={15}/> Nueva cotización</Link>
+      <Link href={`/commercial/quotes?clientId=${id}`}><Receipt size={15}/> Nueva cotización</Link>
       <Link href={`/work-orders?clientId=${id}`}><BriefcaseBusiness size={15}/> Nueva OT</Link>
       <Link href={`/projects?clientId=${id}`}><Wrench size={15}/> Nuevo proyecto</Link>
       <Link href={`/support?clientId=${id}`}><TicketCheck size={15}/> Nuevo ticket</Link>
@@ -139,7 +140,7 @@ function ClientRenewals({ clientId, renewals }: { clientId: string; renewals: Cl
   </div>;
 }
 
-function Commercial({ clientId }: { clientId:string }) { return <div className="commercialClientView"><section><span>Pipeline del cliente</span><h2>Relación comercial</h2><p>Oportunidades, cotizaciones, ventas y seguimientos se consultan desde CRM utilizando este client_id.</p><div><Link href={`/crm/opportunities?clientId=${clientId}`}><Plus size={15}/> Nueva oportunidad</Link><Link href={`/crm/quotes?clientId=${clientId}`}><Receipt size={15}/> Nueva cotización</Link></div></section><div className="clientEmpty compact"><BriefcaseBusiness size={22}/><h3>Sin actividad comercial vinculada</h3><p>No hay oportunidades ni cotizaciones para este cliente.</p></div></div>; }
+function Commercial({ clientId }: { clientId:string }) { const{role}=useAccess();const[items,setItems]=useState<{opportunities:SalesOpportunity[];quotes:SalesQuote[];followUps:SalesFollowUp[];sales:Sale[]}|null>(null);useEffect(()=>{const q=`&clientId=${clientId}`;Promise.all([commercialApi.opportunities(role,q),commercialApi.quotes(role,q),commercialApi.followUps(role,q),commercialApi.sales(role,q)]).then(([o,qts,f,s])=>setItems({opportunities:o.items,quotes:qts.items,followUps:f.items,sales:s.items})).catch(()=>setItems({opportunities:[],quotes:[],followUps:[],sales:[]}));},[clientId,role]);const total=(items?.sales??[]).reduce((sum,item)=>sum+item.amount,0);return <div className="commercialClientView"><section><span>Pipeline del cliente</span><h2>Relación comercial</h2><p>Información real de oportunidades, cotizaciones, ventas y seguimientos vinculados por client_id.</p><div><Link href={`/commercial/opportunities?clientId=${clientId}`}><Plus size={15}/> Oportunidades</Link><Link href={`/commercial/quotes?clientId=${clientId}`}><Receipt size={15}/> Nueva cotización</Link></div></section><div className="clientCommercialFacts">{items&&[...items.opportunities,...items.quotes,...items.sales,...items.followUps].length?<><article><small>Oportunidades</small><strong>{items.opportunities.length}</strong></article><article><small>Cotizaciones</small><strong>{items.quotes.length}</strong></article><article><small>Ventas</small><strong>{items.sales.length}</strong></article><article><small>Valor ganado</small><strong>{formatMoney(total,"CLP")}</strong></article><article><small>Seguimientos</small><strong>{items.followUps.filter((i)=>i.status!=="COMPLETED").length}</strong></article></>:<div className="clientEmpty compact"><BriefcaseBusiness size={22}/><h3>Sin actividad comercial vinculada</h3><p>No hay oportunidades ni cotizaciones para este cliente.</p></div>}</div></div>; }
 function FinancePanel(){return <div className="financeClientPanel"><div><span>Preparado para Finance</span><h2>Resumen financiero</h2><p>Cliente 360 no mantiene un libro financiero paralelo. Consume facturas, pagos y cobros del dominio Finance.</p></div>{["Total facturado","Total pagado","Saldo pendiente","Facturas abiertas","Facturas vencidas","Último pago","Próximo cobro"].map((label)=><article key={label}><span>{label}</span><strong>Sin datos</strong><small>Esperando integración Finance</small></article>)}<aside><ShieldCheck size={19}/><p><strong>Preparación tributaria y pagos</strong> Interfaces futuras TaxDocumentProvider y PaymentProvider. No se almacenan tarjetas, CVV ni datos PCI.</p></aside></div>;}
 function DomainPanel({ icon:Icon,title,description,empty,action }:{icon:typeof Building2;title:string;description:string;empty:string;action?:{href:string;label:string}}){return <div className="clientSection"><div className="domainHero"><span><Icon size={22}/></span><div><h2>{title}</h2><p>{description}</p></div>{action?<Link href={action.href}><Plus size={15}/>{action.label}</Link>:null}</div><div className="clientEmpty compact"><Icon size={24}/><h3>{empty}</h3><p>La relación está preparada mediante client_id y no duplica información.</p></div></div>;}
 function ActivityTimeline({events}:{events:ClientEvent[]}){return <div className="clientTimeline">{events.length?events.map((event)=><article key={event.id}><time>{formatDateTime(event.occurredAt)}</time><span/><div><strong>{event.title}</strong><p>{event.description||event.type}</p><small>{event.type}</small></div></article>):<EmptyLine text="No existe actividad registrada para este cliente."/>}</div>;}

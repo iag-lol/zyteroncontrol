@@ -38,6 +38,8 @@ export class RoleGuard implements CanActivate {
       if (error || !data.user) throw new UnauthorizedException("Sesión Supabase ausente o inválida.");
       const rawRole = data.user.app_metadata.role ?? data.user.user_metadata.role;
       role = typeof rawRole === "string" ? rawRole : undefined;
+      request.headers["x-zyteron-user-id"] = data.user.id;
+      if (role) request.headers["x-zyteron-role"] = role;
     }
 
     if (!role || !roles.includes(role as Role)) {

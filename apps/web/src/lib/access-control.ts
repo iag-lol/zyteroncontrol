@@ -9,21 +9,25 @@ export interface RoleProfile {
 
 export const roleProfiles: RoleProfile[] = [
   { role: "GERENTE_GENERAL", label: "Gerencia General", userName: "Eduardo Ávila", initials: "EA" },
+  { role: "JEFE_VENTAS", label: "Jefatura de Ventas", userName: "Jefatura Ventas", initials: "JV" },
   { role: "JEFE_DESARROLLO", label: "Jefatura Desarrollo", userName: "Jefatura Desarrollo", initials: "JD" },
   { role: "EJECUTIVA_VENTAS", label: "Ejecutiva de Ventas", userName: "Ejecutiva Ventas", initials: "EV" },
   { role: "PROGRAMADOR", label: "Programador", userName: "Programador Zyteron", initials: "PZ" },
   { role: "RRHH", label: "Recursos Humanos", userName: "Equipo RR.HH.", initials: "RH" },
   { role: "FINANZAS", label: "Finanzas", userName: "Equipo Finanzas", initials: "FI" },
+  { role: "COMERCIAL", label: "Administración Comercial", userName: "Equipo Comercial", initials: "CO" },
 ];
 
 const accessByRole: Record<Role, string[]> = {
   GERENTE_GENERAL: ["*"],
   JEFE_DESARROLLO: ["control", "operations", "development", "monitoring", "audits", "documents", "security", "reports"],
   EJECUTIVA_VENTAS: ["control", "commercial", "clients", "documents"],
+  JEFE_VENTAS: ["control", "commercial", "clients", "documents", "reports"],
   PROGRAMADOR: ["control", "operations", "development", "monitoring", "audits", "documents", "security"],
   RRHH: ["control", "hr", "documents", "reports"],
   FINANZAS: ["control", "finance", "documents", "reports"],
   COMERCIAL: ["control", "commercial", "clients", "documents"],
+  PORTAL_CLIENT: [],
   DESARROLLO: ["control", "operations", "development", "monitoring", "audits", "documents"],
   OPERACIONES: ["control", "operations", "monitoring", "support", "documents"],
 };
@@ -35,7 +39,7 @@ export function canAccessGroup(role: Role, groupId: string) {
 
 export function groupForPath(pathname: string) {
   if (["/", "/dashboard", "/command-center", "/activity", "/notifications"].includes(pathname)) return "control";
-  if (pathname.startsWith("/crm")) return "commercial";
+  if (pathname.startsWith("/crm") || pathname.startsWith("/commercial")) return "commercial";
   if (pathname.startsWith("/clients")) return "clients";
   if (["/tasks", "/milestones", "/worklogs", "/deployments"].some((path) => pathname.startsWith(path)) || pathname.startsWith("/work-orders") || pathname.startsWith("/projects")) return "operations";
   if (pathname.startsWith("/development")) return "development";
@@ -50,4 +54,3 @@ export function groupForPath(pathname: string) {
   if (pathname.startsWith("/settings")) return "settings";
   return "control";
 }
-

@@ -1,0 +1,5 @@
+import { Injectable, ServiceUnavailableException } from "@nestjs/common";
+export interface MailMessage{to:string;subject:string;html:string;attachment:{filename:string;contentBase64:string};idempotencyKey:string;}
+@Injectable()export class MailProviderService{
+  async send(message:MailMessage){const key=process.env.RESEND_API_KEY?.trim();const from=process.env.SALES_MAIL_FROM?.trim();if(!key||!from)throw new ServiceUnavailableException("MailProvider no está configurado. Define RESEND_API_KEY y SALES_MAIL_FROM para habilitar el envío real.");const response=await fetch("https://api.resend.com/emails",{method:"POST",headers:{authorization:`Bearer ${key}`,"content-type":"application/json","idempotency-key":message.idempotencyKey},body:JSON.stringify({from,to:[message.to],subject:message.subject,html:message.html,attachments:[{filename:message.attachment.filename,content:message.attachment.contentBase64}]})});const data=await response.json() as {id?:string;message?:string};if(!response.ok||!data.id)throw new ServiceUnavailableException(data.message||"El proveedor de correo rechazó el envío.");return{provider:"RESEND",messageId:data.id};}
+}

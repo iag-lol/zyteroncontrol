@@ -102,9 +102,9 @@
     "semantic_hash": ""
   },
   "apps/api/src/clients/clients.controller.ts": {
-    "mtime": 1790765715.666504,
-    "seen": 1790770383.6345558,
-    "ast_hash": "893f5c19ecc1f5130e298c65f6dc9c71",
+    "mtime": 1790770652.2244723,
+    "seen": 1790770777.122454,
+    "ast_hash": "b27fadb7a1c663802dbdfe17d902a9db",
     "semantic_hash": ""
   },
   "apps/api/src/clients/clients.dto.ts": {
@@ -126,9 +126,9 @@
     "semantic_hash": ""
   },
   "apps/api/src/clients/clients.repository.ts": {
-    "mtime": 1790768367.8716493,
-    "seen": 1790770383.634558,
-    "ast_hash": "90f7317edad1a704aa979d0c4d06adc7",
+    "mtime": 1790770652.2225883,
+    "seen": 1790770777.122457,
+    "ast_hash": "53a977b15867e7033300fadab0c174e9",
     "semantic_hash": ""
   },
   "apps/api/src/clients/clients.service.test.ts": {
@@ -138,9 +138,9 @@
     "semantic_hash": ""
   },
   "apps/api/src/clients/clients.service.ts": {
-    "mtime": 1790768367.8728828,
-    "seen": 1790770383.634559,
-    "ast_hash": "c256895059e4a90c2d2ae2e240c54412",
+    "mtime": 1790770652.2236133,
+    "seen": 1790770777.1224582,
+    "ast_hash": "2c75525ff4498a1923fbc7c541ed4477",
     "semantic_hash": ""
   },
   "apps/api/src/clients/rls.test.ts": {
@@ -342,9 +342,9 @@
     "semantic_hash": ""
   },
   "apps/api/src/renewals/renewals.repository.ts": {
-    "mtime": 1790770307.9189694,
-    "seen": 1790770383.6345751,
-    "ast_hash": "5c6cfd001d75cc8ddd797aca687ad2d2",
+    "mtime": 1790770583.9699092,
+    "seen": 1790770777.122477,
+    "ast_hash": "2e9ee6191087102d241723fb87fa50be",
     "semantic_hash": ""
   },
   "apps/api/src/renewals/renewals.service.ts": {
@@ -576,15 +576,15 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/clients/contact-directory.tsx": {
-    "mtime": 1790768624.0905719,
-    "seen": 1790770383.634597,
-    "ast_hash": "8968055585edc289cbecfcfa223579b6",
+    "mtime": 1790770721.818216,
+    "seen": 1790770777.1225011,
+    "ast_hash": "fba2b218a12c74ca4dca7a114d4e1384",
     "semantic_hash": ""
   },
   "apps/web/src/components/clients/contract-center.tsx": {
-    "mtime": 1790770307.086987,
-    "seen": 1790770383.634597,
-    "ast_hash": "d50193f22070e0ac5f77a4d607c55380",
+    "mtime": 1790770721.8223526,
+    "seen": 1790770777.1225011,
+    "ast_hash": "a43679c443423b5e1a02e4852a7a73a6",
     "semantic_hash": ""
   },
   "apps/web/src/components/clients/new-client-wizard.tsx": {
@@ -594,15 +594,15 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/clients/renewal-center.tsx": {
-    "mtime": 1790770307.089795,
-    "seen": 1790770383.6345978,
-    "ast_hash": "112bf1db615f13ad1da9f1ef72dc0fd0",
+    "mtime": 1790770721.8290257,
+    "seen": 1790770777.1225028,
+    "ast_hash": "fda7d107c7c2f472592778b7685f8d7d",
     "semantic_hash": ""
   },
   "apps/web/src/components/clients/service-operations.tsx": {
-    "mtime": 1790770071.1155498,
-    "seen": 1790770383.6345978,
-    "ast_hash": "dd00577b467b50f3d57183062b8fad88",
+    "mtime": 1790770721.825881,
+    "seen": 1790770777.1225028,
+    "ast_hash": "1794c106ce5a5ad19ce74982fa03c916",
     "semantic_hash": ""
   },
   "apps/web/src/components/commercial-pipeline.tsx": {
@@ -738,9 +738,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/lib/clients-api.ts": {
-    "mtime": 1790769470.6211762,
-    "seen": 1790770383.634608,
-    "ast_hash": "6b2c431f0d4fee5c0135512737e478af",
+    "mtime": 1790770652.225369,
+    "seen": 1790770777.122517,
+    "ast_hash": "1b87a2e011cc05613cc716922b8df1c4",
     "semantic_hash": ""
   },
   "apps/web/src/lib/clients-realtime.ts": {
@@ -828,9 +828,9 @@
     "semantic_hash": ""
   },
   "supabase/migrations/20260930120000_complete_client_domain.sql": {
-    "mtime": 1790770240.9933693,
-    "seen": 1790770383.634615,
-    "ast_hash": "996aa9a899cabb3fdfe2c60410cca868",
+    "mtime": 1790770701.0966444,
+    "seen": 1790770777.122526,
+    "ast_hash": "26bb03138b6677eaa5bd5e6f0eab0b66",
     "semantic_hash": ""
   },
   "tsconfig.base.json": {

@@ -3,8 +3,8 @@ import type { CreateClientInput } from "@zyteron/contracts";
 import { RequireRoles } from "../auth/roles.decorator.js";
 import { ClientsService } from "./clients.service.js";
 
-const clientReaders = ["GERENTE_GENERAL", "EJECUTIVA_VENTAS", "COMERCIAL", "JEFE_DESARROLLO", "PROGRAMADOR", "FINANZAS"] as const;
-const clientManagers = ["GERENTE_GENERAL", "EJECUTIVA_VENTAS", "COMERCIAL"] as const;
+const clientReaders = ["GERENTE_GENERAL", "JEFE_VENTAS", "EJECUTIVA_VENTAS", "COMERCIAL", "JEFE_DESARROLLO", "PROGRAMADOR", "FINANZAS"] as const;
+const clientManagers = ["GERENTE_GENERAL", "JEFE_VENTAS", "EJECUTIVA_VENTAS", "COMERCIAL"] as const;
 
 @Controller("clients")
 export class ClientsController {

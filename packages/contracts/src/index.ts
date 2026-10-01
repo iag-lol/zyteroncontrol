@@ -10,6 +10,7 @@ export type PipelineStage = (typeof pipelineStages)[number];
 
 export const roles = [
   "GERENTE_GENERAL",
+  "JEFE_VENTAS",
   "JEFE_DESARROLLO",
   "EJECUTIVA_VENTAS",
   "PROGRAMADOR",
@@ -18,6 +19,7 @@ export const roles = [
   "COMERCIAL",
   "DESARROLLO",
   "OPERACIONES",
+  "PORTAL_CLIENT",
 ] as const;
 
 export type Role = (typeof roles)[number];
@@ -55,6 +57,55 @@ export interface CreateCommercialRecord {
   valueClp: number;
   stage?: PipelineStage;
   owner: string;
+}
+
+export const leadStatuses = ["NEW", "ASSIGNED", "CONTACT_PENDING", "CONTACTED", "QUALIFYING", "QUALIFIED", "DISQUALIFIED", "CONVERTED"] as const;
+export type LeadStatus = (typeof leadStatuses)[number];
+export const opportunityStatuses = ["OPEN", "WON", "LOST", "ARCHIVED"] as const;
+export type OpportunityStatus = (typeof opportunityStatuses)[number];
+export const followUpStatuses = ["PENDING", "OVERDUE", "COMPLETED", "CANCELLED"] as const;
+export type FollowUpStatus = (typeof followUpStatuses)[number];
+export const followUpTypes = ["CALL", "EMAIL", "WHATSAPP", "MEETING", "PROPOSAL", "FOLLOW_UP", "OTHER"] as const;
+export type FollowUpType = (typeof followUpTypes)[number];
+export const quoteStatuses = ["DRAFT", "PENDING_APPROVAL", "APPROVED", "REJECTED", "READY_TO_SEND", "SENT", "NEGOTIATING", "ACCEPTED", "DECLINED", "EXPIRED", "CONVERTED", "CANCELLED"] as const;
+export type QuoteStatus = (typeof quoteStatuses)[number];
+
+export interface SalesPipeline { id:string; name:string; isDefault:boolean; active:boolean; }
+export interface SalesPipelineStage { id:string; pipelineId:string; code:string; name:string; position:number; probability:number; kind:"OPEN"|"WON"|"LOST"; active:boolean; }
+export interface SalesLead {
+  id:string; companyName:string; contactName:string; email:string|null; phone:string|null; whatsapp:string|null; website:string|null; rut:string|null;
+  sourceId:string|null; sourceName:string|null; campaign:string|null; interest:string|null; notes:string|null; assignedTo:string|null; status:LeadStatus;
+  score:number|null; scoreReason:string; nextActionAt:string|null; clientId:string|null; assignedBy:string|null; assignedAt:string|null;
+  createdBy:string|null; createdAt:string; updatedAt:string; archivedAt:string|null;
+}
+export interface SalesOpportunity {
+  id:string; clientId:string|null; leadId:string|null; company:string; name:string; description:string|null; serviceCategory:string|null;
+  ownerId:string|null; estimatedValue:number; currency:"CLP"|"UF"|"USD"; probability:number; pipelineId:string; stageId:string;
+  stageName:string|null; expectedCloseDate:string|null; nextActionAt:string|null; status:OpportunityStatus; lostReasonId:string|null;
+  lostExplanation:string|null; stageEnteredAt:string; createdAt:string; updatedAt:string;
+}
+export interface SalesFollowUp {
+  id:string; leadId:string|null; opportunityId:string|null; clientId:string|null; assignedTo:string|null; type:FollowUpType; title:string;
+  description:string|null; scheduledAt:string; completedAt:string|null; status:FollowUpStatus; outcome:string|null; createdBy:string|null; createdAt:string; updatedAt:string;
+}
+export interface QuoteItem { id:string; quoteId:string; catalogServiceId:string|null; description:string; quantity:number; unitPrice:number; discountPercent:number; taxable:boolean; subtotal:number; }
+export interface SalesQuote {
+  id:string; quoteNumber:string; version:number; clientId:string|null; leadId:string|null; opportunityId:string|null; companyName:string; contactName:string|null;
+  contactEmail:string|null; ownerId:string|null; status:QuoteStatus; currency:"CLP"|"UF"|"USD"; subtotal:number; discountTotal:number; netAmount:number;
+  taxRate:number; taxAmount:number; totalAmount:number; validUntil:string|null; paymentTerms:string|null; commercialTerms:string|null; notes:string|null;
+  documentId:string|null; documentHash:string|null; sentAt:string|null; acceptedAt:string|null; saleId:string|null; createdAt:string; updatedAt:string; items:QuoteItem[];
+}
+export interface Sale {
+  id:string; quoteId:string; quoteVersionId:string|null; opportunityId:string|null; clientId:string|null; amount:number; currency:string; ownerId:string|null;
+  closedAt:string; contractId:string|null; workOrderId:string|null; status:"WON"|"CANCELLED"; createdAt:string;
+}
+export interface SalesGoal { id:string; userId:string|null; teamId:string|null; periodType:"MONTH"|"QUARTER"|"YEAR"; periodStart:string; periodEnd:string; goalType:"AMOUNT"|"SALES"|"NEW_CLIENTS"|"QUOTES"|"CONVERSION"; target:number; actual:number; createdAt:string; }
+export interface Commission { id:string; saleId:string; userId:string; ruleId:string|null; baseAmount:number; amount:number; currency:string; status:"PENDING"|"ELIGIBLE"|"APPROVED"|"PAYABLE"|"PAID"|"CANCELLED"; createdAt:string; updatedAt:string; }
+export interface SalesHandoff { id:string; saleId:string; clientId:string|null; quoteId:string; workOrderId:string|null; status:"DRAFT"|"READY"|"ACKNOWLEDGED"; scope:string; committedDeadline:string|null; risks:string|null; dependencies:string|null; commercialOwnerId:string|null; developmentOwnerId:string|null; overrideReason:string|null; createdAt:string; updatedAt:string; }
+export interface CommercialEvent { id:string; aggregateType:string; aggregateId:string; eventType:string; actorId:string|null; payload:Record<string,unknown>; occurredAt:string; }
+export interface CommercialSummary {
+  newLeads:number; uncontactedLeads:number; overdueFollowUps:number; todayFollowUps:number; openOpportunities:number; staleOpportunities:number;
+  pendingQuotes:number; expiringQuotes:number; approvalQuotes:number; monthSales:number; activePipeline:number; weightedPipeline:number; wonClients:number; lostOpportunities:number;
 }
 
 export const clientStatuses = ["ACTIVE", "ONBOARDING", "INACTIVE", "ARCHIVED"] as const;

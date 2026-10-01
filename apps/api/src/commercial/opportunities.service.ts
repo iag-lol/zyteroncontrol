@@ -1,0 +1,13 @@
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import type { SalesOpportunity } from "@zyteron/contracts";
+import { CommercialRepository } from "./commercial.repository.js";
+import { optionalUuid, required } from "./commercial.validation.js";
+@Injectable() export class OpportunitiesService{constructor(private readonly repository:CommercialRepository){}
+  list(q:any){return this.repository.listOpportunities(q);} stages(){return this.repository.stages();}
+  async get(id:string){const item=await this.repository.getOpportunity(id);if(!item)throw new NotFoundException("Oportunidad no encontrada.");return item;}
+  async create(b:Partial<SalesOpportunity>,actorId:string|null){required(b.company,"La empresa");required(b.name,"El nombre de la oportunidad");optionalUuid(b.ownerId,"La ejecutiva responsable");if(Number(b.estimatedValue)<0)throw new BadRequestException("El valor estimado no puede ser negativo.");const item=await this.repository.createOpportunity(b);await this.repository.publish("OPPORTUNITY",item.id,"OPPORTUNITY_CREATED",actorId,{leadId:item.leadId});return item;}
+  async update(id:string,b:Partial<SalesOpportunity>,actorId:string|null){const item=await this.repository.updateOpportunity(id,b);await this.repository.publish("OPPORTUNITY",id,"OPPORTUNITY_UPDATED",actorId,{fields:Object.keys(b)});return item;}
+  async changeStage(id:string,stageId:string,reason:string|null,actorId:string|null){const current=await this.get(id);const stage=(await this.repository.stages()).find((i)=>i.id===stageId);if(!stage)throw new BadRequestException("Etapa de pipeline inválida.");if(stage.kind==="LOST"&&!reason?.trim())throw new BadRequestException("Debes indicar el motivo de pérdida.");if(stage.kind==="WON"&&(current.estimatedValue<=0||(!current.clientId&&!current.leadId)))throw new BadRequestException("Para ganar se requiere valor y vínculo con lead o cliente.");const item=await this.repository.changeOpportunityStage(id,stage,actorId,reason);await this.repository.publish("OPPORTUNITY",id,"OPPORTUNITY_STAGE_CHANGED",actorId,{fromStageId:current.stageId,toStageId:stage.id,reason});if(stage.kind==="LOST")await this.repository.publish("OPPORTUNITY",id,"SALE_LOST",actorId,{reason});return item;}
+  async win(id:string,actorId:string|null){const stage=(await this.repository.stages()).find((i)=>i.kind==="WON")!;return this.changeStage(id,stage.id,null,actorId);}
+  async lose(id:string,reason:string,actorId:string|null){const stage=(await this.repository.stages()).find((i)=>i.kind==="LOST")!;return this.changeStage(id,stage.id,reason,actorId);}
+}

@@ -8,7 +8,6 @@ import { UsersModule } from "./users/users.module.js";
 import { RolesModule } from "./roles/roles.module.js";
 import { PermissionsModule } from "./permissions/permissions.module.js";
 import { ClientsModule } from "./clients/clients.module.js";
-import { QuotesModule } from "./quotes/quotes.module.js";
 import { WorkOrdersModule } from "./work-orders/work-orders.module.js";
 import { ProjectsModule } from "./projects/projects.module.js";
 import { TasksModule } from "./tasks/tasks.module.js";
@@ -29,6 +28,7 @@ import { ContactsModule } from "./contacts/contacts.module.js";
 import { ContractsModule } from "./contracts/contracts.module.js";
 import { ClientServicesModule } from "./client-services/client-services.module.js";
 import { RenewalsModule } from "./renewals/renewals.module.js";
+import { CommercialModule } from "./commercial/commercial.module.js";
 
 @Module({
   imports: [
@@ -42,7 +42,7 @@ import { RenewalsModule } from "./renewals/renewals.module.js";
     ContractsModule,
     ClientServicesModule,
     RenewalsModule,
-    QuotesModule,
+    CommercialModule,
     WorkOrdersModule,
     ProjectsModule,
     TasksModule,

@@ -5,6 +5,7 @@ let browserClient: SupabaseClient | undefined;
 
 export async function apiHeaders(role: Role, headers?: HeadersInit) {
   const result: Record<string, string> = { "content-type":"application/json", "x-zyteron-role":role };
+  if (process.env.NEXT_PUBLIC_DEV_USER_ID) result["x-zyteron-user-id"] = process.env.NEXT_PUBLIC_DEV_USER_ID;
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (typeof window !== "undefined" && url && key) {
