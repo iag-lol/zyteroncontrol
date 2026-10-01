@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { Archive, ArrowLeft, BriefcaseBusiness, Building2, CalendarClock, CircleDollarSign, ContactRound, FileStack, Globe2, MonitorCheck, MoreHorizontal, Plus, Receipt, Settings, ShieldCheck, TicketCheck, Upload, Wrench } from "lucide-react";
+import { Archive, ArrowLeft, BriefcaseBusiness, Building2, CalendarClock, CircleDollarSign, ContactRound, FileStack, Globe2, MoreHorizontal, Plus, Receipt, Settings, ShieldCheck, TicketCheck, Upload, Wrench } from "lucide-react";
 import type { Client, ClientContact, ClientContract, ClientEvent, ClientPortalSettings, ClientRenewal, ClientService, OperationsProject, RelatedAuditSnapshot, RelatedSupportSnapshot, Sale, SalesFollowUp, SalesOpportunity, SalesQuote, WorkOrder } from "@zyteron/contracts";
+import { ClientMonitoringPanel } from "@/components/monitoring/embedded";
 import { useAccess } from "@/components/access-context";
 import { ClientFinancePanel } from "@/components/finance/entity-finance-panels";
 import { hasFinancePermission } from "@zyteron/contracts";
@@ -93,7 +94,7 @@ export function Client360({ id, initialTab = "summary" }: { id: string; initialT
       {tab === "documents" ? <DomainPanel icon={FileStack} title="Documentos y versiones" description="Storage privado en clients/{clientId}/ con clasificación y trazabilidad." action={{ href: `/documents/clients?clientId=${id}`, label: "Subir documento" }} empty="No hay documentos asociados a este cliente."/> : null}
       {tab === "finance" ? <ClientFinancePanel clientId={id}/> : null}
       {tab === "support" ? <ClientSupport clientId={id}/> : null}
-      {tab === "monitoring" ? <DomainPanel icon={MonitorCheck} title="Monitoreo del cliente" description="Estado, uptime, latencia, SSL e incidentes desde Monitoring." empty="No hay sitios asociados al monitoreo de este cliente."/> : null}
+      {tab === "monitoring" ? <ClientMonitoringPanel clientId={id}/> : null}
       {tab === "audits" ? <ClientAudits clientId={id}/> : null}
       {tab === "activity" ? <ActivityTimeline events={activity}/> : null}
       {tab === "portal" ? <PortalPanel client={client}/> : null}
