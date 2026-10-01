@@ -96,7 +96,7 @@ begin
  else next_health:='ON_TRACK';next_reason:='Sin señales de riesgo operacionales.';end if;
  update public.projects set progress=next_progress,health=next_health,health_reason=next_reason,updated_at=now() where id=target_project_id;
 end $$;
-create or replace function public.operations_project_progress_trigger() returns trigger language plpgsql security definer set search_path=public as $$begin perform public.operations_recalculate_project(coalesce(new.project_id,old.project_id));return coalesce(new,old);end$$;
+create or replace function public.operations_project_progress_trigger() returns trigger language plpgsql security definer set search_path=public as $$begin if tg_op='DELETE' then perform public.operations_recalculate_project(old.project_id);return old;else perform public.operations_recalculate_project(new.project_id);if tg_op='UPDATE' and old.project_id<>new.project_id then perform public.operations_recalculate_project(old.project_id);end if;return new;end if;end$$;
 drop trigger if exists milestone_project_progress on public.project_milestones;create trigger milestone_project_progress after insert or update or delete on public.project_milestones for each row execute function public.operations_project_progress_trigger();
 drop trigger if exists task_project_progress on public.tasks;create trigger task_project_progress after insert or update or delete on public.tasks for each row execute function public.operations_project_progress_trigger();
 
@@ -110,7 +110,7 @@ begin
 end$$;
 drop trigger if exists task_dependency_guard on public.task_dependencies;create trigger task_dependency_guard before insert or update on public.task_dependencies for each row execute function public.operations_task_dependency_guard();
 
-create or replace function public.operations_refresh_task_minutes() returns trigger language plpgsql security definer set search_path=public as $$begin update public.tasks set actual_minutes=(select coalesce(sum(duration_minutes),0) from public.work_logs where task_id=coalesce(new.task_id,old.task_id)),updated_at=now() where id=coalesce(new.task_id,old.task_id);return coalesce(new,old);end$$;
+create or replace function public.operations_refresh_task_minutes() returns trigger language plpgsql security definer set search_path=public as $$begin if tg_op='DELETE' then if old.task_id is not null then update public.tasks set actual_minutes=(select coalesce(sum(duration_minutes),0) from public.work_logs where task_id=old.task_id),updated_at=now() where id=old.task_id;end if;return old;else if new.task_id is not null then update public.tasks set actual_minutes=(select coalesce(sum(duration_minutes),0) from public.work_logs where task_id=new.task_id),updated_at=now() where id=new.task_id;end if;if tg_op='UPDATE' and old.task_id is distinct from new.task_id and old.task_id is not null then update public.tasks set actual_minutes=(select coalesce(sum(duration_minutes),0) from public.work_logs where task_id=old.task_id),updated_at=now() where id=old.task_id;end if;return new;end if;end$$;
 drop trigger if exists worklog_task_minutes on public.work_logs;create trigger worklog_task_minutes after insert or update or delete on public.work_logs for each row execute function public.operations_refresh_task_minutes();
 
 create or replace function public.operations_change_work_order_status(target_work_order_id uuid,target_status text,actor_user_id uuid,change_reason text) returns void language plpgsql security definer set search_path=public as $$
