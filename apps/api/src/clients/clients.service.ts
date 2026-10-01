@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException, Optional } from "@nestjs/common";
 import type { CreateClientInput } from "@zyteron/contracts";
 import { ClientEventsService } from "./client-events.service.js";
 import { ClientHealthService } from "./client-health.service.js";
@@ -7,6 +7,7 @@ import { parsePagination, validateCreateClient } from "./clients.dto.js";
 import { ClientsRepository } from "./clients.repository.js";
 import { AuditReadService } from "../audits/audits.service.js";
 import { SupportReadService } from "../support/support.service.js";
+import { DocumentReadService } from "../documents/documents.service.js";
 
 @Injectable()
 export class ClientsService {
@@ -17,6 +18,7 @@ export class ClientsService {
     private readonly integrations: ClientIntegrationsService,
     private readonly audits: AuditReadService,
     private readonly support: SupportReadService,
+    @Optional() private readonly documents?: DocumentReadService,
   ) {}
 
   list(query: Record<string, string | undefined>) {
@@ -71,7 +73,7 @@ export class ClientsService {
     await this.events.publish(id, "SERVICE_ACTIVATED", "Servicio agregado", service.serviceName); return service;
   }
   async activity(id: string) { await this.get(id); return this.events.list(id); }
-  async related(id: string, domain: string) { await this.get(id); if(domain==="audits")return this.audits.related({clientId:id});if(domain==="support")return this.support.related({clientId:id});return { clientId: id, domain, items: [], available: true }; }
+  async related(id: string, domain: string) { await this.get(id); if(domain==="audits")return this.audits.related({clientId:id});if(domain==="support")return this.support.related({clientId:id});if(domain==="documents"&&this.documents)return this.documents.related({clientId:id});return { clientId: id, domain, items: [], available: true }; }
   async unavailableSummary(id: string, domain: string) { await this.get(id); return { clientId: id, domain, available: false, reason: `El módulo ${domain} aún no entrega agregados para este cliente.` }; }
   async portal(id: string) { await this.get(id); return this.repository.portalFor(id); }
   async updatePortal(id: string, patch: Parameters<ClientsRepository["updatePortal"]>[1]) {
