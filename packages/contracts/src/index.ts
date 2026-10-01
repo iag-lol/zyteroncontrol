@@ -14,6 +14,9 @@ export const roles = [
   "JEFE_DESARROLLO",
   "EJECUTIVA_VENTAS",
   "PROGRAMADOR",
+  "TECH_LEAD",
+  "QA",
+  "SOPORTE_TECNICO",
   "RRHH",
   "FINANZAS",
   "COMERCIAL",
@@ -453,7 +456,7 @@ export interface WorkLog { id: string; projectId: string; projectName: string | 
 export type DeliverableStatus = "PLANNED" | "IN_PROGRESS" | "READY_FOR_REVIEW" | "INTERNAL_REVIEW" | "CLIENT_REVIEW" | "APPROVED" | "CHANGES_REQUESTED" | "DELIVERED" | "CANCELLED";
 export interface ProjectDeliverable { id: string; projectId: string; projectName: string | null; milestoneId: string | null; name: string; description: string | null; type: string; status: DeliverableStatus; dueDate: string | null; ownerId: string | null; documentId: string | null; externalUrl: string | null; version: number; clientVisibility: "INTERNAL" | "CLIENT_VISIBLE"; submittedAt: string | null; approvedAt: string | null; approvedBy: string | null; createdAt: string; updatedAt: string; }
 
-export type DeploymentStatus = "PLANNED" | "QUEUED" | "IN_PROGRESS" | "SUCCESS" | "FAILED" | "ROLLED_BACK" | "CANCELLED";
+export type DeploymentStatus = "PLANNED" | "READY" | "PENDING_APPROVAL" | "QUEUED" | "BUILDING" | "IN_PROGRESS" | "DEPLOYING" | "VERIFYING" | "SUCCESS" | "BUILD_FAILED" | "DEPLOY_FAILED" | "HEALTH_CHECK_FAILED" | "FAILED" | "ROLLED_BACK" | "CANCELLED";
 export interface ProjectDeployment { id: string; projectId: string; projectName: string | null; environment: string; version: string; commitSha: string | null; status: DeploymentStatus; recordType: "MANUAL_RECORD" | "INTEGRATION"; requestedBy: string | null; deployedBy: string | null; startedAt: string | null; completedAt: string | null; notes: string | null; rollbackOfId: string | null; clientVisibility: "INTERNAL" | "CLIENT_VISIBLE"; createdAt: string; updatedAt: string; }
 
 export interface ProjectEndpoint { id: string; projectId: string; name: string; url: string; environment: string; endpointType: string; monitoringEnabled: boolean; responsibleUserId: string | null; active: boolean; createdAt: string; updatedAt: string; }
@@ -468,3 +471,32 @@ export interface OperationsSummary {
 }
 export interface OperationsPriorityItem { id: string; type: "WORK_ORDER" | "PROJECT" | "TASK" | "MILESTONE" | "DELIVERABLE" | "DEPLOYMENT"; title: string; reason: string; severity: "ATTENTION" | "AT_RISK" | "CRITICAL"; href: string; dueAt: string | null; }
 export interface ProjectOperationalSummary { project: OperationsProject; nextMilestone: ProjectMilestone | null; openTasks: number; overdueTasks: number; blockedTasks: number; usedMinutes: number; remainingMinutes: number | null; members: number; pendingDeliverables: number; activeRisks: number; }
+
+export type DeveloperAvailability = "AVAILABLE" | "PARTIAL" | "FULL" | "AWAY" | "OFFLINE";
+export interface DeveloperSkill { id:string; userId:string; skill:string; level:"BEGINNER"|"INTERMEDIATE"|"ADVANCED"|"EXPERT"; verifiedBy:string|null; updatedAt:string; }
+export interface DevelopmentTeamMember { userId:string; name:string; role:Role|null; availability:DeveloperAvailability; activeProjects:number; openTasks:number; blockedTasks:number; plannedHours:number; allocation:number; nextDeadline:string|null; skills:DeveloperSkill[]; }
+export interface AssignmentRecommendation { userId:string; name:string; allocation:number; activeProjects:number; matchingSkills:string[]; reasons:string[]; }
+export interface DevelopmentAssignment { project:OperationsProject; members:ProjectMember[]; technologies:ProjectTechnology[]; recommendation:AssignmentRecommendation|null; }
+
+export interface ProjectRepository { id:string; projectId:string; projectName:string|null; provider:string; repositoryOwner:string; repositoryName:string; repositoryUrl:string; defaultBranch:string; integrationStatus:"NOT_CONFIGURED"|"CONNECTED"|"ERROR"|"DISCONNECTED"; visibility:"PRIVATE"|"INTERNAL"|"PUBLIC"; createdAt:string; updatedAt:string; }
+export interface ProjectTechnology { id:string; projectId:string; category:"FRONTEND"|"BACKEND"|"DATABASE"|"HOSTING"|"INTEGRATION"|"LANGUAGE"|"FRAMEWORK"|"OTHER"; name:string; version:string|null; createdAt:string; }
+export interface ProjectEnvironment { id:string; projectId:string; projectName:string|null; name:string; type:"LOCAL"|"DEVELOPMENT"|"STAGING"|"PRODUCTION"; url:string|null; status:"UNKNOWN"|"HEALTHY"|"DEGRADED"|"DOWN"|"MAINTENANCE"; deploymentProvider:string|null; externalReference:string|null; lastDeploymentId:string|null; responsibleUserId:string|null; createdAt:string; updatedAt:string; }
+export interface PullRequest { id:string; repositoryId:string; projectId:string; projectName:string|null; externalId:string; number:number; title:string; author:string|null; reviewers:string[]; sourceBranch:string; targetBranch:string; checksStatus:"PASS"|"FAIL"|"PENDING"|"UNKNOWN"; status:"OPEN"|"REVIEW_REQUIRED"|"CHANGES_REQUESTED"|"APPROVED"|"MERGED"|"CLOSED"; providerUrl:string|null; openedAt:string; updatedAt:string; }
+
+export type QaRunStatus = "PLANNED"|"IN_PROGRESS"|"PASSED"|"PASSED_WITH_OBSERVATIONS"|"FAILED"|"BLOCKED"|"CANCELLED";
+export interface QaRun { id:string; projectId:string; projectName:string|null; releaseId:string|null; environmentId:string|null; name:string; status:QaRunStatus; startedBy:string|null; assignedTo:string|null; startedAt:string|null; completedAt:string|null; result:string|null; notes:string|null; createdAt:string; updatedAt:string; }
+export interface QaTestCase { id:string; projectId:string; suite:string; title:string; description:string|null; preconditions:string|null; expectedResult:string; priority:"LOW"|"NORMAL"|"HIGH"|"CRITICAL"; active:boolean; createdAt:string; updatedAt:string; }
+export interface QaTestResult { id:string; qaRunId:string; testCaseId:string; status:"PASS"|"FAIL"|"BLOCKED"|"SKIPPED"; actualResult:string|null; evidenceDocumentId:string|null; executedBy:string|null; executedAt:string; }
+
+export type BugStatus = "NEW"|"TRIAGED"|"ASSIGNED"|"IN_PROGRESS"|"READY_FOR_QA"|"REOPENED"|"RESOLVED"|"CLOSED"|"WONT_FIX"|"DUPLICATE";
+export interface DevelopmentBug { id:string; projectId:string; projectName:string|null; taskId:string|null; title:string; description:string; severity:"LOW"|"MEDIUM"|"HIGH"|"CRITICAL"|"BLOCKER"; priority:"LOW"|"NORMAL"|"HIGH"|"URGENT"|"CRITICAL"; environment:string|null; status:BugStatus; reportedBy:string|null; assignedTo:string|null; stepsToReproduce:string|null; expectedBehavior:string|null; actualBehavior:string|null; evidenceDocumentId:string|null; clientVisibility:"INTERNAL_ONLY"|"CLIENT_SUMMARY"|"CLIENT_VISIBLE"; detectedAt:string; resolvedAt:string|null; createdAt:string; updatedAt:string; }
+export interface BugHistory { id:string; bugId:string; field:string; fromValue:string|null; toValue:string|null; reason:string|null; changedBy:string|null; changedAt:string; }
+
+export type ReleaseStatus = "DRAFT"|"PLANNED"|"READY"|"PENDING_APPROVAL"|"DEPLOYING"|"RELEASED"|"FAILED"|"ROLLED_BACK"|"CANCELLED";
+export interface DevelopmentRelease { id:string; projectId:string; projectName:string|null; version:string; name:string; status:ReleaseStatus; targetEnvironment:string; plannedAt:string|null; releasedAt:string|null; createdBy:string|null; approvedBy:string|null; releaseNotes:string|null; commitSha:string|null; deploymentId:string|null; clientVisibility:"INTERNAL_ONLY"|"CLIENT_SUMMARY"|"CLIENT_VISIBLE"; createdAt:string; updatedAt:string; }
+export interface TechnicalDebtItem { id:string; projectId:string; projectName:string|null; title:string; description:string; impact:string|null; severity:"LOW"|"MEDIUM"|"HIGH"|"CRITICAL"; estimatedEffort:number|null; status:"OPEN"|"PLANNED"|"IN_PROGRESS"|"RESOLVED"|"ACCEPTED"; ownerId:string|null; targetDate:string|null; createdAt:string; updatedAt:string; }
+export interface IntegrationConnection { id:string; provider:"GITHUB"|"RENDER"|"SUPABASE"|"EMAIL"|string; status:"NOT_CONFIGURED"|"CONNECTED"|"ERROR"|"DISCONNECTED"; displayName:string; externalReference:string|null; lastSyncAt:string|null; lastError:string|null; createdAt:string; updatedAt:string; }
+export interface DevelopmentEvent { id:string; projectId:string|null; aggregateType:string; aggregateId:string; eventType:string; actorId:string|null; payload:Record<string,unknown>; occurredAt:string; }
+export interface DevelopmentSummary { unassignedProjects:number; activeProjects:number; availableDevelopers:number; overloadedDevelopers:number; blockedTasks:number; pendingPullRequests:number; pendingQa:number; criticalBugs:number; failedDeployments:number; upcomingReleases:number; productionPending:number; technicalIncidents:number; }
+export interface DevelopmentAttentionItem { id:string; type:"DEPLOYMENT"|"BUG"|"PROJECT"|"TASK"|"QA"|"PULL_REQUEST"|"RELEASE"|"ENVIRONMENT"; title:string; reason:string; severity:"ATTENTION"|"AT_RISK"|"CRITICAL"; href:string; occurredAt:string|null; }
+export interface DevelopmentProjectSnapshot { project:OperationsProject; members:ProjectMember[]; technologies:ProjectTechnology[]; repositories:ProjectRepository[]; environments:ProjectEnvironment[]; pullRequests:PullRequest[]; qaRuns:QaRun[]; bugs:DevelopmentBug[]; releases:DevelopmentRelease[]; deployments:ProjectDeployment[]; techHealth:"HEALTHY"|"ATTENTION"|"AT_RISK"|"CRITICAL"; healthReasons:string[]; }

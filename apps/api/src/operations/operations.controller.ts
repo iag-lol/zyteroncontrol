@@ -3,8 +3,8 @@ import type { OperationsProject, OperationsTask, WorkOrder } from "@zyteron/cont
 import { RequireRoles } from "../auth/roles.decorator.js";
 import { actorFromHeaders, operationsPage, OperationsService } from "./operations.service.js";
 
-const readRoles = ["GERENTE_GENERAL", "JEFE_DESARROLLO", "PROGRAMADOR", "DESARROLLO", "OPERACIONES", "JEFE_VENTAS", "EJECUTIVA_VENTAS", "COMERCIAL"] as const;
-const deliveryRoles = ["GERENTE_GENERAL", "JEFE_DESARROLLO", "PROGRAMADOR", "DESARROLLO", "OPERACIONES"] as const;
+const readRoles = ["GERENTE_GENERAL", "JEFE_DESARROLLO", "TECH_LEAD", "PROGRAMADOR", "QA", "SOPORTE_TECNICO", "DESARROLLO", "OPERACIONES", "JEFE_VENTAS", "EJECUTIVA_VENTAS", "COMERCIAL"] as const;
+const deliveryRoles = ["GERENTE_GENERAL", "JEFE_DESARROLLO", "TECH_LEAD", "PROGRAMADOR", "QA", "SOPORTE_TECNICO", "DESARROLLO", "OPERACIONES"] as const;
 const managerRoles = ["GERENTE_GENERAL", "JEFE_DESARROLLO", "OPERACIONES"] as const;
 type HeadersMap = Record<string, string | undefined>;
 
