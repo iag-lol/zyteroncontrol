@@ -1,2 +1,3 @@
-import { ModulePage } from "@/components/module-page";
-export default async function Page({ params }: { params: Promise<{ segments?: string[] }> }) { const { segments = [] } = await params; return <ModulePage pathname={`/finance${segments.length ? `/${segments.join("/")}` : ""}`} />; }
+import { FinanceWorkspace } from "@/components/finance/finance-workspace";
+import "../../finance.css";
+export default async function Page({ params }: { params: Promise<{ segments?: string[] }> }) { const { segments = [] } = await params; return <FinanceWorkspace segments={segments} />; }

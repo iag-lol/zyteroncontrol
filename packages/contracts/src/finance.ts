@@ -1,5 +1,17 @@
 // Contratos del Módulo 07 · Finanzas y Contabilidad.
 // Montos en la moneda del documento; la contabilidad registra en moneda base (CLP). Fechas contables como "AAAA-MM-DD".
+import type { Role } from "./index.js";
+
+// Matriz RBAC financiera: espejo exacto de role_permissions de la migración (verificado por test). Fuente única para API y web.
+export const financePermissions = ["finance.dashboard.view","invoice.view","invoice.create","invoice.edit","invoice.approve","invoice.issue","dte.view","dte.issue","dte.credit_note","dte.debit_note","dte.manage","receivable.view","collection.manage","payment.view","payment.record","payment.refund","payment.allocate","payable.view","payable.approve","payable.pay","expense.view","expense.create","expense.approve","bank.view","bank.import","bank.reconcile","accounting.view","journal.create","journal.review","journal.post","journal.reverse","period.view","period.close","period.reopen","tax.view","tax.review","tax.manage","report.finance.view","report.finance.export","commission.finance.manage","finance.settings.manage"] as const;
+export type FinancePermission = (typeof financePermissions)[number];
+const accountantPermissions: FinancePermission[] = ["finance.dashboard.view","invoice.view","dte.view","dte.manage","receivable.view","payment.view","payable.view","expense.view","expense.approve","bank.view","bank.import","bank.reconcile","accounting.view","journal.create","journal.review","journal.post","journal.reverse","period.view","period.close","period.reopen","tax.view","tax.review","tax.manage","report.finance.view","report.finance.export"];
+const salesLeadPermissions: FinancePermission[] = ["invoice.view","invoice.create","receivable.view","collection.manage","payment.view"];
+export const financeRoleMatrix: Partial<Record<Role, readonly FinancePermission[]>> = {
+  GERENTE_GENERAL: financePermissions, FINANZAS: financePermissions, CONTADOR: accountantPermissions, JEFE_VENTAS: salesLeadPermissions, COMERCIAL: salesLeadPermissions,
+  EJECUTIVA_VENTAS: ["invoice.view","receivable.view","collection.manage"],
+};
+export const hasFinancePermission = (role: string, permission: FinancePermission) => Boolean(financeRoleMatrix[role as Role]?.includes(permission));
 
 export type AccountType = "ASSET" | "LIABILITY" | "EQUITY" | "REVENUE" | "EXPENSE";
 export type NormalBalance = "DEBIT" | "CREDIT";

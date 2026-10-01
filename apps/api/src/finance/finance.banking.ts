@@ -8,6 +8,8 @@ import { AccountingRuleEngine, LedgerService } from "./finance.ledger.js";
 import { PaymentService } from "./finance.payments.js";
 import { daysBetween, type FinanceActor, guarded, isoDate, last4, money, nowIso, oneOf, optionalText, optionalUuid, positiveAmount, r2, requiredText, requiredUuid, type Row, sha256, sum, todayCl } from "./finance.util.js";
 
+/** Palabras societarias o genéricas que no identifican a una contraparte en la glosa bancaria. */
+const genericWords=new Set(["spa","ltda","limitada","sociedad","cliente","clientes","servicios","comercial","empresa","empresas","chile","eirl","transferencia","transf","pago","abono","deposito","proveedor","inversiones","group","grupo"]);
 const normalize=(value:string)=>value.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
 const headerNames:Record<string,string[]>={date:["fecha","fecha operacion","fecha contable","fecha movimiento","date"],description:["descripcion","glosa","detalle","concepto","movimiento","descripcion movimiento"],amount:["monto","importe","amount"],debit:["cargo","cargos","debito","debitos","retiro","giros","cargos clp"],credit:["abono","abonos","credito","creditos","deposito","depositos","abonos clp"],balance:["saldo","saldo disponible","saldo contable"],reference:["n documento","nro documento","documento","referencia","nro operacion","n operacion","numero documento"]};
 export function detectMapping(headers:string[]){const normalized=headers.map(normalize);const find=(names:string[])=>{const index=normalized.findIndex((h)=>names.includes(h));return index>=0?headers[index]!:normalized.findIndex((h)=>names.some((n)=>h.startsWith(n)))>=0?headers[normalized.findIndex((h)=>names.some((n)=>h.startsWith(n)))]!:null;};return Object.fromEntries(Object.entries(headerNames).map(([key,names])=>[key,find(names)])) as Record<string,string|null>;}
@@ -76,7 +78,7 @@ export class ReconciliationService {
     const score=(amount:number,date:string|null,refs:Array<string|null|undefined>,names:Array<string|null|undefined>)=>{const reasons:string[]=[];let value=0;const diff=Math.abs(amount-open);if(diff===0){value+=0.5;reasons.push("Monto exacto");}else if(diff<=tolerance){value+=0.35;reasons.push(`Monto dentro de tolerancia (${money(diff)})`);}else return null;
       if(date){const gap=Math.abs(daysBetween(date,tx.transactionDate));if(gap<=days){value+=0.25*(1-gap/(days+1));reasons.push(gap===0?"Misma fecha":`Fecha a ${gap} día(s)`);}}
       if(refs.some((r)=>r&&normalize(r).length>=4&&text.includes(normalize(r)))){value+=0.2;reasons.push("Referencia coincide");}
-      if(names.some((n)=>n&&normalize(n).split(" ").filter((w)=>w.length>3).some((w)=>text.includes(w)))){value+=0.1;reasons.push("Nombre/RUT en la glosa");}
+      if(names.some((n)=>n&&normalize(n).split(" ").filter((w)=>w.length>3&&!genericWords.has(w)).some((w)=>text.split(" ").includes(w)))){value+=0.1;reasons.push("Nombre del cliente/proveedor en la glosa");}
       return{confidence:Math.min(0.99,r2(value)),reasons};};
     if(tx.direction==="CREDIT"){
       const matched=await this.matchedByTarget("PAYMENT");const payments=(await this.repo.list<Payment>("payments",{status:["PENDING_VERIFICATION","CONFIRMED","PARTIALLY_REFUNDED"],provider:{neq:"MERCADOPAGO"}})).filter((p)=>r2(p.grossAmount-(matched.get(p.id)??0))>0);const names=await this.ctx.sources.clientNames(payments.map((p)=>p.clientId));

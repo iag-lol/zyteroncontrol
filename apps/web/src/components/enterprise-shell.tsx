@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { enterpriseNavigation } from "@/lib/navigation";
 import { canAccessGroup, roleProfiles } from "@/lib/access-control";
+import { canSeeFinancePath } from "@/lib/finance-format";
 import { AccessContext } from "@/components/access-context";
 import { NotificationCenter } from "@/components/enterprise/notification-center";
 import { clientsApi } from "@/lib/clients-api";
@@ -41,7 +42,7 @@ export function EnterpriseShell({ children }: { children: ReactNode }) {
       .filter((group) => canAccessGroup(currentRole, group.id))
       .map((group) => group.id === "security" && currentRole !== "GERENTE_GENERAL"
         ? { ...group, items: group.items.filter((item) => item.href === "/security/vault") }
-        : group),
+        : group.id === "finance" ? { ...group, items: group.items.filter((item) => canSeeFinancePath(currentRole, item.href)) } : group),
     [currentRole],
   );
   const profile = roleProfiles.find((item) => item.role === currentRole) ?? roleProfiles[0]!;
@@ -79,6 +80,9 @@ export function EnterpriseShell({ children }: { children: ReactNode }) {
       return next;
     });
   }
+
+  // Portal de pago público (link con token): sin navegación interna ni datos de la sesión.
+  if (pathname.startsWith("/payments/")) return <>{children}</>;
 
   return (
     <AccessContext.Provider value={{ role: currentRole }}>

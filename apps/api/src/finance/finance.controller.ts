@@ -37,6 +37,8 @@ export class FinanceController {
   @Get("settings") getSettings(@Headers() h:H){return this.settings.get(actor(h));}
   @Patch("settings") @RequireRoles(...MANAGE) updateSettings(@Body() b:any,@Headers() h:H){return this.settings.update(b,actor(h));}
   @Get("catalogs") catalogs(@Headers() h:H){return this.settings.catalogs(actor(h));}
+  @Get("client-options") clientOptions(@Headers() h:H,@Query("search") search?:string){return this.settings.clientOptions(actor(h),search);}
+  @Get("project-options") projectOptions(@Headers() h:H){return this.settings.projectOptions(actor(h));}
   @Get("notifications") notifications(@Headers() h:H){return this.settings.notifications(actor(h));}
   @Post("notifications/:id/read") read(@Param("id") id:string,@Headers() h:H){return this.settings.markRead(id,actor(h));}
   @Get("activity") activity(@Headers() h:H,@Query("clientId") clientId?:string){return this.settings.activity(actor(h),clientId);}
