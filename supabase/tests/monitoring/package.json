@@ -1,0 +1,13 @@
+{
+  "name": "zyteron-monitoring-sql-tests",
+  "private": true,
+  "type": "module",
+  "description": "Verificación de la migración de Monitoreo sobre PostgreSQL real (PGlite). No forma parte del workspace pnpm.",
+  "scripts": {
+    "rls": "node rls-scenario.mjs",
+    "engine": "node engine-scenario.mjs"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.8"
+  }
+}
