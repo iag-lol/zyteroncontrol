@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { Archive, ArrowLeft, BriefcaseBusiness, Building2, CalendarClock, CircleDollarSign, ContactRound, FileStack, Globe2, MonitorCheck, MoreHorizontal, Plus, Receipt, Settings, ShieldCheck, TicketCheck, Upload, Wrench } from "lucide-react";
+import { ClientMonitoringPanel } from "@/components/monitoring/embedded";
+import { Archive, ArrowLeft, BriefcaseBusiness, Building2, CalendarClock, CircleDollarSign, ContactRound, FileStack, Globe2, MoreHorizontal, Plus, Receipt, Settings, ShieldCheck, TicketCheck, Upload, Wrench } from "lucide-react";
 import type { Client, ClientContact, ClientContract, ClientEvent, ClientPortalSettings, ClientRenewal, ClientService, OperationsProject, Sale, SalesFollowUp, SalesOpportunity, SalesQuote, WorkOrder } from "@zyteron/contracts";
 import { useAccess } from "@/components/access-context";
 import { contractsApi, renewalsApi } from "@/lib/client-domain-api";
@@ -91,7 +92,7 @@ export function Client360({ id, initialTab = "summary" }: { id: string; initialT
       {tab === "documents" ? <DomainPanel icon={FileStack} title="Documentos y versiones" description="Storage privado en clients/{clientId}/ con clasificación y trazabilidad." action={{ href: `/documents/clients?clientId=${id}`, label: "Subir documento" }} empty="No hay documentos asociados a este cliente."/> : null}
       {tab === "finance" ? <FinancePanel/> : null}
       {tab === "support" ? <DomainPanel icon={TicketCheck} title="Soporte y SLA" description="Tickets, prioridades, vencimientos y últimas respuestas desde Support." action={{ href: `/support?clientId=${id}`, label: "Nuevo ticket" }} empty="No hay tickets abiertos para este cliente."/> : null}
-      {tab === "monitoring" ? <DomainPanel icon={MonitorCheck} title="Monitoreo del cliente" description="Estado, uptime, latencia, SSL e incidentes desde Monitoring." empty="No hay sitios asociados al monitoreo de este cliente."/> : null}
+      {tab === "monitoring" ? <ClientMonitoringPanel clientId={id}/> : null}
       {tab === "audits" ? <DomainPanel icon={ShieldCheck} title="Auditorías y hallazgos" description="Próximas revisiones, hallazgos y planes de acción vinculados al cliente." action={role === "GERENTE_GENERAL" || role === "JEFE_DESARROLLO" ? { href: `/audits/scheduled?clientId=${id}`, label: "Nueva auditoría" } : undefined} empty="No hay auditorías programadas para este cliente."/> : null}
       {tab === "activity" ? <ActivityTimeline events={activity}/> : null}
       {tab === "portal" ? <PortalPanel client={client}/> : null}
