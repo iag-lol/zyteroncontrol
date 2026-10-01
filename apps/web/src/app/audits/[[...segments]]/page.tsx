@@ -1,2 +1,3 @@
-import { ModulePage } from "@/components/module-page";
-export default async function Page({ params }: { params: Promise<{ segments?: string[] }> }) { const { segments = [] } = await params; return <ModulePage pathname={`/audits${segments.length ? `/${segments.join("/")}` : ""}`} />; }
+import "../../audits.css";
+import { AuditWorkspace } from "@/components/audits/audit-workspace";
+export default async function Page({ params }: { params: Promise<{ segments?: string[] }> }) { const { segments = [] } = await params; return <AuditWorkspace segments={segments}/>; }

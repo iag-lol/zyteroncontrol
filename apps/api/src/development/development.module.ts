@@ -9,6 +9,6 @@ import { DevelopmentManagementService, DevelopmentReadService, IntegrationServic
   imports:[OperationsModule],
   controllers:[DevelopmentController,ProjectDevelopmentController,RepositoriesController,QaController,BugsController,ReleasesController,EnvironmentsController,TechnicalDebtController,IntegrationsController,DevelopmentWebhooksController],
   providers:[DevelopmentRepository,DevelopmentReadService,DevelopmentManagementService,QualityService,ReleaseService,IntegrationService,GitHubSourceControlProvider,GitHubActionsProvider,RenderDeploymentProvider],
-  exports:[DevelopmentReadService],
+  exports:[DevelopmentReadService,QualityService],
 })
 export class DevelopmentModule {}

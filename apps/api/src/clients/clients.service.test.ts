@@ -12,7 +12,7 @@ describe("Client 360 service", () => {
   beforeEach(() => {
     delete process.env.SUPABASE_URL; delete process.env.SUPABASE_SERVICE_ROLE_KEY;
     const repository = new ClientsRepository();
-    service = new ClientsService(repository, new ClientHealthService(), new ClientEventsService(repository), new ClientIntegrationsService());
+    service = new ClientsService(repository, new ClientHealthService(), new ClientEventsService(repository), new ClientIntegrationsService(), { related: async()=>({}) } as any);
   });
 
   it("crea, busca, edita y archiva sin borrar el historial", async () => {

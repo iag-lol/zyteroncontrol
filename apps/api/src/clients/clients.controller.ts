@@ -28,7 +28,7 @@ export class ClientsController {
   @Get(":id/finance-summary") @RequireRoles("GERENTE_GENERAL", "FINANZAS") finance(@Param("id") id: string) { return this.service.unavailableSummary(id, "Finance"); }
   @Get(":id/support-summary") @RequireRoles(...clientReaders) support(@Param("id") id: string) { return this.service.unavailableSummary(id, "Support"); }
   @Get(":id/monitoring-summary") @RequireRoles("GERENTE_GENERAL", "JEFE_DESARROLLO", "PROGRAMADOR") monitoring(@Param("id") id: string) { return this.service.unavailableSummary(id, "Monitoring"); }
-  @Get(":id/audits") @RequireRoles("GERENTE_GENERAL", "JEFE_DESARROLLO", "PROGRAMADOR") audits(@Param("id") id: string) { return this.service.related(id, "audits"); }
+  @Get(":id/audits") @RequireRoles("GERENTE_GENERAL", "JEFE_DESARROLLO", "TECH_LEAD", "QA", "PROGRAMADOR") audits(@Param("id") id: string) { return this.service.related(id, "audits"); }
   @Get(":id/portal") @RequireRoles("GERENTE_GENERAL") portal(@Param("id") id: string) { return this.service.portal(id); }
   @Patch(":id/portal") @RequireRoles("GERENTE_GENERAL") updatePortal(@Param("id") id: string, @Body() body: Parameters<ClientsService["updatePortal"]>[1]) { return this.service.updatePortal(id, body); }
 }

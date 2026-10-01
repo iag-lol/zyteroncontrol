@@ -28,7 +28,7 @@ const accessByRole: Record<Role, string[]> = {
   JEFE_VENTAS: ["control", "commercial", "clients", "documents", "reports"],
   PROGRAMADOR: ["control", "operations", "development", "monitoring", "audits", "documents", "security"],
   TECH_LEAD: ["control", "operations", "development", "monitoring", "audits", "documents", "security", "reports"],
-  QA: ["control", "operations", "development", "documents"],
+  QA: ["control", "operations", "development", "audits", "documents"],
   SOPORTE_TECNICO: ["control", "operations", "development", "monitoring", "support", "documents", "security"],
   RRHH: ["control", "hr", "documents", "reports"],
   FINANZAS: ["control", "finance", "documents", "reports"],

@@ -1,4 +1,4 @@
-import type { Client, ClientContact, ClientEvent, ClientListResponse, ClientPortalSettings, ClientService, CreateClientInput, Role } from "@zyteron/contracts";
+import type { Client, ClientContact, ClientEvent, ClientListResponse, ClientPortalSettings, ClientService, CreateClientInput, RelatedAuditSnapshot, Role } from "@zyteron/contracts";
 import { apiHeaders } from "./api-auth";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api";
@@ -31,4 +31,5 @@ export const clientsApi = {
   portal: (role: Role, id: string) => request<ClientPortalSettings>(`/clients/${id}/portal`, role),
   updatePortal: (role: Role, id: string, input: Partial<ClientPortalSettings>) => request<ClientPortalSettings>(`/clients/${id}/portal`, role, { method: "PATCH", body: JSON.stringify(input) }),
   related: (role: Role, id: string, endpoint: string) => request<Record<string, unknown>>(`/clients/${id}/${endpoint}`, role),
+  audits: (role:Role,id:string)=>request<RelatedAuditSnapshot>(`/clients/${id}/audits`,role),
 };
