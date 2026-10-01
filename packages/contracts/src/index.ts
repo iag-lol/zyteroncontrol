@@ -410,3 +410,61 @@ export interface ClientPortalSettings {
   auditsVisible: boolean;
   updatedAt: string;
 }
+
+export const workOrderStatuses = ["DRAFT", "READY_FOR_HANDOFF", "PENDING_PLANNING", "PLANNING", "PENDING_ASSIGNMENT", "ASSIGNED", "IN_PROGRESS", "IN_REVIEW", "WAITING_CLIENT", "COMPLETED", "CLOSED", "CANCELLED"] as const;
+export type WorkOrderStatus = (typeof workOrderStatuses)[number];
+export const operationPriorities = ["LOW", "NORMAL", "HIGH", "URGENT", "CRITICAL"] as const;
+export type OperationPriority = (typeof operationPriorities)[number];
+
+export interface WorkOrder {
+  id: string; workOrderNumber: string; clientId: string | null; clientName: string | null; quoteId: string | null; quoteVersionId: string | null;
+  saleId: string | null; contractId: string | null; handoffId: string | null; projectId: string | null; title: string; description: string | null;
+  scope: string; commercialSnapshot: Record<string, unknown>; priority: OperationPriority; status: WorkOrderStatus; commercialOwnerId: string | null;
+  developmentManagerId: string | null; assignedTo: string | null; plannedStartDate: string | null; targetDate: string | null; actualStartDate: string | null;
+  completedAt: string | null; estimatedHours: number | null; budgetReference: number | null; currency: string; createdBy: string | null; createdAt: string; updatedAt: string;
+}
+
+export const projectStatuses = ["PLANNING", "READY", "IN_PROGRESS", "BLOCKED", "INTERNAL_REVIEW", "QA", "WAITING_CLIENT", "READY_FOR_PRODUCTION", "PRODUCTION", "MAINTENANCE", "COMPLETED", "ON_HOLD", "CANCELLED", "ARCHIVED"] as const;
+export type ProjectStatus = (typeof projectStatuses)[number];
+export const projectHealthStatuses = ["ON_TRACK", "ATTENTION", "AT_RISK", "CRITICAL", "COMPLETED"] as const;
+export type ProjectHealth = (typeof projectHealthStatuses)[number];
+
+export interface OperationsProject {
+  id: string; projectNumber: string; clientId: string | null; clientName: string | null; workOrderId: string; quoteId: string | null; contractId: string | null;
+  name: string; description: string | null; scope: string; status: ProjectStatus; priority: OperationPriority; health: ProjectHealth; healthReason: string;
+  progress: number; developmentManagerId: string | null; projectLeadId: string | null; plannedStartDate: string | null; actualStartDate: string | null;
+  targetDate: string | null; completedAt: string | null; estimatedHours: number | null; budgetedHours: number | null; stagingUrl: string | null;
+  productionUrl: string | null; repositoryUrl: string | null; clientVisibility: "INTERNAL" | "CLIENT_VISIBLE"; createdBy: string | null; createdAt: string; updatedAt: string; archivedAt: string | null;
+}
+
+export type ProjectRole = "PROJECT_MANAGER" | "TECH_LEAD" | "DEVELOPER" | "QA" | "DESIGNER" | "SUPPORT" | "OBSERVER";
+export interface ProjectMember { id: string; projectId: string; userId: string; userName: string | null; projectRole: ProjectRole; allocationPercentage: number | null; assignedBy: string | null; assignedAt: string; removedAt: string | null; active: boolean; }
+
+export type MilestoneStatus = "PLANNED" | "IN_PROGRESS" | "AT_RISK" | "BLOCKED" | "COMPLETED" | "CANCELLED";
+export interface ProjectMilestone { id: string; projectId: string; name: string; description: string | null; status: MilestoneStatus; weight: number; plannedStartDate: string | null; dueDate: string | null; completedAt: string | null; responsibleUserId: string | null; clientVisibility: "INTERNAL" | "CLIENT_VISIBLE"; sortOrder: number; createdAt: string; updatedAt: string; }
+
+export type TaskStatus = "BACKLOG" | "TODO" | "IN_PROGRESS" | "BLOCKED" | "REVIEW" | "QA" | "DONE" | "CANCELLED";
+export interface OperationsTask { id: string; projectId: string; projectName: string | null; milestoneId: string | null; parentTaskId: string | null; title: string; description: string | null; status: TaskStatus; priority: OperationPriority; assignedTo: string | null; createdBy: string | null; estimatedMinutes: number | null; actualMinutes: number; startDate: string | null; dueDate: string | null; completedAt: string | null; blockedReason: string | null; blockedType: string | null; clientVisibility: "INTERNAL" | "CLIENT_VISIBLE"; overdue: boolean; createdAt: string; updatedAt: string; }
+export interface TaskDependency { id: string; taskId: string; dependsOnTaskId: string; dependencyType: "BLOCKS" | "REQUIRES"; createdAt: string; }
+
+export type WorkType = "DEVELOPMENT" | "DESIGN" | "MEETING" | "QA" | "SUPPORT" | "RESEARCH" | "DEPLOYMENT" | "DOCUMENTATION" | "MANAGEMENT" | "OTHER";
+export interface WorkLog { id: string; projectId: string; projectName: string | null; taskId: string | null; userId: string; workDate: string; startedAt: string | null; durationMinutes: number; description: string; publicDescription: string | null; workType: WorkType; billable: boolean; clientVisibility: "INTERNAL" | "CLIENT_VISIBLE"; commitReference: string | null; deploymentId: string | null; createdAt: string; updatedAt: string; }
+
+export type DeliverableStatus = "PLANNED" | "IN_PROGRESS" | "READY_FOR_REVIEW" | "INTERNAL_REVIEW" | "CLIENT_REVIEW" | "APPROVED" | "CHANGES_REQUESTED" | "DELIVERED" | "CANCELLED";
+export interface ProjectDeliverable { id: string; projectId: string; projectName: string | null; milestoneId: string | null; name: string; description: string | null; type: string; status: DeliverableStatus; dueDate: string | null; ownerId: string | null; documentId: string | null; externalUrl: string | null; version: number; clientVisibility: "INTERNAL" | "CLIENT_VISIBLE"; submittedAt: string | null; approvedAt: string | null; approvedBy: string | null; createdAt: string; updatedAt: string; }
+
+export type DeploymentStatus = "PLANNED" | "QUEUED" | "IN_PROGRESS" | "SUCCESS" | "FAILED" | "ROLLED_BACK" | "CANCELLED";
+export interface ProjectDeployment { id: string; projectId: string; projectName: string | null; environment: string; version: string; commitSha: string | null; status: DeploymentStatus; recordType: "MANUAL_RECORD" | "INTEGRATION"; requestedBy: string | null; deployedBy: string | null; startedAt: string | null; completedAt: string | null; notes: string | null; rollbackOfId: string | null; clientVisibility: "INTERNAL" | "CLIENT_VISIBLE"; createdAt: string; updatedAt: string; }
+
+export interface ProjectEndpoint { id: string; projectId: string; name: string; url: string; environment: string; endpointType: string; monitoringEnabled: boolean; responsibleUserId: string | null; active: boolean; createdAt: string; updatedAt: string; }
+export interface ProjectRisk { id: string; projectId: string; title: string; description: string | null; probability: number; impact: number; severity: number; ownerId: string | null; mitigation: string | null; status: "OPEN" | "MITIGATING" | "ACCEPTED" | "RESOLVED"; createdAt: string; resolvedAt: string | null; }
+export interface ChangeRequest { id: string; projectId: string; requestedBy: string | null; source: string; description: string; reason: string | null; scopeImpact: string | null; timeImpact: string | null; costImpact: number | null; currency: string; status: "REQUESTED" | "ANALYSIS" | "PENDING_APPROVAL" | "APPROVED" | "REJECTED" | "IMPLEMENTING" | "COMPLETED"; approvedBy: string | null; approvedAt: string | null; createdAt: string; updatedAt: string; }
+export interface OperationsEvent { id: string; projectId: string | null; workOrderId: string | null; aggregateType: string; aggregateId: string; eventType: string; actorId: string | null; payload: Record<string, unknown>; occurredAt: string; }
+
+export interface OperationsSummary {
+  newWorkOrders: number; pendingPlanning: number; activeProjects: number; atRiskProjects: number; overdueProjects: number; overdueTasks: number;
+  blockedTasks: number; upcomingMilestones: number; overdueMilestones: number; pendingDeliverables: number; pendingDeployments: number;
+  minutesToday: number; unassignedProjects: number;
+}
+export interface OperationsPriorityItem { id: string; type: "WORK_ORDER" | "PROJECT" | "TASK" | "MILESTONE" | "DELIVERABLE" | "DEPLOYMENT"; title: string; reason: string; severity: "ATTENTION" | "AT_RISK" | "CRITICAL"; href: string; dueAt: string | null; }
+export interface ProjectOperationalSummary { project: OperationsProject; nextMilestone: ProjectMilestone | null; openTasks: number; overdueTasks: number; blockedTasks: number; usedMinutes: number; remainingMinutes: number | null; members: number; pendingDeliverables: number; activeRisks: number; }

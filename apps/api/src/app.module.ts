@@ -8,9 +8,7 @@ import { UsersModule } from "./users/users.module.js";
 import { RolesModule } from "./roles/roles.module.js";
 import { PermissionsModule } from "./permissions/permissions.module.js";
 import { ClientsModule } from "./clients/clients.module.js";
-import { WorkOrdersModule } from "./work-orders/work-orders.module.js";
-import { ProjectsModule } from "./projects/projects.module.js";
-import { TasksModule } from "./tasks/tasks.module.js";
+import { OperationsModule } from "./operations/operations.module.js";
 import { DevelopmentModule } from "./development/development.module.js";
 import { MonitoringModule } from "./monitoring/monitoring.module.js";
 import { IncidentsModule } from "./incidents/incidents.module.js";
@@ -43,9 +41,7 @@ import { CommercialModule } from "./commercial/commercial.module.js";
     ClientServicesModule,
     RenewalsModule,
     CommercialModule,
-    WorkOrdersModule,
-    ProjectsModule,
-    TasksModule,
+    OperationsModule,
     DevelopmentModule,
     MonitoringModule,
     IncidentsModule,

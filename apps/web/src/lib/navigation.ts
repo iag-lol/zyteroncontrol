@@ -76,11 +76,13 @@ export const enterpriseNavigation: NavigationGroup[] = [
     label: "Operaciones",
     icon: BriefcaseBusiness,
     items: [
+      { label: "Centro de operaciones", href: "/operations" },
       { label: "Órdenes de trabajo", href: "/work-orders" },
       { label: "Proyectos", href: "/projects" },
       { label: "Tareas", href: "/tasks" },
       { label: "Hitos", href: "/milestones" },
       { label: "Worklogs", href: "/worklogs" },
+      { label: "Entregables", href: "/deliverables" },
       { label: "Deployments", href: "/deployments" },
     ],
   },

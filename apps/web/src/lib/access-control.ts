@@ -41,7 +41,7 @@ export function groupForPath(pathname: string) {
   if (["/", "/dashboard", "/command-center", "/activity", "/notifications"].includes(pathname)) return "control";
   if (pathname.startsWith("/crm") || pathname.startsWith("/commercial")) return "commercial";
   if (pathname.startsWith("/clients")) return "clients";
-  if (["/tasks", "/milestones", "/worklogs", "/deployments"].some((path) => pathname.startsWith(path)) || pathname.startsWith("/work-orders") || pathname.startsWith("/projects")) return "operations";
+  if (["/operations", "/tasks", "/milestones", "/worklogs", "/deliverables", "/deployments"].some((path) => pathname.startsWith(path)) || pathname.startsWith("/work-orders") || pathname.startsWith("/projects")) return "operations";
   if (pathname.startsWith("/development")) return "development";
   if (pathname.startsWith("/monitoring")) return "monitoring";
   if (pathname.startsWith("/audits")) return "audits";
