@@ -1,5 +1,6 @@
 import "reflect-metadata";
 import { NestFactory } from "@nestjs/core";
+import type { NestExpressApplication } from "@nestjs/platform-express";
 import { config } from "dotenv";
 import { resolve } from "node:path";
 import { AppModule } from "./app.module.js";
@@ -7,7 +8,9 @@ import { AppModule } from "./app.module.js";
 config({ path: [resolve(process.cwd(), ".env"), resolve(process.cwd(), "../../.env")] });
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { rawBody: true });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, { rawBody: true });
+  // Respaldos (comprobantes, XML/CAF, cartolas) viajan en base64: límite acotado y explícito.
+  app.useBodyParser("json", { limit: "25mb" });
   app.setGlobalPrefix("api");
   app.enableCors({
     origin: process.env.WEB_ORIGIN ?? "http://localhost:3000",

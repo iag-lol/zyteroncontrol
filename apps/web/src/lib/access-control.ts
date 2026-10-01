@@ -18,6 +18,7 @@ export const roleProfiles: RoleProfile[] = [
   { role: "SOPORTE_TECNICO", label: "Soporte Técnico", userName: "Soporte Zyteron", initials: "ST" },
   { role: "RRHH", label: "Recursos Humanos", userName: "Equipo RR.HH.", initials: "RH" },
   { role: "FINANZAS", label: "Finanzas", userName: "Equipo Finanzas", initials: "FI" },
+  { role: "CONTADOR", label: "Contabilidad", userName: "Contador Zyteron", initials: "CT" },
   { role: "COMERCIAL", label: "Administración Comercial", userName: "Equipo Comercial", initials: "CO" },
 ];
 
@@ -32,6 +33,7 @@ const accessByRole: Record<Role, string[]> = {
   SOPORTE_TECNICO: ["control", "operations", "development", "monitoring", "support", "documents", "security"],
   RRHH: ["control", "hr", "support", "documents", "reports"],
   FINANZAS: ["control", "finance", "support", "documents", "reports"],
+  CONTADOR: ["control", "finance", "support", "documents", "reports"],
   COMERCIAL: ["control", "commercial", "clients", "support", "documents"],
   PORTAL_CLIENT: [],
   DESARROLLO: ["control", "operations", "development", "monitoring", "audits", "support", "documents"],

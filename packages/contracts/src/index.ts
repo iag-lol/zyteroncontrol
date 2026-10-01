@@ -19,6 +19,7 @@ export const roles = [
   "SOPORTE_TECNICO",
   "RRHH",
   "FINANZAS",
+  "CONTADOR",
   "COMERCIAL",
   "DESARROLLO",
   "OPERACIONES",
@@ -582,3 +583,4 @@ export interface DocumentSummary { total:number; mine:number; shared:number; pen
 export interface DocumentWorkspace { summary:DocumentSummary; attention:DocumentAttentionItem[]; documents:EnterpriseDocument[]; types:DocumentType[]; reviews:DocumentReview[]; signatures:DocumentSignatureRequest[]; templates:DocumentTemplate[]; activity:DocumentActivity[]; providers:{malware:string;signature:string;rendering:string;textExtraction:string;ocr:string}; generatedAt:string; }
 export interface DocumentDetail { document:EnterpriseDocument; versions:DocumentVersion[]; links:DocumentLink[]; reviews:DocumentReview[]; signatures:DocumentSignatureRequest[]; relationships:Array<{id:string;relationshipType:string;relatedDocumentId:string;createdAt:string}>; comments:Array<{id:string;body:string;authorId:string|null;createdAt:string}>; permissions:Array<{id:string;subjectType:string;subjectId:string;permission:string;createdAt:string}>; activity:DocumentActivity[]; duplicateWarnings:string[]; }
 export interface RelatedDocumentsSnapshot { clientId?:string; projectId?:string; linkType?:DocumentLinkType; documents:EnterpriseDocument[]; total:number; expiring:number; pendingReview:number; pendingSignature:number; }
+export * from "./finance.js";
