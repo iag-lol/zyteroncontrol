@@ -3,7 +3,7 @@ import type { CreateClientInput } from "@zyteron/contracts";
 import { RequireRoles } from "../auth/roles.decorator.js";
 import { ClientsService } from "./clients.service.js";
 
-const clientReaders = ["GERENTE_GENERAL", "JEFE_VENTAS", "EJECUTIVA_VENTAS", "COMERCIAL", "JEFE_DESARROLLO", "PROGRAMADOR", "FINANZAS"] as const;
+const clientReaders = ["GERENTE_GENERAL", "JEFE_VENTAS", "EJECUTIVA_VENTAS", "COMERCIAL", "JEFE_DESARROLLO", "PROGRAMADOR", "FINANZAS", "SOPORTE_TECNICO", "OPERACIONES"] as const;
 const clientManagers = ["GERENTE_GENERAL", "JEFE_VENTAS", "EJECUTIVA_VENTAS", "COMERCIAL"] as const;
 
 @Controller("clients")
@@ -26,7 +26,7 @@ export class ClientsController {
   @Get(":id/work-orders") @RequireRoles(...clientReaders) workOrders(@Param("id") id: string) { return this.service.related(id, "work-orders"); }
   @Get(":id/documents") @RequireRoles(...clientReaders) documents(@Param("id") id: string) { return this.service.related(id, "documents"); }
   @Get(":id/finance-summary") @RequireRoles("GERENTE_GENERAL", "FINANZAS") finance(@Param("id") id: string) { return this.service.unavailableSummary(id, "Finance"); }
-  @Get(":id/support-summary") @RequireRoles(...clientReaders) support(@Param("id") id: string) { return this.service.unavailableSummary(id, "Support"); }
+  @Get(":id/support-summary") @RequireRoles(...clientReaders) support(@Param("id") id: string) { return this.service.related(id, "support"); }
   @Get(":id/monitoring-summary") @RequireRoles("GERENTE_GENERAL", "JEFE_DESARROLLO", "PROGRAMADOR") monitoring(@Param("id") id: string) { return this.service.unavailableSummary(id, "Monitoring"); }
   @Get(":id/audits") @RequireRoles("GERENTE_GENERAL", "JEFE_DESARROLLO", "TECH_LEAD", "QA", "PROGRAMADOR") audits(@Param("id") id: string) { return this.service.related(id, "audits"); }
   @Get(":id/portal") @RequireRoles("GERENTE_GENERAL") portal(@Param("id") id: string) { return this.service.portal(id); }

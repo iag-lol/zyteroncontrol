@@ -40,6 +40,10 @@ export class RoleGuard implements CanActivate {
       role = typeof rawRole === "string" ? rawRole : undefined;
       request.headers["x-zyteron-user-id"] = data.user.id;
       if (role) request.headers["x-zyteron-role"] = role;
+      const clientId = data.user.app_metadata.client_id;
+      const contactId = data.user.app_metadata.contact_id;
+      if (typeof clientId === "string") request.headers["x-zyteron-client-id"] = clientId;
+      if (typeof contactId === "string") request.headers["x-zyteron-contact-id"] = contactId;
     }
 
     if (!role || !roles.includes(role as Role)) {

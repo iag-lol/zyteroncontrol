@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
-import type { AuditFinding, AuditRun, Client, Role } from "@zyteron/contracts";
+import type { AuditFinding, AuditRun, Client, Role, SupportTicket } from "@zyteron/contracts";
 import {
   Bell,
   ChevronDown,
@@ -21,6 +21,7 @@ import { clientsApi } from "@/lib/clients-api";
 import { commercialApi } from "@/lib/commercial-api";
 import type { Sale, SalesLead, SalesOpportunity, SalesQuote } from "@zyteron/contracts";
 import { auditsApi } from "@/lib/audits-api";
+import { supportApi } from "@/lib/support-api";
 
 export function EnterpriseShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -33,6 +34,7 @@ export function EnterpriseShell({ children }: { children: ReactNode }) {
   const [clientResults, setClientResults] = useState<Client[]>([]);
   const [commercialResults, setCommercialResults] = useState<{leads:SalesLead[];opportunities:SalesOpportunity[];quotes:SalesQuote[];sales:Sale[]}>({leads:[],opportunities:[],quotes:[],sales:[]});
   const [auditResults,setAuditResults]=useState<{audits:AuditRun[];findings:AuditFinding[]}>({audits:[],findings:[]});
+  const [supportResults,setSupportResults]=useState<SupportTicket[]>([]);
 
   const visibleNavigation = useMemo(
     () => enterpriseNavigation
@@ -52,9 +54,10 @@ export function EnterpriseShell({ children }: { children: ReactNode }) {
   );
 
   useEffect(() => {
-    if (globalQuery.trim().length < 2 || (!canAccessGroup(currentRole, "clients") && !canAccessGroup(currentRole, "commercial") && !canAccessGroup(currentRole,"audits"))) {
+    if (globalQuery.trim().length < 2 || (!canAccessGroup(currentRole, "clients") && !canAccessGroup(currentRole, "commercial") && !canAccessGroup(currentRole,"audits") && !canAccessGroup(currentRole,"support"))) {
       setClientResults([]); setCommercialResults({leads:[],opportunities:[],quotes:[],sales:[]});
       setAuditResults({audits:[],findings:[]});
+      setSupportResults([]);
       return;
     }
     const timer = window.setTimeout(() => {
@@ -62,7 +65,8 @@ export function EnterpriseShell({ children }: { children: ReactNode }) {
         canAccessGroup(currentRole,"clients") ? clientsApi.list(currentRole,new URLSearchParams({search:globalQuery.trim(),pageSize:"5"})) : Promise.resolve({items:[]}),
         canAccessGroup(currentRole,"commercial") ? commercialApi.search(currentRole,globalQuery.trim()) : Promise.resolve({leads:[],opportunities:[],quotes:[],sales:[]}),
         canAccessGroup(currentRole,"audits") ? auditsApi.search(currentRole,globalQuery.trim()) : Promise.resolve({audits:[],findings:[]}),
-      ]).then(([clients,commercial,audits])=>{setClientResults(clients.items as Client[]);setCommercialResults(commercial);setAuditResults(audits);}).catch(()=>{setClientResults([]);setCommercialResults({leads:[],opportunities:[],quotes:[],sales:[]});setAuditResults({audits:[],findings:[]});});
+        canAccessGroup(currentRole,"support") ? supportApi.search(currentRole,globalQuery.trim()) : Promise.resolve([]),
+      ]).then(([clients,commercial,audits,support])=>{setClientResults(clients.items as Client[]);setCommercialResults(commercial);setAuditResults(audits);setSupportResults(support);}).catch(()=>{setClientResults([]);setCommercialResults({leads:[],opportunities:[],quotes:[],sales:[]});setAuditResults({audits:[],findings:[]});setSupportResults([]);});
     }, 280);
     return () => window.clearTimeout(timer);
   }, [currentRole, globalQuery]);
@@ -134,8 +138,8 @@ export function EnterpriseShell({ children }: { children: ReactNode }) {
           </div>
           <div className="topbarActions">
             <div className="globalSearchWrap">
-              <label className="globalSearch"><Search size={16} /><input aria-label="Buscar en Zyteron Control" placeholder="Buscar clientes, AUD o FND" value={globalQuery} onChange={(event) => setGlobalQuery(event.target.value)} /></label>
-              {clientResults.length+commercialResults.leads.length+commercialResults.opportunities.length+commercialResults.quotes.length+commercialResults.sales.length+auditResults.audits.length+auditResults.findings.length ? <div className="globalSearchResults"><small>Resultados</small>{clientResults.map((client) => <Link href={`/clients/${client.id}`} key={client.id} onClick={() => setGlobalQuery("")}><span>CL</span><div><strong>{client.tradeName || client.legalName}</strong><small>{client.rut}</small></div></Link>)}{auditResults.audits.map(item=><Link href={`/audits/${item.id}`} key={item.id} onClick={()=>setGlobalQuery("")}><span>AU</span><div><strong>{item.auditNumber}</strong><small>{item.clientName||item.auditType}</small></div></Link>)}{auditResults.findings.map(item=><Link href={`/audits/${item.auditId}`} key={item.id} onClick={()=>setGlobalQuery("")}><span>FN</span><div><strong>{item.findingNumber}</strong><small>{item.title}</small></div></Link>)}{commercialResults.leads.map((item)=><Link href="/commercial/leads" key={item.id} onClick={()=>setGlobalQuery("")}><span>LD</span><div><strong>{item.companyName}</strong><small>{item.contactName}</small></div></Link>)}{commercialResults.opportunities.map((item)=><Link href="/commercial/opportunities" key={item.id} onClick={()=>setGlobalQuery("")}><span>OP</span><div><strong>{item.company}</strong><small>{item.name}</small></div></Link>)}{commercialResults.quotes.map((item)=><Link href="/commercial/quotes" key={item.id} onClick={()=>setGlobalQuery("")}><span>CT</span><div><strong>{item.quoteNumber}</strong><small>{item.companyName}</small></div></Link>)}{commercialResults.sales.map((item)=><Link href="/commercial/sales" key={item.id} onClick={()=>setGlobalQuery("")}><span>VT</span><div><strong>{item.amount.toLocaleString("es-CL")} {item.currency}</strong><small>Venta {item.id.slice(0,8)}</small></div></Link>)}</div> : null}
+              <label className="globalSearch"><Search size={16} /><input aria-label="Buscar en Zyteron Control" placeholder="Buscar clientes, SUP, AUD o FND" value={globalQuery} onChange={(event) => setGlobalQuery(event.target.value)} /></label>
+              {clientResults.length+commercialResults.leads.length+commercialResults.opportunities.length+commercialResults.quotes.length+commercialResults.sales.length+auditResults.audits.length+auditResults.findings.length+supportResults.length ? <div className="globalSearchResults"><small>Resultados</small>{clientResults.map((client) => <Link href={`/clients/${client.id}`} key={client.id} onClick={() => setGlobalQuery("")}><span>CL</span><div><strong>{client.tradeName || client.legalName}</strong><small>{client.rut}</small></div></Link>)}{supportResults.map(item=><Link href={`/support/inbox/${item.id}`} key={item.id} onClick={()=>setGlobalQuery("")}><span>SP</span><div><strong>{item.ticketNumber}</strong><small>{item.subject}</small></div></Link>)}{auditResults.audits.map(item=><Link href={`/audits/${item.id}`} key={item.id} onClick={()=>setGlobalQuery("")}><span>AU</span><div><strong>{item.auditNumber}</strong><small>{item.clientName||item.auditType}</small></div></Link>)}{auditResults.findings.map(item=><Link href={`/audits/${item.auditId}`} key={item.id} onClick={()=>setGlobalQuery("")}><span>FN</span><div><strong>{item.findingNumber}</strong><small>{item.title}</small></div></Link>)}{commercialResults.leads.map((item)=><Link href="/commercial/leads" key={item.id} onClick={()=>setGlobalQuery("")}><span>LD</span><div><strong>{item.companyName}</strong><small>{item.contactName}</small></div></Link>)}{commercialResults.opportunities.map((item)=><Link href="/commercial/opportunities" key={item.id} onClick={()=>setGlobalQuery("")}><span>OP</span><div><strong>{item.company}</strong><small>{item.name}</small></div></Link>)}{commercialResults.quotes.map((item)=><Link href="/commercial/quotes" key={item.id} onClick={()=>setGlobalQuery("")}><span>CT</span><div><strong>{item.quoteNumber}</strong><small>{item.companyName}</small></div></Link>)}{commercialResults.sales.map((item)=><Link href="/commercial/sales" key={item.id} onClick={()=>setGlobalQuery("")}><span>VT</span><div><strong>{item.amount.toLocaleString("es-CL")} {item.currency}</strong><small>Venta {item.id.slice(0,8)}</small></div></Link>)}</div> : null}
             </div>
             <button
               className="notificationButton"

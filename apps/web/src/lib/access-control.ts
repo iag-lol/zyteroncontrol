@@ -23,18 +23,18 @@ export const roleProfiles: RoleProfile[] = [
 
 const accessByRole: Record<Role, string[]> = {
   GERENTE_GENERAL: ["*"],
-  JEFE_DESARROLLO: ["control", "operations", "development", "monitoring", "audits", "documents", "security", "reports"],
-  EJECUTIVA_VENTAS: ["control", "commercial", "clients", "documents"],
-  JEFE_VENTAS: ["control", "commercial", "clients", "documents", "reports"],
-  PROGRAMADOR: ["control", "operations", "development", "monitoring", "audits", "documents", "security"],
-  TECH_LEAD: ["control", "operations", "development", "monitoring", "audits", "documents", "security", "reports"],
-  QA: ["control", "operations", "development", "audits", "documents"],
+  JEFE_DESARROLLO: ["control", "operations", "development", "monitoring", "audits", "support", "documents", "security", "reports"],
+  EJECUTIVA_VENTAS: ["control", "commercial", "clients", "support", "documents"],
+  JEFE_VENTAS: ["control", "commercial", "clients", "support", "documents", "reports"],
+  PROGRAMADOR: ["control", "operations", "development", "monitoring", "audits", "support", "documents", "security"],
+  TECH_LEAD: ["control", "operations", "development", "monitoring", "audits", "support", "documents", "security", "reports"],
+  QA: ["control", "operations", "development", "audits", "support", "documents"],
   SOPORTE_TECNICO: ["control", "operations", "development", "monitoring", "support", "documents", "security"],
-  RRHH: ["control", "hr", "documents", "reports"],
-  FINANZAS: ["control", "finance", "documents", "reports"],
-  COMERCIAL: ["control", "commercial", "clients", "documents"],
+  RRHH: ["control", "hr", "support", "documents", "reports"],
+  FINANZAS: ["control", "finance", "support", "documents", "reports"],
+  COMERCIAL: ["control", "commercial", "clients", "support", "documents"],
   PORTAL_CLIENT: [],
-  DESARROLLO: ["control", "operations", "development", "monitoring", "audits", "documents"],
+  DESARROLLO: ["control", "operations", "development", "monitoring", "audits", "support", "documents"],
   OPERACIONES: ["control", "operations", "monitoring", "support", "documents"],
 };
 

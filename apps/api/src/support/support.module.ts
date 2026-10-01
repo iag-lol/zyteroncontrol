@@ -1,14 +1,16 @@
-import { Controller, Get, Module } from "@nestjs/common";
-import { RequireRoles } from "../auth/roles.decorator.js";
-import { emptyDomain } from "../domain/domain-response.js";
+import { Module } from "@nestjs/common";
+import { DevelopmentModule } from "../development/development.module.js";
+import { OperationsModule } from "../operations/operations.module.js";
+import { ClientSupportController, SupportController, SupportKnowledgeController, SupportRelationsController } from "./support.controller.js";
+import { DeferredMailSupportProvider, SupportChannelProvider, SupportCopilotProvider } from "./support.providers.js";
+import { SupportRepository } from "./support.repository.js";
+import { SupportSlaEngine } from "./support.sla.js";
+import { SupportAttachmentService, SupportCatalogService, SupportChannelService, SupportKnowledgeService, SupportReadService, SupportSlaService, SupportTicketService } from "./support.service.js";
 
-@Controller("support")
-class SupportController {
-  @Get()
-  @RequireRoles("GERENTE_GENERAL", "EJECUTIVA_VENTAS", "COMERCIAL", "OPERACIONES", "JEFE_DESARROLLO")
-  index() { return emptyDomain("support", "No hay tickets registrados."); }
-}
-
-@Module({ controllers: [SupportController] })
+@Module({
+  imports:[OperationsModule,DevelopmentModule],
+  controllers:[SupportController,SupportKnowledgeController,ClientSupportController,SupportRelationsController],
+  providers:[SupportRepository,SupportSlaEngine,SupportCatalogService,SupportSlaService,SupportTicketService,SupportAttachmentService,SupportKnowledgeService,SupportChannelService,SupportReadService,SupportCopilotProvider,DeferredMailSupportProvider,{provide:SupportChannelProvider,useExisting:DeferredMailSupportProvider}],
+  exports:[SupportReadService],
+})
 export class SupportModule {}
-
