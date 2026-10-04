@@ -1,4 +1,4 @@
-import { Body, Controller, ForbiddenException, Get, Headers, Param, Patch, Post, Query } from "@nestjs/common";
+import { BadRequestException, Body, Controller, ForbiddenException, Get, Headers, Param, Patch, Post, Query } from "@nestjs/common";
 import type { SupportTicketStatus } from "@zyteron/contracts";
 import { RequireRoles } from "../auth/roles.decorator.js";
 import type { SupportInboundMessage } from "./support.providers.js";
@@ -7,6 +7,7 @@ import { SupportAttachmentService, SupportCatalogService, SupportChannelService,
 
 type HeaderMap=Record<string,string|string[]|undefined>;
 const header=(h:HeaderMap,key:string)=>{const value=h[key];return Array.isArray(value)?value[0]:value;};
+const idempotencyKey=(h:HeaderMap)=>{const value=header(h,"idempotency-key")?.trim();if(!value)throw new BadRequestException("Idempotency-Key obligatorio para crear tickets.");return value;};
 const actor=(h:HeaderMap):SupportActor=>({userId:header(h,"x-zyteron-user-id")??null,role:header(h,"x-zyteron-role")??"",clientId:header(h,"x-zyteron-client-id")??null,contactId:header(h,"x-zyteron-contact-id")??null});
 const readers=["GERENTE_GENERAL","JEFE_DESARROLLO","TECH_LEAD","QA","SOPORTE_TECNICO","OPERACIONES","PROGRAMADOR","DESARROLLO","FINANZAS","RRHH","JEFE_VENTAS","EJECUTIVA_VENTAS","COMERCIAL"] as const;
 const agents=["GERENTE_GENERAL","JEFE_DESARROLLO","TECH_LEAD","QA","SOPORTE_TECNICO","OPERACIONES"] as const;
@@ -20,7 +21,7 @@ export class SupportController{
   @Get("workspace") @RequireRoles(...readers) workspace(){return this.read.workspace();}
   @Get("search") @RequireRoles(...readers) search(@Query("q") q=""){return this.read.search(q);}
   @Get("tickets") @RequireRoles(...readers) list(@Query() q:Record<string,string|undefined>){return this.tickets.list(supportPage(q));}
-  @Post("tickets") @RequireRoles(...readers) create(@Body() b:any,@Headers() h:HeaderMap){return this.tickets.create(b,actor(h));}
+  @Post("tickets") @RequireRoles(...readers) create(@Body() b:any,@Headers() h:HeaderMap){return this.tickets.create(b,actor(h),idempotencyKey(h));}
   @Get("tickets/:id") @RequireRoles(...readers) detail(@Param("id") id:string,@Headers() h:HeaderMap){return this.tickets.detail(id,actor(h));}
   @Patch("tickets/:id") @RequireRoles(...agents) update(@Param("id") id:string,@Body() b:any,@Headers() h:HeaderMap){return this.tickets.update(id,b,actor(h));}
   @Post("tickets/:id/assign") @RequireRoles(...agents) assign(@Param("id") id:string,@Body("userId") userId:string,@Headers() h:HeaderMap){return this.tickets.assign(id,userId,actor(h));}
@@ -72,7 +73,7 @@ export class ClientSupportController{
   constructor(private readonly tickets:SupportTicketService,private readonly read:SupportReadService,private readonly attachments:SupportAttachmentService,private readonly repository:SupportRepository){}
   private async portal(h:HeaderMap){const value=actor(h);if(!value.clientId&&value.userId){const identity=await this.repository.portalIdentity(value.userId);if(identity){value.clientId=identity.clientId;value.contactId=identity.contactId;}}if(!value.clientId)throw new ForbiddenException("Identidad de Portal Cliente no vinculada.");return value;}
   @Get("tickets") @RequireRoles("PORTAL_CLIENT") async list(@Query() q:Record<string,string|undefined>,@Headers() h:HeaderMap){const a=await this.portal(h);return this.tickets.list({...supportPage(q),clientId:a.clientId!,clientVisibility:"CLIENT_VISIBLE"});}
-  @Post("tickets") @RequireRoles("PORTAL_CLIENT") async create(@Body() b:any,@Headers() h:HeaderMap){const a=await this.portal(h);return this.tickets.create({...b,requesterType:"PORTAL",clientId:a.clientId,clientContactId:a.contactId,channel:"PORTAL",clientVisibility:"CLIENT_VISIBLE"},a);}
+  @Post("tickets") @RequireRoles("PORTAL_CLIENT") async create(@Body() b:any,@Headers() h:HeaderMap){const a=await this.portal(h);return this.tickets.create({...b,requesterType:"PORTAL",clientId:a.clientId,clientContactId:a.contactId,channel:"PORTAL",clientVisibility:"CLIENT_VISIBLE"},a,idempotencyKey(h));}
   @Get("tickets/:id") @RequireRoles("PORTAL_CLIENT") async detail(@Param("id") id:string,@Headers() h:HeaderMap){return this.tickets.detail(id,await this.portal(h));}
   @Post("tickets/:id/messages") @RequireRoles("PORTAL_CLIENT") async message(@Param("id") id:string,@Body() b:any,@Headers() h:HeaderMap){const a=await this.portal(h);return this.tickets.message(id,b,a,"PUBLIC_REPLY");}
   @Post("tickets/:id/attachments") @RequireRoles("PORTAL_CLIENT") async attachment(@Param("id") id:string,@Body() b:any,@Headers() h:HeaderMap){const a=await this.portal(h);return this.attachments.add(id,{...b,visibility:"CLIENT_VISIBLE"},a);}
