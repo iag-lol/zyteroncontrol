@@ -113,6 +113,7 @@ insert into public.chart_of_accounts(code,name,account_type,normal_balance,state
 on conflict(code) do nothing;
 update public.chart_of_accounts c set parent_id=p.id from public.chart_of_accounts p
 where c.parent_id is null and p.code=regexp_replace(c.code,'\.[0-9]+$','') and c.code like '%.%';
+drop trigger if exists chart_of_accounts_guard on public.chart_of_accounts;
 create trigger chart_of_accounts_guard before insert or update on public.chart_of_accounts for each row execute function public.finance_account_guard();
 
 create table if not exists public.cost_centers(
@@ -303,6 +304,7 @@ begin
   if old.status<>'DRAFT' and (new.lines is distinct from old.lines or new.version<>old.version) then raise exception 'FINANCE_IMMUTABLE: una versión activa o retirada de regla es inmutable; crea una nueva versión'; end if;
   return new;
 end $$;
+drop trigger if exists accounting_rule_versions_guard on public.accounting_rule_versions;
 create trigger accounting_rule_versions_guard before update on public.accounting_rule_versions for each row execute function public.finance_rule_version_guard();
 
 create table if not exists public.accounting_events(
@@ -359,6 +361,7 @@ begin
   end if;
   return new;
 end $$;
+drop trigger if exists tax_rule_versions_guard on public.tax_rule_versions;
 create trigger tax_rule_versions_guard before insert or update on public.tax_rule_versions for each row execute function public.finance_tax_version_guard();
 insert into public.tax_rules(code,tax_type,name,description) values
 ('IVA','VAT','Impuesto al Valor Agregado','Tasa general del IVA. Revisar ante cambios legales.'),
@@ -467,6 +470,7 @@ begin
   new.updated_at:=now();
   return new;
 end $$;
+drop trigger if exists invoices_guard on public.invoices;
 create trigger invoices_guard before update or delete on public.invoices for each row execute function public.finance_invoice_guard();
 create or replace function public.finance_invoice_lines_guard() returns trigger language plpgsql set search_path=public as $$
 declare v_status text;
@@ -475,6 +479,7 @@ begin
   if v_status not in('DRAFT','PENDING_APPROVAL') then raise exception 'FINANCE_IMMUTABLE: las líneas sólo cambian en borrador'; end if;
   return coalesce(new,old);
 end $$;
+drop trigger if exists invoice_lines_guard on public.invoice_lines;
 create trigger invoice_lines_guard before insert or update or delete on public.invoice_lines for each row execute function public.finance_invoice_lines_guard();
 
 -- ---------------------------------------------------------------------------------------------- DTE / SII
@@ -512,6 +517,7 @@ begin
   if old.folio<>new.folio or old.document_type_code<>new.document_type_code or old.environment<>new.environment then raise exception 'FINANCE_IMMUTABLE: identidad de folio inmutable'; end if;
   return new;
 end $$;
+drop trigger if exists tax_folios_guard on public.tax_folios;
 create trigger tax_folios_guard before update or delete on public.tax_folios for each row execute function public.finance_folio_guard();
 create index if not exists tax_folios_available_idx on public.tax_folios(environment,document_type_code,folio) where status='AVAILABLE';
 
@@ -544,6 +550,7 @@ begin
   new.updated_at:=now();
   return new;
 end $$;
+drop trigger if exists tax_documents_guard on public.tax_documents;
 create trigger tax_documents_guard before update or delete on public.tax_documents for each row execute function public.finance_tax_document_guard();
 
 -- Asignación concurrente de folios: nunca entrega dos veces el mismo folio.
@@ -739,6 +746,7 @@ begin
   new.updated_at:=now();
   return new;
 end $$;
+drop trigger if exists payments_guard on public.payments;
 create trigger payments_guard before update or delete on public.payments for each row execute function public.finance_payment_guard();
 create or replace function public.finance_no_delete() returns trigger language plpgsql as $$ begin raise exception 'FINANCE_IMMUTABLE: registro financiero no eliminable (%)',tg_table_name; end $$;
 
@@ -791,6 +799,7 @@ begin
   if (new.payment_id,new.invoice_id,new.amount) is distinct from (old.payment_id,old.invoice_id,old.amount) or (old.reversed_at is not null and new.reversed_at is distinct from old.reversed_at) then raise exception 'FINANCE_IMMUTABLE: aplicación inmutable'; end if;
   return new;
 end $$;
+drop trigger if exists payment_allocations_guard on public.payment_allocations;
 create trigger payment_allocations_guard before update or delete on public.payment_allocations for each row execute function public.finance_allocation_guard();
 
 create table if not exists public.payment_refunds(
@@ -883,8 +892,11 @@ begin
   perform public.finance_refresh_bank_transaction(new.bank_transaction_id);
   return new;
 end $$;
+drop trigger if exists reconciliation_matches_refresh on public.reconciliation_matches;
 create trigger reconciliation_matches_refresh after insert or update on public.reconciliation_matches for each row execute function public.finance_match_trigger();
+drop trigger if exists reconciliation_matches_no_delete on public.reconciliation_matches;
 create trigger reconciliation_matches_no_delete before delete on public.reconciliation_matches for each row execute function public.finance_no_delete();
+drop trigger if exists bank_transactions_no_delete on public.bank_transactions;
 create trigger bank_transactions_no_delete before delete on public.bank_transactions for each row execute function public.finance_no_delete();
 
 -- ---------------------------------------------------------------------------------------------- presupuestos, comisiones, costos
@@ -970,8 +982,10 @@ create table if not exists public.period_snapshots(
   trial_balance jsonb not null,income_statement jsonb not null,balance_sheet jsonb not null,sha256 text not null,created_by uuid,created_at timestamptz not null default now(),
   unique(period_id,version)
 );
+drop trigger if exists period_snapshots_no_delete on public.period_snapshots;
 create trigger period_snapshots_no_delete before delete on public.period_snapshots for each row execute function public.finance_no_delete();
 create or replace function public.finance_snapshot_guard() returns trigger language plpgsql as $$ begin raise exception 'FINANCE_IMMUTABLE: los snapshots de cierre son inmutables'; end $$;
+drop trigger if exists period_snapshots_immutable on public.period_snapshots;
 create trigger period_snapshots_immutable before update on public.period_snapshots for each row execute function public.finance_snapshot_guard();
 
 -- Cierre atómico: sin borradores en el período, con snapshot inmutable y estado CLOSED.
@@ -1025,6 +1039,7 @@ create table if not exists public.finance_audit_events(
   summary text not null,metadata jsonb not null default '{}'::jsonb,occurred_at timestamptz not null default now()
 );
 create or replace function public.finance_append_only() returns trigger language plpgsql as $$ begin raise exception 'FINANCE_IMMUTABLE: la auditoría financiera es sólo de inserción'; end $$;
+drop trigger if exists finance_audit_events_append_only on public.finance_audit_events;
 create trigger finance_audit_events_append_only before update or delete on public.finance_audit_events for each row execute function public.finance_append_only();
 create table if not exists public.finance_idempotency_keys(idempotency_key text not null,operation text not null,resource_id uuid not null,created_at timestamptz not null default now(),primary key(idempotency_key,operation));
 create table if not exists public.finance_analysis_runs(
@@ -1041,6 +1056,7 @@ begin
   end if;
   return new;
 end $$;
+drop trigger if exists finance_events_activity on public.finance_events;
 create trigger finance_events_activity after insert on public.finance_events for each row execute function public.finance_activity_projection();
 -- Outbox transaccional: cada hito financiero queda disponible para integraciones en la misma transacción.
 create or replace function public.finance_outbox_projection() returns trigger language plpgsql security definer set search_path=public as $$
@@ -1049,6 +1065,7 @@ begin
   values('FINANCE_'||new.aggregate_type,new.aggregate_id,new.event_type,jsonb_build_object('financeEventId',new.id,'clientId',new.client_id,'projectId',new.project_id,'title',new.title,'occurredAt',new.occurred_at)||new.payload);
   return new;
 end $$;
+drop trigger if exists finance_events_outbox on public.finance_events;
 create trigger finance_events_outbox after insert on public.finance_events for each row execute function public.finance_outbox_projection();
 
 -- ---------------------------------------------------------------------------------------------- reportes base (saldos por cuenta)
