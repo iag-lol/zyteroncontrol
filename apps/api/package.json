@@ -7,6 +7,7 @@
     "dev": "nest start --watch",
     "build": "nest build",
     "start": "node dist/main.js",
+    "start:monitoring-worker": "MONITORING_PROCESS_ROLE=worker node dist/monitoring/worker-main.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run src"
   },

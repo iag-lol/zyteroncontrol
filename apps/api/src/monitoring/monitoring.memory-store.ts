@@ -47,7 +47,7 @@ export class MemoryMonitoringStore implements MonitoringStore {
   private readonly windows = new Map<string, MaintenanceWindow>();
   private readonly deliveries = new Map<string, AlertDelivery>();
   private readonly events: MonitoringEvent[] = [];
-  readonly outbox: Array<{ aggregateType: string; aggregateId: string; eventType: string; payload: Record<string, unknown>; occurredAt: string }> = [];
+  readonly outbox: Array<{ id: string; aggregateType: string; aggregateId: string; eventType: string; payload: Record<string, unknown>; occurredAt: string; attempts: number; processedAt: string | null; leaseOwner: string | null; leaseExpiresAt: string | null; lastError: string | null }> = [];
   private readonly heartbeats = new Map<string, WorkerHeartbeat>();
   private readonly sslLog: Array<CertificateObservation & { monitorId: string }> = [];
   private checkSequence = 0;
@@ -209,7 +209,7 @@ export class MemoryMonitoringStore implements MonitoringStore {
     const monitorId = scope.monitorId ?? (scope as { id?: string }).id ?? null;
     if (incident) for (const event of incidentEvents) this.incidentEventLog.push({ id: randomUUID(), incidentId: incident.id, eventType: event.eventType, fromStatus: event.fromStatus ?? null, toStatus: event.toStatus ?? null, actorId: event.actorId ?? null, actorType: event.actorType, message: event.message ?? null, visibility: event.visibility ?? "INTERNAL", metadata: event.metadata ?? {}, occurredAt: event.occurredAt ?? iso() });
     for (const event of monitoringEvents) this.events.unshift({ id: randomUUID(), projectId: incident?.projectId ?? scope.projectId, clientId: incident?.clientId ?? scope.clientId, endpointId: incident?.endpointId ?? scope.endpointId, monitorId, incidentId: event.attachIncident === false ? null : incident?.id ?? null, maintenanceWindowId: event.maintenanceWindowId ?? null, eventType: event.eventType, tone: event.tone, title: event.title.replace("{incidentNumber}", incident?.incidentNumber ?? ""), visibility: event.visibility ?? "INTERNAL", actorId: event.actorId ?? null, payload: { ...(event.payload ?? {}), ...(incident ? { incidentNumber: incident.incidentNumber } : {}) }, occurredAt: event.occurredAt ?? iso() });
-    for (const event of outbox) this.outbox.push({ aggregateType: event.aggregateType ?? "INCIDENT", aggregateId: (event.aggregateType === "MONITOR" ? monitorId : incident?.id ?? monitorId) ?? "", eventType: event.eventType, payload: { ...(event.payload ?? {}), incidentId: incident?.id ?? null, incidentNumber: incident?.incidentNumber ?? null, monitorId, projectId: incident?.projectId ?? scope.projectId, clientId: incident?.clientId ?? scope.clientId }, occurredAt: iso() });
+    for (const event of outbox) this.outbox.push({ id: randomUUID(), aggregateType: event.aggregateType ?? "INCIDENT", aggregateId: (event.aggregateType === "MONITOR" ? monitorId : incident?.id ?? monitorId) ?? "", eventType: event.eventType, payload: { ...(event.payload ?? {}), incidentId: incident?.id ?? null, incidentNumber: incident?.incidentNumber ?? null, monitorId, projectId: incident?.projectId ?? scope.projectId, clientId: incident?.clientId ?? scope.clientId }, occurredAt: iso(), attempts: 0, processedAt: null, leaseOwner: null, leaseExpiresAt: null, lastError: null });
   }
 
   async listChecks(monitorId: string, filter: CheckFilter): Promise<Paged<MonitorCheck>> {
@@ -311,6 +311,15 @@ export class MemoryMonitoringStore implements MonitoringStore {
   async publishEvents(context: { projectId: string | null; clientId: string | null; endpointId: string | null; monitorId: string | null; incidentId: string | null }, events: MonitoringEventDraft[], outbox: OutboxDraft[]) {
     this.sideEffects(context.incidentId ? this.incidents.get(context.incidentId) ?? null : null, context, [], events, outbox);
   }
+  async claimOutbox(workerId: string, limit: number, leaseSeconds: number) {
+    const now = Date.now(), claimed = this.outbox.filter((item) => !item.processedAt && (!item.leaseExpiresAt || Date.parse(item.leaseExpiresAt) < now)).slice(0, limit);
+    for (const item of claimed) { item.leaseOwner = workerId; item.leaseExpiresAt = new Date(now + leaseSeconds * 1000).toISOString(); item.attempts += 1; }
+    return claimed.map(({ id, aggregateType, aggregateId, eventType, payload, occurredAt, attempts }) => ({ id, aggregateType, aggregateId, eventType, payload, occurredAt, attempts }));
+  }
+  async completeOutbox(id: string, workerId: string, error: string | null) {
+    const item = this.outbox.find((entry) => entry.id === id && entry.leaseOwner === workerId); if (!item) return;
+    item.lastError = error; item.leaseOwner = null; item.leaseExpiresAt = null; if (!error) item.processedAt = iso();
+  }
 
   private within(monitorId: string, ms: number) { const from = Date.now() - ms; return this.checks.filter((check) => check.monitorId === monitorId && new Date(check.checkedAt).getTime() >= from); }
   async monitorStats(monitorId: string): Promise<MonitorStats> {
@@ -347,9 +356,11 @@ export class MemoryMonitoringStore implements MonitoringStore {
     return { rawDeleted: before - this.checks.length, skipped: false };
   }
 
-  async heartbeat(workerId: string, hostname: string, checksExecuted: number, lastError: string | null) {
-    const current = this.heartbeats.get(workerId);
-    this.heartbeats.set(workerId, { workerId, hostname, startedAt: current?.startedAt ?? iso(), lastSeenAt: iso(), checksExecuted, lastError });
+  async heartbeat(input: import("./monitoring.store.js").WorkerHeartbeatInput) {
+    const current = this.heartbeats.get(input.workerId);
+    const nextJobAt = [...this.monitors.values()].filter((item) => item.enabled).sort((a, b) => a.nextCheckAt.localeCompare(b.nextCheckAt))[0]?.nextCheckAt ?? null;
+    const lastCheckAt = [...this.checks].sort((a, b) => b.checkedAt.localeCompare(a.checkedAt))[0]?.checkedAt ?? null;
+    this.heartbeats.set(input.workerId, { ...input, startedAt: current?.startedAt ?? iso(), lastSeenAt: iso(), nextJobAt, queueLagSeconds: nextJobAt ? Math.max(0, Math.floor((Date.now() - Date.parse(nextJobAt)) / 1000)) : null, lastCheckAt });
   }
   async listHeartbeats() { return [...this.heartbeats.values()].sort((a, b) => b.lastSeenAt.localeCompare(a.lastSeenAt)); }
 

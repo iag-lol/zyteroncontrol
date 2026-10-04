@@ -7,12 +7,20 @@ import type {
 import type { OperationsTask, ProjectEndpoint } from "@zyteron/contracts";
 import { apiHeaders } from "./api-auth";
 
-const base = () => process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api";
+export function monitoringApiBase() {
+  const configured = process.env.NEXT_PUBLIC_API_URL?.trim();
+  if (!configured) {
+    if (process.env.NODE_ENV === "production") throw new MonitoringApiError("NEXT_PUBLIC_API_URL no está configurada para Monitoreo.", 503);
+    return "http://localhost:4000/api";
+  }
+  const clean = configured.replace(/\/+$/, "").replace(/\/api\/api$/, "/api");
+  return clean.endsWith("/api") ? clean : `${clean}/api`;
+}
 
 export class MonitoringApiError extends Error { constructor(message: string, readonly status: number) { super(message); } }
 
 async function request<T>(role: Role, path: string, init: RequestInit = {}): Promise<T> {
-  const response = await fetch(`${base()}/monitoring${path}`, { ...init, headers: await apiHeaders(role, init.headers), cache: "no-store" });
+  const response = await fetch(`${monitoringApiBase()}/monitoring${path}`, { ...init, headers: await apiHeaders(role, init.headers), cache: "no-store" });
   if (!response.ok) {
     let message = `Error ${response.status}`;
     try { const data = await response.json() as { message?: string | string[] }; message = Array.isArray(data.message) ? data.message.join(" ") : data.message || message; } catch { /* respuesta sin JSON */ }
@@ -79,7 +87,7 @@ export const monitoringApi = {
   monthly: (role: Role, filters: Record<string, string | undefined>) => request<MonitoringMonthlyReport>(role, `/reports/monthly${qs(filters)}`),
   /** Descarga CSV con los mismos encabezados de autenticación que el resto del API. */
   async download(role: Role, kind: "uptime" | "incidents" | "ssl", filters: Record<string, string | undefined> = {}) {
-    const response = await fetch(`${base()}/monitoring/exports/${kind}.csv${qs(filters)}`, { headers: await apiHeaders(role), cache: "no-store" });
+    const response = await fetch(`${monitoringApiBase()}/monitoring/exports/${kind}.csv${qs(filters)}`, { headers: await apiHeaders(role), cache: "no-store" });
     if (!response.ok) throw new MonitoringApiError(`Error ${response.status}`, response.status);
     const url = URL.createObjectURL(await response.blob());
     const link = Object.assign(document.createElement("a"), { href: url, download: `zyteron-${kind}.csv` });

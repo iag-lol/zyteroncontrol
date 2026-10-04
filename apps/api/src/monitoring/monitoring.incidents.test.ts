@@ -153,12 +153,13 @@ describe("Alertas, escalamiento y acciones", () => {
     const devAlerts = await store.listAlertsFor(ids.dev, "PROGRAMADOR", 20, null);
     expect(devAlerts.map((alert) => alert.eventType)).toEqual(["INCIDENT_CONFIRMED"]);
     expect(devAlerts[0]!.soundProfile).toBe("DEFAULT");
+    expect((await store.listAlertsFor(ids.jefe, "JEFE_DESARROLLO", 20, null)).some((alert) => alert.stage === "CONFIRMED")).toBe(true);
+    expect((await store.listAlertsFor(null, "GERENTE_GENERAL", 20, null)).some((alert) => alert.stage === "CONFIRMED")).toBe(true);
     const later = new Date(Date.now() + 16 * 60_000);
     expect(await alerts.processEscalations(later)).toBe(1);
     expect(await alerts.processEscalations(later)).toBe(0);
     expect((await store.listAlertsFor(ids.lead, "PROGRAMADOR", 20, null)).map((alert) => alert.stage)).toEqual(["ESCALATION_1_0"]);
-    expect((await store.listAlertsFor(ids.jefe, "JEFE_DESARROLLO", 20, null)).some((alert) => alert.stage === "ESCALATION_2_0")).toBe(true);
-    expect((await store.getIncident(incident!.id))?.escalationLevel).toBe(2);
+    expect((await store.getIncident(incident!.id))?.escalationLevel).toBe(1);
     // Reconocido: no escala más.
     await service.acknowledge(actors.dev, incident!.id);
     expect(await alerts.processEscalations(new Date(Date.now() + 60 * 60_000))).toBe(0);
@@ -240,6 +241,12 @@ describe("Configuración y validaciones del monitor", () => {
     expect(first).toMatchObject({ expectedStatusMin: 200, expectedStatusMax: 200, monitorType: "HTTPS", clientId: ids.client });
     await expect(kit.service.createMonitor(actors.jefe, { projectId: kit.projectA.id, name: "Web 2", url: "https://www.zyteron.cl/" })).rejects.toBeInstanceOf(ConflictException);
     expect(await kit.store.listEndpoints(null, kit.projectA.id)).toHaveLength(1);
+  });
+  it("normaliza dominios sin protocolo a HTTPS antes de validarlos y persistirlos", async () => {
+    const kit = await createKit();
+    const monitor = await kit.service.createMonitor(actors.jefe, { projectId: kit.projectA.id, name: "Web", url: "www.zyteron.cl" });
+    expect(monitor.url).toBe("https://www.zyteron.cl/");
+    expect(monitor.monitorType).toBe("HTTPS");
   });
 });
 

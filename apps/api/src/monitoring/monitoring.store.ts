@@ -4,6 +4,7 @@ import type {
   MonitoringEvent, MonitoringFleetEntry, MonitoringSettings, MonitorView, Paged, SeverityRule, UptimeBucket, WorkerHeartbeat,
 } from "@zyteron/contracts/monitoring";
 import type { CertificateObservation } from "./certificate-probe.js";
+import { ServiceUnavailableException } from "@nestjs/common";
 import type {
   ApplyCheckPayload, ApplyCheckResult, EngineContext, IncidentEventDraft, IncidentPatch, MonitorExecution, MonitoringEventDraft, OutboxDraft,
 } from "./monitoring.types.js";
@@ -19,9 +20,11 @@ export interface EndpointView extends ProjectEndpoint { clientId: string | null;
 export interface AlertDeliveryDraft extends Omit<AlertDelivery, "id" | "createdAt" | "readAt"> { maintenanceWindowId?: string | null }
 export interface IncidentMutationGuard { escalationBelow?: number; unacknowledged?: boolean }
 export interface MaintenanceInput { projectId: string; endpointId: string | null; title: string; description: string | null; clientSummary: string | null; startsAt: string; endsAt: string; suppressAlerts: boolean; clientVisibility: "INTERNAL" | "CLIENT_VISIBLE"; createdBy: string | null }
+export interface WorkerHeartbeatInput { workerId: string; hostname: string; checksExecuted: number; lastError: string | null; releaseSha: string | null; persistenceMode: string; schedulerActive: boolean; processRole: string; }
+export interface MonitoringOutboxEvent { id: string; aggregateType: string; aggregateId: string; eventType: string; payload: Record<string, unknown>; occurredAt: string; attempts: number; }
 
 export interface MonitoringStore {
-  readonly mode: "supabase" | "memory";
+  readonly mode: "supabase" | "memory" | "unavailable";
   getSettings(): Promise<MonitoringSettings>;
   updateSettings(patch: Partial<MonitoringSettings>, actorId: string | null): Promise<MonitoringSettings>;
   listSeverityRules(): Promise<SeverityRule[]>;
@@ -72,6 +75,8 @@ export interface MonitoringStore {
 
   listEvents(filter: EventFilter): Promise<Paged<MonitoringEvent>>;
   publishEvents(context: { projectId: string | null; clientId: string | null; endpointId: string | null; monitorId: string | null; incidentId: string | null }, events: MonitoringEventDraft[], outbox: OutboxDraft[]): Promise<void>;
+  claimOutbox(workerId: string, limit: number, leaseSeconds: number): Promise<MonitoringOutboxEvent[]>;
+  completeOutbox(id: string, workerId: string, error: string | null): Promise<void>;
 
   monitorStats(monitorId: string): Promise<MonitorStats>;
   fleetStats(monitorIds: string[]): Promise<Record<string, MonitoringFleetEntry>>;
@@ -80,7 +85,7 @@ export interface MonitoringStore {
   refreshRollups(from: string, to: string): Promise<number>;
   purge(): Promise<Record<string, unknown>>;
 
-  heartbeat(workerId: string, hostname: string, checksExecuted: number, lastError: string | null): Promise<void>;
+  heartbeat(input: WorkerHeartbeatInput): Promise<void>;
   listHeartbeats(): Promise<WorkerHeartbeat[]>;
 
   projectIdsForUser(userId: string): Promise<string[]>;
@@ -89,6 +94,21 @@ export interface MonitoringStore {
   recentDeployments(projectId: string, before: string, limit: number): Promise<ProjectDeployment[]>;
   createTask(input: Partial<OperationsTask>): Promise<OperationsTask>;
   getTask(id: string): Promise<OperationsTask | undefined>;
+}
+
+/**
+ * Mantiene el API levantado para que health-checks y otros dominios sigan disponibles, pero hace
+ * fallar Monitoreo de forma explícita. Nunca convierte una falta de Supabase en datos volátiles.
+ */
+export function unavailableMonitoringStore(): MonitoringStore {
+  const failure = () => Promise.reject(new ServiceUnavailableException("Monitoreo no está disponible: falta configurar la persistencia Supabase del API."));
+  return new Proxy({ mode: "unavailable" } as MonitoringStore, {
+    get(target, property) {
+      if (property === "mode") return target.mode;
+      if (property === "then") return undefined;
+      return failure;
+    },
+  });
 }
 
 export class MonitoringError extends Error {
@@ -102,8 +122,8 @@ export const defaultSettings: MonitoringSettings = {
 };
 
 export const defaultEscalationPolicy: AlertRule["escalationPolicy"] = {
-  steps: [{ afterMinutes: 0, targets: ["ENDPOINT_RESPONSIBLE"] }, { afterMinutes: 5, targets: ["PROJECT_LEAD"] }, { afterMinutes: 15, targets: ["DEVELOPMENT_MANAGER"] }],
-  criticalImmediateTargets: ["GENERAL_MANAGER"],
+  steps: [{ afterMinutes: 0, targets: ["ENDPOINT_RESPONSIBLE", "DEVELOPMENT_MANAGER", "GENERAL_MANAGER"] }, { afterMinutes: 5, targets: ["PROJECT_LEAD"] }],
+  criticalImmediateTargets: [],
 };
 export const defaultNotifyEvents = ["INCIDENT_CONFIRMED", "INCIDENT_ESCALATED", "ENDPOINT_RECOVERED", "INCIDENT_RESOLVED", "SSL_EXPIRING", "SSL_EXPIRED", "LATENCY_DEGRADED", "MAINTENANCE_STARTED", "MAINTENANCE_COMPLETED"];
 

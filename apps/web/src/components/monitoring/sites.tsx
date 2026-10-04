@@ -3,14 +3,15 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import type { OperationsProject, UserDirectoryItem } from "@zyteron/contracts";
+import type { Client, OperationsProject, ProjectEndpoint, UserDirectoryItem } from "@zyteron/contracts";
 import type { AlertRule, MonitorView } from "@zyteron/contracts/monitoring";
 import { endpointEnvironments, endpointTypes, incidentSeverities, monitorIntervals } from "@zyteron/contracts/monitoring";
 import { Globe2, LayoutGrid, Plus, Radio, RefreshCw, Search } from "lucide-react";
 import { useAccess } from "@/components/access-context";
 import { usersDirectoryApi } from "@/lib/client-domain-api";
+import { clientsApi } from "@/lib/clients-api";
 import { monitoringApi } from "@/lib/monitoring-api";
-import { endpointTypeLabel, environmentLabel, formatDateTime, formatInterval, formatMs, formatPercent, monitorStatusLabel, severityLabel } from "@/lib/monitoring-format";
+import { endpointTypeLabel, environmentLabel, formatDateTime, formatInterval, formatMs, formatPercent, monitorStatusLabel, observationFreshness, severityLabel } from "@/lib/monitoring-format";
 import { operationsApi } from "@/lib/operations-api";
 import { can, MonitoringShell, useScope } from "./shell";
 import { Empty, ErrorBox, Loading, Modal, Notice, Panel, SslChip, StatusPill, useAction, useMonitoringQuery } from "./ui";
@@ -45,11 +46,12 @@ function SitesBody() {
           {monitors.map((monitor) => <SiteRow key={monitor.id} monitor={monitor} fleet={query.data!.fleet[monitor.id]} onCheck={() => void action.run(`Check ejecutado para ${monitor.endpointName}.`, () => monitoringApi.checkNow(role, monitor.id))} busy={action.busy} />)}
         </tbody></table></div>}
     </Panel>
-    {creating ? <CreateMonitorModal onClose={() => { setCreating(false); if (params.get("new")) router.replace("/monitoring/websites"); }} onCreated={async (monitor) => { setCreating(false); action.setNotice({ tone: "success", text: `Monitor creado para ${monitor.endpointName}. El primer check se ejecuta en el próximo ciclo del scheduler.` }); await query.reload(); }} /> : null}
+    {creating ? <CreateMonitorModal onClose={() => { setCreating(false); if (params.get("new")) router.replace("/monitoring/websites"); }} onCreated={async (monitor) => { setCreating(false); await query.reload(); router.push(`/monitoring/endpoints/${monitor.endpointId}`); }} /> : null}
   </>;
 }
 
 function SiteRow({ monitor, fleet, onCheck, busy }: { monitor: MonitorView; fleet?: { uptime24h: number | null; uptime30d: number | null }; onCheck: () => void; busy: boolean }) {
+  const freshness = observationFreshness(monitor);
   return <tr>
     <td><Link href={`/monitoring/endpoints/${monitor.endpointId}`} style={{ fontWeight: 800, color: "inherit" }}>{monitor.endpointName}</Link><br /><small className="relMuted relMono">{monitor.url}</small></td>
     <td>{monitor.projectName}<br /><small className="relMuted">{monitor.clientName ?? "Sin cliente"}</small></td>
@@ -58,30 +60,45 @@ function SiteRow({ monitor, fleet, onCheck, busy }: { monitor: MonitorView; flee
     <td className="num">{formatPercent(fleet?.uptime24h ?? null)}</td><td className="num">{formatPercent(fleet?.uptime30d ?? null)}</td>
     <td className="num">{formatMs(monitor.lastLatencyMs)}</td>
     <td>{monitor.monitorType === "HTTPS" ? <SslChip status={monitor.ssl.status} /> : <span className="relMuted">HTTP</span>}</td>
-    <td><span className="relMono" style={{ fontSize: 10.5 }}>{formatDateTime(monitor.lastCheckedAt)}</span></td>
+    <td><span className="relMono" style={{ fontSize: 10.5 }}>{formatDateTime(monitor.lastCheckedAt)}</span><br /><small className="relMuted">{freshness === "FRESH" ? "Dato vigente" : freshness === "STALE" ? "Dato vencido" : "Nunca comprobado"}</small></td>
     <td><button className="relBtn small" disabled={busy || !monitor.enabled} onClick={onCheck} title="Ejecuta un check real con las mismas protecciones del worker"><Radio size={12} aria-hidden />Check</button></td>
   </tr>;
 }
 
 export function CreateMonitorModal({ onClose, onCreated, presetProjectId }: { onClose: () => void; onCreated: (monitor: MonitorView) => void | Promise<void>; presetProjectId?: string }) {
   const { role } = useAccess();
+  const [clients, setClients] = useState<Client[]>([]);
   const [projects, setProjects] = useState<OperationsProject[]>([]);
+  const [endpoints, setEndpoints] = useState<ProjectEndpoint[]>([]);
   const [users, setUsers] = useState<UserDirectoryItem[]>([]);
   const [rules, setRules] = useState<AlertRule[]>([]);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  const [value, setValue] = useState<Record<string, string | number | boolean>>({ projectId: presetProjectId ?? "", name: "", url: "https://", environment: "PRODUCTION", endpointType: "WEB", responsibleUserId: "", intervalSeconds: 300, timeoutMs: 10000, expectedStatus: "200-299", failureThreshold: 3, recoveryThreshold: 2, sslMonitoringEnabled: true, httpMethod: "GET", followRedirects: true, maxRedirects: 3, expectedContent: "", warningLatencyMs: "", criticalLatencyMs: "", incidentSeverity: "", maintenanceMode: "CHECK_AND_SUPPRESS", alertRuleId: "", clientVisibility: "INTERNAL" });
+  const [value, setValue] = useState<Record<string, string | number | boolean>>({ clientId: "", projectId: presetProjectId ?? "", endpointId: "", name: "", url: "", environment: "PRODUCTION", endpointType: "WEB", responsibleUserId: "", intervalSeconds: 300, timeoutMs: 10000, expectedStatus: "200-299", failureThreshold: 3, recoveryThreshold: 2, sslMonitoringEnabled: true, httpMethod: "GET", followRedirects: true, maxRedirects: 3, expectedContent: "", warningLatencyMs: "", criticalLatencyMs: "", incidentSeverity: "", maintenanceMode: "CHECK_AND_SUPPRESS", alertRuleId: "", clientVisibility: "INTERNAL" });
   useEffect(() => {
-    void operationsApi.projects(role).then((page) => setProjects(page.items)).catch(() => setProjects([]));
-    void usersDirectoryApi.list(role).then(setUsers).catch(() => setUsers([]));
+    const clientQuery = new URLSearchParams({ page: "1", pageSize: "100" });
+    void clientsApi.list(role, clientQuery).then((page) => setClients(page.items)).catch(() => setClients([]));
+    void operationsApi.projects(role).then((page) => { setProjects(page.items); const preset = page.items.find((item) => item.id === presetProjectId); if (preset?.clientId) setValue((current) => ({ ...current, clientId: preset.clientId! })); }).catch(() => setProjects([]));
+    void usersDirectoryApi.list(role).then((items) => setUsers(items.filter((user) => user.active && Boolean(user.role) && ["PROGRAMADOR", "DESARROLLO", "TECH_LEAD", "JEFE_DESARROLLO", "OPERACIONES", "SOPORTE_TECNICO"].includes(user.role!)))).catch(() => setUsers([]));
     void monitoringApi.alertRules(role).then(setRules).catch(() => setRules([]));
-  }, [role]);
+  }, [role, presetProjectId]);
+  useEffect(() => {
+    const projectId = String(value.projectId);
+    setEndpoints([]);
+    if (projectId) void operationsApi.endpoints(role, projectId).then(setEndpoints).catch(() => setEndpoints([]));
+  }, [role, value.projectId]);
   const set = (key: string, entry: string | number | boolean) => setValue((current) => ({ ...current, [key]: entry }));
   const project = projects.find((item) => item.id === value.projectId);
+  const visibleProjects = projects.filter((item) => !value.clientId || item.clientId === value.clientId);
+  const normalizedUrl = String(value.url).trim() ? (/^[a-z][a-z\d+.-]*:\/\//i.test(String(value.url).trim()) ? String(value.url).trim() : `https://${String(value.url).trim()}`) : "";
   const submit = async () => {
     setBusy(true); setError("");
     try {
       const payload: Record<string, unknown> = { ...value };
+      delete payload.clientId;
+      if (value.endpointId) {
+        for (const key of ["projectId", "name", "url", "environment", "endpointType", "responsibleUserId"]) delete payload[key];
+      } else delete payload.endpointId;
       for (const key of ["warningLatencyMs", "criticalLatencyMs"]) payload[key] = value[key] === "" ? null : Number(value[key]);
       for (const key of ["incidentSeverity", "alertRuleId", "responsibleUserId", "expectedContent"]) if (value[key] === "") payload[key] = null;
       await onCreated(await monitoringApi.createMonitor(role, payload));
@@ -91,12 +108,16 @@ export function CreateMonitorModal({ onClose, onCreated, presetProjectId }: { on
   return <Modal title="Nuevo monitor HTTP/HTTPS" eyebrow="Monitoreo · registro autorizado" onClose={onClose}>
     {error ? <ErrorBox error={error} /> : null}
     <form className="relForm" onSubmit={(event) => { event.preventDefault(); void submit(); }}>
-      <label className="relField wide">Proyecto<select required value={String(value.projectId)} onChange={(event) => set("projectId", event.target.value)}><option value="">Seleccionar proyecto</option>{projects.map((item) => <option key={item.id} value={item.id}>{item.projectNumber} · {item.name}</option>)}</select><small>Cliente derivado: {project?.clientName ?? "—"}. Monitoreo sólo de endpoints autorizados por Zyteron o el cliente.</small></label>
-      <label className="relField">Nombre<input required maxLength={120} value={String(value.name)} onChange={(event) => set("name", event.target.value)} placeholder="Web principal" /></label>
-      <label className="relField">URL<input required type="url" value={String(value.url)} onChange={(event) => set("url", event.target.value)} placeholder="https://www.zyteron.cl" /><small>Sólo http/https públicos, puertos 80/443/8080/8443. Destinos privados se rechazan.</small></label>
-      <label className="relField">Ambiente<select value={String(value.environment)} onChange={(event) => set("environment", event.target.value)}>{endpointEnvironments.map((item) => <option key={item} value={item}>{environmentLabel[item]}</option>)}</select></label>
-      <label className="relField">Tipo<select value={String(value.endpointType)} onChange={(event) => set("endpointType", event.target.value)}>{endpointTypes.map((item) => <option key={item} value={item}>{endpointTypeLabel[item]}</option>)}</select></label>
-      <label className="relField wide">Responsable<select value={String(value.responsibleUserId)} onChange={(event) => set("responsibleUserId", event.target.value)}><option value="">Sin responsable (alertas al líder del proyecto)</option>{users.map((user) => <option key={user.id} value={user.id}>{user.name}</option>)}</select></label>
+      <label className="relField wide">1. Cliente<select required value={String(value.clientId)} onChange={(event) => setValue((current) => ({ ...current, clientId: event.target.value, projectId: "", endpointId: "" }))}><option value="">Seleccionar cliente</option>{clients.map((item) => <option key={item.id} value={item.id}>{item.tradeName ?? item.legalName}</option>)}</select></label>
+      <label className="relField wide">2. Proyecto<select required value={String(value.projectId)} onChange={(event) => setValue((current) => ({ ...current, projectId: event.target.value, endpointId: "" }))} disabled={!value.clientId}><option value="">Seleccionar proyecto</option>{visibleProjects.map((item) => <option key={item.id} value={item.id}>{item.projectNumber} · {item.name}</option>)}</select>{value.clientId && !visibleProjects.length ? <small>Este cliente aún no tiene proyectos. <Link href={`/operations/work-orders?new=1&clientId=${value.clientId}`}>Crear orden de trabajo</Link> para iniciar el flujo autorizado.</small> : <small>El cliente se deriva del proyecto; no se envía un UUID editable al backend.</small>}</label>
+      <label className="relField wide">3. Endpoint<select value={String(value.endpointId)} onChange={(event) => set("endpointId", event.target.value)} disabled={!project}><option value="">Crear endpoint nuevo</option>{endpoints.filter((item) => item.active).map((item) => <option key={item.id} value={item.id}>{item.name} · {item.url}</option>)}</select><small>Selecciona uno existente o registra un endpoint nuevo debajo.</small></label>
+      {!value.endpointId ? <>
+        <label className="relField">Nombre<input required maxLength={120} value={String(value.name)} onChange={(event) => set("name", event.target.value)} placeholder="Web principal" /></label>
+        <label className="relField">URL<input required type="text" inputMode="url" value={String(value.url)} onChange={(event) => set("url", event.target.value)} placeholder="www.zyteron.cl" /><small>{normalizedUrl ? `Se comprobará: ${normalizedUrl}` : "Se agregará HTTPS si omites el protocolo."} Sólo destinos públicos autorizados.</small></label>
+        <label className="relField">Ambiente<select value={String(value.environment)} onChange={(event) => set("environment", event.target.value)}>{endpointEnvironments.map((item) => <option key={item} value={item}>{environmentLabel[item]}</option>)}</select></label>
+        <label className="relField">Tipo<select value={String(value.endpointType)} onChange={(event) => set("endpointType", event.target.value)}>{endpointTypes.map((item) => <option key={item} value={item}>{endpointTypeLabel[item]}</option>)}</select></label>
+        <label className="relField wide">Responsable<select value={String(value.responsibleUserId)} onChange={(event) => set("responsibleUserId", event.target.value)}><option value="">Sin responsable (alertas a las jefaturas)</option>{users.map((user) => <option key={user.id} value={user.id}>{user.name} · {user.role}</option>)}</select></label>
+      </> : null}
       <fieldset><legend>Ejecución</legend>
         <label className="relField">Intervalo<select value={String(value.intervalSeconds)} onChange={(event) => set("intervalSeconds", Number(event.target.value))}>{monitorIntervals.map((item) => <option key={item} value={item}>{formatInterval(item)}</option>)}</select></label>
         <label className="relField">Timeout (ms)<input type="number" min={1000} max={30000} step={500} value={Number(value.timeoutMs)} onChange={(event) => set("timeoutMs", Number(event.target.value))} /></label>

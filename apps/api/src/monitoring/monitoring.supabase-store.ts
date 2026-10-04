@@ -256,6 +256,13 @@ export class SupabaseMonitoringStore implements MonitoringStore {
     if (events.length) { const { error } = await this.db.from("monitoring_events").insert(events.map((event) => ({ project_id: context.projectId, client_id: context.clientId, endpoint_id: context.endpointId, monitor_id: context.monitorId, incident_id: context.incidentId, maintenance_window_id: event.maintenanceWindowId ?? null, event_type: event.eventType, tone: event.tone, title: event.title, visibility: event.visibility ?? "INTERNAL", actor_id: event.actorId ?? null, payload: event.payload ?? {}, occurred_at: event.occurredAt ?? new Date().toISOString() }))); if (error) throw error; }
     if (outbox.length) { const { error } = await this.db.from("business_event_outbox").insert(outbox.map((event) => ({ aggregate_type: event.aggregateType ?? "MONITOR", aggregate_id: context.monitorId ?? context.incidentId, event_type: event.eventType, payload: { ...(event.payload ?? {}), ...context } }))); if (error) throw error; }
   }
+  async claimOutbox(workerId: string, limit: number, leaseSeconds: number) {
+    const { data, error } = await this.db.rpc("monitoring_claim_outbox", { p_worker: workerId, p_limit: limit, p_lease_seconds: leaseSeconds }); if (error) throw error;
+    return (data ?? []).map((row: any) => ({ id: row.id, aggregateType: row.aggregate_type, aggregateId: row.aggregate_id, eventType: row.event_type, payload: row.payload ?? {}, occurredAt: row.occurred_at, attempts: Number(row.attempts) }));
+  }
+  async completeOutbox(id: string, workerId: string, errorMessage: string | null) {
+    const { error } = await this.db.rpc("monitoring_complete_outbox", { p_id: id, p_worker: workerId, p_error: errorMessage?.slice(0, 500) ?? null }); if (error) throw error;
+  }
 
   async monitorStats(monitorId: string): Promise<MonitorStats> {
     const [stats, monitor] = await Promise.all([this.db.rpc("monitoring_monitor_stats", { p_monitor: monitorId }), this.db.from("monitors").select("last_latency_ms").eq("id", monitorId).maybeSingle()]);
@@ -288,12 +295,18 @@ export class SupabaseMonitoringStore implements MonitoringStore {
   async refreshRollups(from: string, to: string) { const { data, error } = await this.db.rpc("monitoring_refresh_rollups", { p_from: from, p_to: to }); if (error) throw error; return Number(data ?? 0); }
   async purge() { const { data, error } = await this.db.rpc("monitoring_purge", { p_batch: 5000 }); if (error) throw error; return data as Record<string, unknown>; }
 
-  async heartbeat(workerId: string, hostname: string, checksExecuted: number, lastError: string | null) {
-    const { error } = await this.db.from("monitoring_worker_heartbeats").upsert({ worker_id: workerId, hostname, last_seen_at: new Date().toISOString(), checks_executed: checksExecuted, last_error: lastError?.slice(0, 300) ?? null }, { onConflict: "worker_id" }); if (error) throw error;
+  async heartbeat(input: import("./monitoring.store.js").WorkerHeartbeatInput) {
+    const [next, last] = await Promise.all([
+      this.db.from("monitors").select("next_check_at").eq("enabled", true).order("next_check_at").limit(1).maybeSingle(),
+      this.db.from("monitor_checks").select("checked_at").order("checked_at", { ascending: false }).limit(1).maybeSingle(),
+    ]);
+    if (next.error) throw next.error; if (last.error) throw last.error;
+    const nextJobAt = next.data?.next_check_at ?? null;
+    const { error } = await this.db.from("monitoring_worker_heartbeats").upsert({ worker_id: input.workerId, hostname: input.hostname, last_seen_at: new Date().toISOString(), checks_executed: input.checksExecuted, last_error: input.lastError?.slice(0, 300) ?? null, release_sha: input.releaseSha, persistence_mode: input.persistenceMode, scheduler_active: input.schedulerActive, process_role: input.processRole, next_job_at: nextJobAt, queue_lag_seconds: nextJobAt ? Math.max(0, Math.floor((Date.now() - Date.parse(nextJobAt)) / 1000)) : null, last_check_at: last.data?.checked_at ?? null }, { onConflict: "worker_id" }); if (error) throw error;
   }
   async listHeartbeats(): Promise<WorkerHeartbeat[]> {
     const { data, error } = await this.db.from("monitoring_worker_heartbeats").select("*").gte("last_seen_at", new Date(Date.now() - 24 * 3_600_000).toISOString()).order("last_seen_at", { ascending: false }); if (error) throw error;
-    return (data ?? []).map((r) => ({ workerId: r.worker_id, hostname: r.hostname, startedAt: r.started_at, lastSeenAt: r.last_seen_at, checksExecuted: Number(r.checks_executed), lastError: r.last_error }));
+    return (data ?? []).map((r) => ({ workerId: r.worker_id, hostname: r.hostname, startedAt: r.started_at, lastSeenAt: r.last_seen_at, checksExecuted: Number(r.checks_executed), lastError: r.last_error, releaseSha: r.release_sha ?? null, persistenceMode: r.persistence_mode ?? "unknown", schedulerActive: Boolean(r.scheduler_active), processRole: r.process_role ?? "unknown", nextJobAt: r.next_job_at ?? null, queueLagSeconds: r.queue_lag_seconds === null || r.queue_lag_seconds === undefined ? null : Number(r.queue_lag_seconds), lastCheckAt: r.last_check_at ?? null }));
   }
 
   async projectIdsForUser(userId: string) { return this.operations.projectIdsForUser(userId); }

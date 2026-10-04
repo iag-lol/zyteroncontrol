@@ -3,6 +3,7 @@ import { Reflector } from "@nestjs/core";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
+import { AuthorizationService } from "../auth/authorization.service.js";
 import { RoleGuard } from "../auth/role.guard.js";
 import { REQUIRED_ROLES } from "../auth/roles.decorator.js";
 import { MonitoringController } from "./monitoring.controller.js";
@@ -58,10 +59,10 @@ describe("RBAC y alcance (anti-IDOR)", () => {
   });
   it("usuario sin rol es rechazado por el guard global", async () => {
     process.env.AUTH_MODE = "development";
-    const guard = new RoleGuard(new Reflector());
+    const guard = new RoleGuard(new Reflector(), new AuthorizationService());
     const context = (role?: string) => ({ getHandler: () => MonitoringController.prototype.monitors, getClass: () => MonitoringController, switchToHttp: () => ({ getRequest: () => ({ headers: role ? { "x-zyteron-role": role } : {} }) }) }) as unknown as ExecutionContext;
     await expect(guard.canActivate(context())).rejects.toBeInstanceOf(UnauthorizedException);
-    expect(await guard.canActivate(context("RRHH"))).toBe(false);
+    await expect(guard.canActivate(context("RRHH"))).rejects.toBeInstanceOf(ForbiddenException);
     expect(await guard.canActivate(context("PROGRAMADOR"))).toBe(true);
     expect(Reflect.getMetadata(REQUIRED_ROLES, MonitoringController.prototype.monitors)).toEqual(rolesWith("monitor.view"));
   });

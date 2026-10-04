@@ -50,7 +50,7 @@ export async function createKit() {
   const probe = new StubProbe();
   const alerts = new MonitoringAlerts(store, new MonitoringMailer());
   const runner = new MonitoringRunner(store, checker as unknown as HttpChecker, probe, alerts);
-  const service = new MonitoringService(store, runner, alerts, publicResolver);
+  const service = new MonitoringService(store, runner, alerts, publicResolver, undefined, undefined);
   const scheduler = new MonitoringScheduler(store, runner, alerts);
   const projectA = await operations.createProject({ workOrderId: randomUUID(), name: "Zyteron Web", scope: "Sitio corporativo", clientId: ids.client, clientName: "Zyteron SpA", priority: "HIGH", projectLeadId: ids.lead, developmentManagerId: ids.jefe });
   const projectB = await operations.createProject({ workOrderId: randomUUID(), name: "Portal B", scope: "Portal", clientId: ids.clientB, clientName: "Cliente B", priority: "NORMAL" });

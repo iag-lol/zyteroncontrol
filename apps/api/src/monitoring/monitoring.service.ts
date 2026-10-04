@@ -1,16 +1,17 @@
-import { BadRequestException, ConflictException, ForbiddenException, HttpException, HttpStatus, Inject, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ConflictException, ForbiddenException, HttpException, HttpStatus, Inject, Injectable, NotFoundException, Optional } from "@nestjs/common";
 import type {
   AlertRule, ClientMonitoringSummary, Incident, IncidentDetail, IncidentStatus, MaintenanceWindow, MonitorConfig, MonitoringDashboard,
   MonitoringMonthlyReport, MonitorView, UptimeBucket,
 } from "@zyteron/contracts/monitoring";
 import { alertChannels, alertTargets, endpointEnvironments, endpointTypes, executableMonitorTypes, incidentSeverities, monitorIntervals } from "@zyteron/contracts/monitoring";
 import { uuidPattern } from "../commercial/commercial.validation.js";
+import { UsersDirectoryService } from "../users/users.module.js";
 import { MonitoringAlerts } from "./monitoring.alerts.js";
 import { activeStatuses, formatDuration, incidentTransitions, severityRank } from "./monitoring.engine.js";
 import { santiagoDate, santiagoDateTime, toCsv } from "./monitoring.format.js";
 import { hasFleetScope, hasMonitoringPermission, scopeFor, type MonitoringPermission } from "./monitoring.rbac.js";
 import { MonitoringRunner } from "./monitoring.runner.js";
-import { LEASE_SECONDS } from "./monitoring.scheduler.js";
+import { LEASE_SECONDS, MonitoringScheduler } from "./monitoring.scheduler.js";
 import { incidentMetrics } from "./monitoring.stats.js";
 import { defaultEscalationPolicy, defaultMonitorConfig, defaultNotifyEvents, MONITORING_STORE, MonitoringError, type IncidentFilter, type MonitoringStore } from "./monitoring.store.js";
 import type { IncidentPatch } from "./monitoring.types.js";
@@ -37,6 +38,12 @@ const oneOf = <T extends string>(value: unknown, options: readonly T[], label: s
 const iso = (value: unknown, label: string) => { const date = new Date(String(value)); if (!value || Number.isNaN(date.getTime())) throw new BadRequestException(`${label} inválida.`); return date.toISOString(); };
 const containsIp = (value: string) => /\b(?:\d{1,3}\.){3}\d{1,3}\b/.test(value) || /\b[0-9a-f]{1,4}(?::[0-9a-f]{0,4}){3,7}\b/i.test(value);
 const periodHours: Record<string, number> = { "24h": 24, "7d": 168, "30d": 720, "90d": 2160 };
+const endpointResponsibleRoles = new Set(["PROGRAMADOR", "DESARROLLO", "TECH_LEAD", "JEFE_DESARROLLO", "OPERACIONES", "SOPORTE_TECNICO"]);
+
+export function normalizeMonitorUrl(raw: string) {
+  const trimmed = raw.trim();
+  return /^[a-z][a-z\d+.-]*:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+}
 
 @Injectable()
 export class MonitoringService {
@@ -47,6 +54,8 @@ export class MonitoringService {
     private readonly runner: MonitoringRunner,
     private readonly alerts: MonitoringAlerts,
     @Inject(MONITORING_RESOLVER) private readonly resolver: Resolver,
+    @Optional() private readonly directory?: UsersDirectoryService,
+    @Optional() private readonly scheduler?: MonitoringScheduler,
   ) {}
 
   // ---------------------------------------------------------------- acceso
@@ -111,8 +120,17 @@ export class MonitoringService {
     return out;
   }
   private async validateTarget(url: string) {
-    try { return await assertMonitorTarget(url, this.resolver, publicAddressPolicy, configuredAllowedPorts()); }
+    try { return await assertMonitorTarget(normalizeMonitorUrl(url), this.resolver, publicAddressPolicy, configuredAllowedPorts()); }
     catch (error) { if (error instanceof SsrfError) throw new BadRequestException(`URL rechazada por la política de seguridad: ${error.message}`); throw error; }
+  }
+  private async validateResponsible(projectId: string, responsibleUserId: string | null) {
+    if (!responsibleUserId || !this.directory) return;
+    const selected = (await this.directory.list()).find((user) => user.id === responsibleUserId && user.active);
+    if (!selected || !selected.role || !endpointResponsibleRoles.has(selected.role)) throw new BadRequestException("El responsable debe ser un usuario activo de Desarrollo u Operaciones.");
+    if (["PROGRAMADOR", "DESARROLLO", "TECH_LEAD", "SOPORTE_TECNICO"].includes(selected.role)) {
+      const members = await this.store.projectMemberIds(projectId);
+      if (!members.includes(selected.id)) throw new BadRequestException("El responsable técnico debe pertenecer al proyecto seleccionado.");
+    }
   }
 
   async listMonitors(actor: MonitoringActor, query: Record<string, string | undefined>) {
@@ -130,16 +148,19 @@ export class MonitoringService {
       const endpoint = await this.store.getEndpoint(endpointId);
       if (!endpoint) throw new NotFoundException("Endpoint no encontrado.");
       await this.assertProject(actor, endpoint.projectId);
+      await this.validateResponsible(endpoint.projectId, endpoint.responsibleUserId);
       url = await this.validateTarget(endpoint.url);
     } else {
       const projectId = uuid(body.projectId, "Proyecto");
       await this.assertProject(actor, projectId);
       if (!(await this.store.getProject(projectId))) throw new NotFoundException("Proyecto no encontrado.");
       url = await this.validateTarget(text(body.url, "URL", 2048));
+      const responsibleUserId = optionalUuid(body.responsibleUserId, "Responsable");
+      await this.validateResponsible(projectId, responsibleUserId);
       const existing = (await this.store.listEndpoints(null, projectId)).find((endpoint) => endpoint.url.replace(/\/$/, "").toLowerCase() === url.toString().replace(/\/$/, "").toLowerCase());
       endpointId = existing?.id ?? (await this.store.createEndpoint(projectId, {
         name: text(body.name, "Nombre", 120), url: url.toString(), environment: oneOf(body.environment ?? "PRODUCTION", endpointEnvironments, "Ambiente"),
-        endpointType: oneOf(body.endpointType ?? "WEB", endpointTypes, "Tipo de endpoint"), monitoringEnabled: true, responsibleUserId: optionalUuid(body.responsibleUserId, "Responsable"),
+        endpointType: oneOf(body.endpointType ?? "WEB", endpointTypes, "Tipo de endpoint"), monitoringEnabled: true, responsibleUserId,
       })).id;
     }
     const monitorType = url.protocol === "https:" ? "HTTPS" : "HTTP";
@@ -163,7 +184,7 @@ export class MonitoringService {
       if (body.name !== undefined) patch.name = text(body.name, "Nombre", 120);
       if (body.environment !== undefined) patch.environment = oneOf(body.environment, endpointEnvironments, "Ambiente");
       if (body.endpointType !== undefined) patch.endpointType = oneOf(body.endpointType, endpointTypes, "Tipo de endpoint");
-      if (body.responsibleUserId !== undefined) patch.responsibleUserId = optionalUuid(body.responsibleUserId, "Responsable");
+      if (body.responsibleUserId !== undefined) { const responsibleUserId = optionalUuid(body.responsibleUserId, "Responsable"); await this.validateResponsible(monitor.projectId, responsibleUserId); patch.responsibleUserId = responsibleUserId; }
       await this.store.updateEndpoint(monitor.endpointId, patch);
     }
     return this.store.updateMonitor(monitor.id, this.parseConfig(body, monitor));
@@ -604,6 +625,21 @@ export class MonitoringService {
     return this.store.updateSettings(patch, actor.userId);
   }
   async workers(actor: MonitoringActor) { this.require(actor, "monitoring.dashboard.view"); if (!hasFleetScope(actor.role)) throw new ForbiddenException("Sólo gerencia y jefaturas ven el estado del scheduler."); return this.store.listHeartbeats(); }
+  async diagnostics(actor: MonitoringActor) {
+    this.require(actor, "monitoring.dashboard.view");
+    if (!hasFleetScope(actor.role)) throw new ForbiddenException("Sólo gerencia y jefaturas ven el diagnóstico del worker.");
+    const scheduler = this.scheduler?.diagnostics() ?? { active: false, workerId: null, checksExecuted: 0, lastError: null, processRole: process.env.MONITORING_PROCESS_ROLE ?? "unspecified" };
+    return {
+      releaseSha: process.env.RENDER_GIT_COMMIT ?? process.env.GIT_COMMIT_SHA ?? null,
+      persistenceMode: this.store.mode,
+      scheduler,
+      databaseConfigured: Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY),
+      realtimeConfigured: Boolean(process.env.SUPABASE_URL),
+      alertChannels: { inApp: true, email: Boolean(process.env.RESEND_API_KEY && process.env.MONITORING_MAIL_FROM), webPush: false },
+      workers: this.store.mode === "unavailable" ? [] : await this.store.listHeartbeats(),
+      generatedAt: new Date().toISOString(),
+    };
+  }
 
   /** Agregaciones para el futuro informe mensual del cliente (sin Report Builder). */
   async monthlyReport(actor: MonitoringActor, query: Record<string, string | undefined>): Promise<MonitoringMonthlyReport> {

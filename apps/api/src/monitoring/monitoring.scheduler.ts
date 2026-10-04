@@ -16,7 +16,9 @@ const HOUSEKEEPING_MS = 60_000, ROLLUP_MS = 5 * 60_000, PURGE_MS = 6 * 3_600_000
 
 export function monitoringWorkerEnabled() {
   if (process.env.MONITORING_WORKER_ENABLED === "false") return false;
-  return !process.env.VITEST && process.env.NODE_ENV !== "test";
+  if (process.env.VITEST || process.env.NODE_ENV === "test") return false;
+  if (process.env.NODE_ENV === "production") return process.env.MONITORING_PROCESS_ROLE === "worker";
+  return process.env.MONITORING_PROCESS_ROLE !== "api";
 }
 
 @Injectable()
@@ -36,7 +38,7 @@ export class MonitoringScheduler implements OnApplicationBootstrap, OnApplicatio
   constructor(@Inject(MONITORING_STORE) private readonly store: MonitoringStore, private readonly runner: MonitoringRunner, private readonly alerts: MonitoringAlerts) {}
 
   onApplicationBootstrap() {
-    if (!monitoringWorkerEnabled()) { this.logger.log("Worker de monitoreo deshabilitado en esta instancia."); return; }
+    if (!monitoringWorkerEnabled() || this.store.mode === "unavailable") { this.logger.log("Worker de monitoreo deshabilitado en esta instancia."); return; }
     this.logger.log(`Worker de monitoreo ${this.workerId} activo (${this.store.mode}, tick ${TICK_MS} ms, concurrencia ${MAX_CONCURRENCY}).`);
     this.timer = setInterval(() => void this.tick(), TICK_MS);
     void this.tick();
@@ -97,9 +99,17 @@ export class MonitoringScheduler implements OnApplicationBootstrap, OnApplicatio
       }
     }
     await this.runner.probeCertificates(5).catch((error) => this.alerts.logError("SSL", error));
-    await this.store.heartbeat(this.workerId, hostname(), this.checksExecuted, this.lastError).catch(() => undefined);
+    for (const event of await this.store.claimOutbox(this.workerId, 50, LEASE_SECONDS)) {
+      try { await this.alerts.dispatchOutbox(event); await this.store.completeOutbox(event.id, this.workerId, null); }
+      catch (error) { const message = error instanceof Error ? error.message : String(error); await this.store.completeOutbox(event.id, this.workerId, message).catch(() => undefined); this.alerts.logError("Outbox", error); }
+    }
+    await this.store.heartbeat({ workerId: this.workerId, hostname: hostname(), checksExecuted: this.checksExecuted, lastError: this.lastError, releaseSha: process.env.RENDER_GIT_COMMIT ?? process.env.GIT_COMMIT_SHA ?? null, persistenceMode: this.store.mode, schedulerActive: true, processRole: process.env.MONITORING_PROCESS_ROLE ?? "unspecified" }).catch(() => undefined);
   }
 
   /** Espera los checks lanzados por el último tick (pruebas y apagado ordenado). */
   async drain() { await Promise.allSettled([...this.inFlight]); }
+
+  diagnostics() {
+    return { active: Boolean(this.timer) && !this.stopping, workerId: this.workerId, checksExecuted: this.checksExecuted, lastError: this.lastError, processRole: process.env.MONITORING_PROCESS_ROLE ?? "unspecified" };
+  }
 }

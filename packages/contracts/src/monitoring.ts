@@ -95,7 +95,7 @@ export interface AlertRule {
 }
 export interface AlertDelivery {
   id: string; dedupKey: string; incidentId: string | null; monitorId: string | null; projectId: string | null; ruleId: string | null; recipientUserId: string | null;
-  recipientRole: string | null; channel: AlertChannel; stage: string; eventType: string; status: "DELIVERED" | "SENT" | "PROVIDER_NOT_CONFIGURED" | "NO_ADDRESS" | "FAILED" | "SUPPRESSED";
+  recipientRole: string | null; channel: AlertChannel; stage: string; eventType: string; status: "QUEUED" | "ACCEPTED" | "DELIVERED" | "SENT" | "PROVIDER_NOT_CONFIGURED" | "NO_ADDRESS" | "FAILED" | "SUPPRESSED";
   title: string; body: string | null; href: string | null; severity: IncidentSeverity | null; soundProfile: SoundProfile; sentAt: string | null; readAt: string | null; createdAt: string;
 }
 export interface MonitoringEvent {
@@ -108,7 +108,7 @@ export interface MonitoringSettings {
   sslWarningDays: number; sslCheckIntervalMinutes: number; manualCheckCooldownSeconds: number; perHostConcurrency: number; contentInspectBytes: number;
 }
 export interface SeverityRule { id: string; name: string; environment: string | null; endpointType: string | null; projectPriority: string | null; clientId: string | null; severity: IncidentSeverity; enabled: boolean; }
-export interface WorkerHeartbeat { workerId: string; hostname: string | null; startedAt: string; lastSeenAt: string; checksExecuted: number; lastError: string | null; }
+export interface WorkerHeartbeat { workerId: string; hostname: string | null; startedAt: string; lastSeenAt: string; checksExecuted: number; lastError: string | null; releaseSha: string | null; persistenceMode: string; schedulerActive: boolean; processRole: string; nextJobAt: string | null; queueLagSeconds: number | null; lastCheckAt: string | null; }
 
 export interface MonitoringFleetEntry { uptime24h: number | null; uptime7d: number | null; uptime30d: number | null; uptime90d: number | null; avgLatency24h: number | null; p95Latency24h: number | null; firstDay: string | null; }
 export interface MonitoringDashboard {

@@ -14,6 +14,7 @@ class MonitoringWorkerModule {}
 
 async function bootstrap() {
   if (process.env.MONITORING_WORKER_ENABLED === "false") throw new Error("MONITORING_WORKER_ENABLED=false: este proceso sólo existe para ejecutar checks.");
+  process.env.MONITORING_PROCESS_ROLE = "worker";
   const app = await NestFactory.createApplicationContext(MonitoringWorkerModule);
   app.enableShutdownHooks();
 }

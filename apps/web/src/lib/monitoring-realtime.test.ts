@@ -7,7 +7,7 @@ const client = { channel: vi.fn(() => channel), auth: { getSession: vi.fn(async 
 vi.mock("@supabase/supabase-js", () => ({ createClient: vi.fn(() => client) }));
 
 describe("Realtime de Monitoreo", () => {
-  beforeEach(() => { vi.stubGlobal("window", globalThis); channel.on.mockReturnValue(channel); });
+  beforeEach(() => { vi.resetModules(); vi.stubGlobal("window", globalThis); channel.on.mockReturnValue(channel); });
   afterEach(() => { vi.unstubAllEnvs(); vi.useRealTimers(); vi.clearAllMocks(); });
 
   it("usa canal privado autenticado con la sesión del usuario y escucha cada tabla publicada", async () => {
@@ -17,10 +17,12 @@ describe("Realtime de Monitoreo", () => {
     const changes: string[] = [];
     const subscription = subscribeToMonitoring((table) => changes.push(table));
     await Promise.resolve(); await Promise.resolve();
-    expect(subscription.mode).toBe("realtime");
+    expect(subscription.mode).toBe("connecting");
     expect(client.channel).toHaveBeenCalledWith("private:monitoring:reliability", { config: { private: true } });
     expect(client.realtime.setAuth).toHaveBeenCalledWith("jwt-del-usuario");
     expect(channel.subscribe).toHaveBeenCalled();
+    const status = channel.subscribe.mock.calls[0]![0] as (value: string) => void;
+    status("SUBSCRIBED");
     const tables = channel.on.mock.calls.map((call) => (call as unknown as [string, { table: string }, () => void])[1].table);
     expect(tables).toEqual([...monitoringRealtimeTables]);
     (channel.on.mock.calls[0] as unknown as [string, unknown, () => void])[2]();

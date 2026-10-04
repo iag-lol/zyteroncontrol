@@ -59,7 +59,7 @@ function Frame({ section, title, subtitle, actions, children }: { section: Monit
     <header className="relHead">
       <div><small><Radio size={12} aria-hidden />Monitoreo · Site Reliability Center</small><h1>{title}</h1><p>{subtitle}</p></div>
       <div className="relHeadActions">
-        <span className="relLive" title={live.mode === "realtime" ? "Supabase Realtime (canal privado)" : "Supabase Realtime no configurado en este entorno"}><i className={`relPulse ${live.mode}`} aria-hidden />{live.mode === "realtime" ? "En vivo" : "Sondeo cada 30 s"}{live.lastChange ? ` · ${formatTime(live.lastChange)}` : ""}</span>
+        <span className="relLive" title={live.mode === "realtime" ? "Supabase Realtime conectado con canal privado" : "Estado real del canal de actualización"}><i className={`relPulse ${live.mode}`} aria-hidden />{{ connecting: "Conectando…", realtime: "En vivo", reconnecting: "Reconectando · sondeo", error: "Canal no disponible · sondeo", polling: "Sondeo cada 30 s" }[live.mode]}{live.lastChange ? ` · ${formatTime(live.lastChange)}` : ""}</span>
         {scope && can(scope, "monitoring.dashboard.view") ? <AlertInbox /> : null}
         {actions}
       </div>
@@ -132,4 +132,3 @@ export function AlertInbox() {
     </div> : null}
   </div>;
 }
-

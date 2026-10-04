@@ -1,4 +1,4 @@
-import type { IncidentSeverity, IncidentStatus, MonitorStatus, SslStatus } from "@zyteron/contracts/monitoring";
+import type { IncidentSeverity, IncidentStatus, MonitorStatus, MonitorView, SslStatus } from "@zyteron/contracts/monitoring";
 import { formatDate, formatDateTime, formatTime } from "./date-time";
 
 export { formatDate, formatDateTime, formatTime };
@@ -17,6 +17,12 @@ export function since(value: string | null | undefined, now = Date.now()) { retu
 export function formatPercent(value: number | null | undefined, digits = 2) { return value === null || value === undefined ? "Sin datos" : `${value.toLocaleString("es-CL", { minimumFractionDigits: digits, maximumFractionDigits: digits })} %`; }
 export function formatMs(value: number | null | undefined) { return value === null || value === undefined ? "—" : value >= 1000 ? `${(value / 1000).toLocaleString("es-CL", { maximumFractionDigits: 2 })} s` : `${Math.round(value)} ms`; }
 export function formatInterval(seconds: number) { return seconds >= 3600 ? `${seconds / 3600} h` : `${seconds / 60} min`; }
+export function observationFreshness(monitor: Pick<MonitorView, "lastCheckedAt" | "intervalSeconds">, now = Date.now()): "NEVER_CHECKED" | "FRESH" | "STALE" {
+  if (!monitor.lastCheckedAt) return "NEVER_CHECKED";
+  const checkedAt = new Date(monitor.lastCheckedAt).getTime();
+  if (!Number.isFinite(checkedAt)) return "NEVER_CHECKED";
+  return now - checkedAt <= Math.max(monitor.intervalSeconds * 2, 180) * 1000 ? "FRESH" : "STALE";
+}
 
 export const monitorStatusLabel: Record<MonitorStatus, string> = { UNKNOWN: "Sin datos", ONLINE: "Online", DEGRADED: "Degradado", OFFLINE: "Offline", MAINTENANCE: "Mantenimiento", DISABLED: "Deshabilitado" };
 export const incidentStatusLabel: Record<IncidentStatus, string> = { DETECTED: "Detectado", CONFIRMED: "Confirmado", ACKNOWLEDGED: "Reconocido", INVESTIGATING: "Investigando", MITIGATING: "Mitigando", MONITORING: "En observación", RESOLVED: "Resuelto", POSTMORTEM_REQUIRED: "Postmortem pendiente", CLOSED: "Cerrado" };

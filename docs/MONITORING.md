@@ -53,8 +53,8 @@ Proyecto → Endpoint → Monitor → Check periódico → Falla → Umbral → 
 - `monitoring_apply_check` valida que el lease siga siendo del worker y que `state_version` no haya cambiado (deshabilitar un monitor invalida checks en vuelo), y en una sola transacción guarda el check, crea/actualiza el incidente, eventos, outbox y estado.
 - Tareas periódicas idempotentes: transiciones de mantenimiento (advisory lock), escalamientos (guardas por nivel), auto-resolución, probes SSL (compare-and-set de `ssl_next_check_at`), rollups cada 5 min y purga cada 6 h.
 - **Opción económica (por defecto):** el worker corre dentro del web service de la API en Render. Sin servicios adicionales.
-- **Opción escalable:** Render Background Worker con `node dist/monitoring/worker-main.js` y `MONITORING_WORKER_ENABLED=false` en el web service. Ambas pueden coexistir con N instancias.
-- Variables: `MONITORING_WORKER_ENABLED` (por defecto activo), `MONITORING_TICK_MS`, `MONITORING_MAX_CONCURRENCY` (8), `MONITORING_ALLOWED_PORTS` (80,443,8080,8443), `RESEND_API_KEY` + `MONITORING_MAIL_FROM` (email opcional).
+- **Arquitectura productiva:** Render Background Worker con `pnpm --filter @zyteron/api start:monitoring-worker`, `MONITORING_PROCESS_ROLE=worker` y `MONITORING_WORKER_ENABLED=true`. El web service usa `MONITORING_PROCESS_ROLE=api` y `MONITORING_WORKER_ENABLED=false`; así un escalado del API no multiplica runners.
+- En desarrollo el worker puede ejecutarse con el API salvo que `MONITORING_PROCESS_ROLE=api`. Variables: `MONITORING_WORKER_ENABLED`, `MONITORING_PROCESS_ROLE`, `MONITORING_TICK_MS`, `MONITORING_MAX_CONCURRENCY` (8), `MONITORING_ALLOWED_PORTS` (80,443,8080,8443), `RESEND_API_KEY` + `MONITORING_MAIL_FROM` (email opcional).
 - No se usa Azure (Monitor, Functions, Service Bus ni Application Insights) ni `pg_cron`.
 
 ## Check HTTP

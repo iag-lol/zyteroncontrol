@@ -45,13 +45,13 @@ export const useLive = () => useContext(LiveContext);
 
 /** Una sola suscripción por pantalla; agrupa ráfagas de cambios (debounce) para no recargar en cada check. */
 export function LiveProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<LiveState>({ version: 0, mode: "polling", lastChange: null });
+  const [state, setState] = useState<LiveState>({ version: 0, mode: "connecting", lastChange: null });
   const timer = useRef<number | null>(null);
   useEffect(() => {
     const { mode, unsubscribe } = subscribeToMonitoring(() => {
       if (timer.current) window.clearTimeout(timer.current);
       timer.current = window.setTimeout(() => setState((current) => ({ ...current, version: current.version + 1, lastChange: new Date().toISOString() })), 1200);
-    });
+    }, (nextMode) => setState((current) => ({ ...current, mode: nextMode })));
     setState((current) => ({ ...current, mode }));
     return () => { unsubscribe(); if (timer.current) window.clearTimeout(timer.current); };
   }, []);
@@ -89,4 +89,3 @@ export function useAction(reload?: () => Promise<unknown> | void) {
   }, [reload]);
   return { notice, setNotice, busy, run };
 }
-

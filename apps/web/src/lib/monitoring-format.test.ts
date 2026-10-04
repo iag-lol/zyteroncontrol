@@ -1,8 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { formatDuration, formatMs, formatPercent, optionalSantiagoIso, santiagoToIso, uptimeBand } from "./monitoring-format";
+import { formatDuration, formatMs, formatPercent, observationFreshness, optionalSantiagoIso, santiagoToIso, uptimeBand } from "./monitoring-format";
 import { formatDate, formatDateTime } from "./date-time";
 
 describe("Formatos de Monitoreo", () => {
+  it("distingue mediciones vigentes, vencidas y endpoints nunca comprobados", () => {
+    const now = Date.parse("2026-10-04T12:00:00.000Z");
+    expect(observationFreshness({ lastCheckedAt: null, intervalSeconds: 300 }, now)).toBe("NEVER_CHECKED");
+    expect(observationFreshness({ lastCheckedAt: "2026-10-04T11:56:00.000Z", intervalSeconds: 300 }, now)).toBe("FRESH");
+    expect(observationFreshness({ lastCheckedAt: "2026-10-04T11:49:00.000Z", intervalSeconds: 300 }, now)).toBe("STALE");
+  });
   it("duraciones legibles: 7 min, 1 h 42 min", () => {
     expect(formatDuration(420)).toBe("7 min");
     expect(formatDuration(6120)).toBe("1 h 42 min");

@@ -3,7 +3,7 @@ import type { AlertDelivery, AlertRule, AlertTarget, Incident, IncidentSeverity,
 import { createServerSupabase } from "../domain/server-supabase.js";
 import type { CertificateObservation } from "./certificate-probe.js";
 import { formatDuration, severityRank } from "./monitoring.engine.js";
-import { MONITORING_STORE, type AlertDeliveryDraft, type MonitoringStore } from "./monitoring.store.js";
+import { MONITORING_STORE, type AlertDeliveryDraft, type MonitoringOutboxEvent, type MonitoringStore } from "./monitoring.store.js";
 import type { AlertTriggerType } from "./monitoring.types.js";
 
 export interface Recipient { userId: string | null; role: string | null; key: string }
@@ -86,17 +86,17 @@ export class MonitoringAlerts {
     const now = new Date().toISOString();
     const drafts: AlertDeliveryDraft[] = [];
     for (const recipient of input.recipients) for (const channel of channels) {
-      const status = channel === "IN_APP" ? "DELIVERED" : channel === "EMAIL" && this.mailer.configured() ? "SENT" : "PROVIDER_NOT_CONFIGURED";
+      const status = channel === "IN_APP" ? "DELIVERED" : channel === "EMAIL" && this.mailer.configured() ? "QUEUED" : "PROVIDER_NOT_CONFIGURED";
       drafts.push({ dedupKey: `${input.stage}:${recipient.key}:${channel}`, incidentId: input.incidentId, monitorId: input.monitorId, projectId: input.projectId, maintenanceWindowId: input.maintenanceWindowId ?? null, ruleId: input.rule.id, recipientUserId: recipient.userId, recipientRole: recipient.role, channel: channel as AlertDelivery["channel"], stage: input.stage.split(":")[0]!, eventType: input.eventType, status, title: input.title, body: input.body, href: input.href, severity: input.severity, soundProfile: sound, sentAt: status === "DELIVERED" ? now : null });
     }
     const inserted = await this.store.insertDeliveries(drafts);
-    for (const delivery of inserted.filter((item) => item.channel === "EMAIL" && item.status === "SENT")) {
+    for (const delivery of inserted.filter((item) => item.channel === "EMAIL" && item.status === "QUEUED")) {
       const recipient = input.recipients.find((item) => (item.userId && item.userId === delivery.recipientUserId) || (item.role && item.role === delivery.recipientRole))!;
       try {
         const to = await this.mailer.addressesFor(recipient);
         if (!to.length) { await this.store.updateDelivery(delivery.id, { status: "NO_ADDRESS" }); continue; }
         const reference = await this.mailer.send(to, `[Zyteron Monitor] ${input.title}`, `${input.body}\n\n${input.href}`, delivery.dedupKey);
-        await this.store.updateDelivery(delivery.id, { status: "SENT", sentAt: new Date().toISOString(), providerReference: reference });
+        await this.store.updateDelivery(delivery.id, { status: "ACCEPTED", sentAt: new Date().toISOString(), providerReference: reference });
       } catch (error) { await this.store.updateDelivery(delivery.id, { status: "FAILED", errorMessage: error instanceof Error ? error.message : "Error de proveedor" }); }
     }
     return inserted;
@@ -180,6 +180,24 @@ export class MonitoringAlerts {
       }
     }
     return escalated;
+  }
+
+  /** Reproduce efectos pendientes del outbox; dedup_key hace segura la reejecución tras una caída. */
+  async dispatchOutbox(event: MonitoringOutboxEvent) {
+    if (["INCIDENT_CONFIRMED", "ENDPOINT_RECOVERED", "INCIDENT_RESOLVED"].includes(event.eventType)) {
+      const incidentId = typeof event.payload.incidentId === "string" ? event.payload.incidentId : event.aggregateType === "INCIDENT" ? event.aggregateId : null;
+      if (!incidentId) return;
+      const incident = await this.store.getIncident(incidentId); if (!incident) return;
+      const monitor = incident.monitorId ? await this.store.getMonitor(incident.monitorId) : null;
+      await this.dispatchIncident(event.eventType as "INCIDENT_CONFIRMED" | "ENDPOINT_RECOVERED" | "INCIDENT_RESOLVED", incident, monitor ?? null); return;
+    }
+    if (event.eventType === "LATENCY_DEGRADED") {
+      const monitorId = typeof event.payload.monitorId === "string" ? event.payload.monitorId : event.aggregateId;
+      const monitor = await this.store.getMonitor(monitorId); if (monitor) await this.dispatchLatency(monitor, Number(event.payload.latencyMs) || null, event.occurredAt); return;
+    }
+    if (["MAINTENANCE_STARTED", "MAINTENANCE_COMPLETED"].includes(event.eventType)) {
+      const window = await this.store.getMaintenance(event.aggregateId); if (window) await this.dispatchMaintenance(window, event.eventType as "MAINTENANCE_STARTED" | "MAINTENANCE_COMPLETED");
+    }
   }
 
   private async projectScope(incident: Incident): Promise<AlertScope> {
