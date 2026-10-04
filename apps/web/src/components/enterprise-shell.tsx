@@ -49,8 +49,8 @@ export function EnterpriseShell({ children }: { children: ReactNode }) {
 
   useEffect(()=>{
     if(isDevelopment){const configured=process.env.NEXT_PUBLIC_DEV_ROLE;setCurrentRole(roles.includes(configured as Role)?configured as Role:"GERENTE_GENERAL");setAuthenticated(true);setAuthReady(true);return;}
-    const client=browserSupabase();if(!client){setAuthError("Faltan NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_ANON_KEY.");setAuthReady(true);return;}
-    const apply=(session:Session|null)=>{const value=session?.user?.app_metadata?.role;if(session&&roles.includes(value as Role)){setCurrentRole(value as Role);setAuthenticated(true);setAuthError("");}else{setAuthenticated(false);if(session)setAuthError("La identidad no posee un rol válido en app_metadata.");}setAuthReady(true);};
+    const client=browserSupabase();if(!client){setAuthError("El acceso empresarial no está disponible en este momento.");setAuthReady(true);return;}
+    const apply=(session:Session|null)=>{const value=session?.user?.app_metadata?.role;if(session&&roles.includes(value as Role)){setCurrentRole(value as Role);setAuthenticated(true);setAuthError("");}else{setAuthenticated(false);if(session)setAuthError("Tu cuenta no tiene acceso habilitado. Contacta al administrador.");}setAuthReady(true);};
     void client.auth.getSession().then(({data})=>apply(data.session));const{data:listener}=client.auth.onAuthStateChange((event,session)=>{if(event==="PASSWORD_RECOVERY")setPasswordRecovery(true);apply(session);});return()=>listener.subscription.unsubscribe();
   },[isDevelopment]);
 
