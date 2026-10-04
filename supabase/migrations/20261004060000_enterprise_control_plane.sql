@@ -1,5 +1,7 @@
 -- Zyteron Enterprise Control Plane. Configuration metadata only; canonical
 -- business entities remain owned by their domain modules.
+begin;
+
 create extension if not exists pgcrypto;
 
 create table if not exists public.configuration_registry(
@@ -123,3 +125,5 @@ do $$begin alter publication supabase_realtime add table public.automation_rules
 do $$begin alter publication supabase_realtime add table public.alert_rules;exception when duplicate_object then null;end$$;
 do $$begin alter publication supabase_realtime add table public.feature_flags;exception when duplicate_object then null;end$$;
 do $$begin alter publication supabase_realtime add table public.system_jobs;exception when duplicate_object then null;end$$;
+
+commit;
