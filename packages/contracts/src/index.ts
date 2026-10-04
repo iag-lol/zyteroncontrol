@@ -292,6 +292,24 @@ export interface ClientContract {
   createdAt: string;
   updatedAt: string;
   archivedAt: string | null;
+  projectId?: string | null;
+  quoteId?: string | null;
+  quoteVersionId?: string | null;
+  independentReason?: string | null;
+  templateCodes?: string[];
+  builderValues?: Record<string, unknown>;
+  sourceSnapshot?: Record<string, unknown>;
+  legalReviewStatus?: "REQUIRED" | "IN_REVIEW" | "APPROVED" | "CHANGES_REQUIRED";
+  approvalStatus?: "DRAFT" | "PENDING" | "APPROVED" | "REJECTED";
+  effectiveStatus?: "NOT_STARTED" | "EFFECTIVE" | "SUSPENDED" | "ENDED";
+  complianceStatus?: "NOT_ASSESSED" | "COMPLIANT" | "AT_RISK" | "BREACHED" | "REMEDIATED";
+  collectionStatus?: "NOT_DUE" | "DUE" | "PARTIAL" | "PAID" | "OVERDUE" | "DISPUTED";
+  frozenAt?: string | null;
+  frozenHash?: string | null;
+  originalDocumentId?: string | null;
+  signedDocumentId?: string | null;
+  signedDocumentHash?: string | null;
+  signatureEvidence?: Record<string, unknown>;
 }
 
 export interface ContractVersion {
@@ -643,3 +661,16 @@ export interface SecuritySummary { criticalEvents:number; highEvents:number; log
 export interface SecurityWorkspace { summary:SecuritySummary; posture:SecurityPosture; identities:SecurityIdentity[]; sessions:SecuritySession[]; devices:SecurityDevice[]; accessRequests:SecurityAccessRequest[]; accessGrants:SecurityAccessGrant[]; accessReviews:Array<Record<string,unknown>>; vaultItems:SecurityVaultItem[]; vaultAccesses:SecurityVaultAccess[]; events:SecurityEvent[]; incidents:SecurityIncident[]; incidentEvents:SecurityIncidentEvent[]; vulnerabilities:SecurityVulnerability[]; controls:SecurityControl[]; scans:SecurityScan[]; dataAssets:DataAsset[]; processingActivities:ProcessingActivity[]; subjectRequests:DataSubjectRequest[]; dpias:PrivacyImpactAssessment[]; privacyBreaches:Array<Record<string,unknown>>; retentionPolicies:Array<Record<string,unknown>>; dataExports:Array<Record<string,unknown>>; vendors:VendorSecurityRecord[]; backupTargets:Array<Record<string,unknown>>; recoveryTests:RecoveryTest[]; disasterRecoveryPlans:Array<Record<string,unknown>>; threatModels:Array<Record<string,unknown>>; gates:SecurityGate[]; settings:Array<Record<string,unknown>>; roles:Array<{role:string;permissionCount:number;classification:"STANDARD"|"SENSITIVE"|"PRIVILEGED"|"SECURITY_CRITICAL"}>; permissions:Array<{code:string;description:string}>; providers:{vault:string;secretScan:string;sast:string;sca:string;dast:string;backup:string;waf:string;malware:string}; generatedAt:string; }
 
 export * from "./finance.js";
+export type ConfigurationHealthStatus="HEALTHY"|"ATTENTION"|"AT_RISK"|"CRITICAL";
+export type ConfigurationClassification="PUBLIC"|"INTERNAL"|"CONFIDENTIAL"|"RESTRICTED"|"CRITICAL";
+export interface ConfigurationEntry { id:string; namespace:string; key:string; value:unknown; valueType:"STRING"|"INTEGER"|"DECIMAL"|"BOOLEAN"|"ENUM"|"DURATION"|"JSON"|"SECRET_REFERENCE"; environment:"DEVELOPMENT"|"STAGING"|"PRODUCTION"; classification:ConfigurationClassification; version:number; effectiveFrom:string; description:string|null; schema:Record<string,unknown>; ownerDomain:string; approvalRequired:boolean; updatedBy:string|null; updatedAt:string; }
+export interface ConfigurationHistoryItem { id:string; configurationId:string|null; namespace:string; key:string; action:string; beforeValue:unknown; afterValue:unknown; actorId:string|null; actorRole:string|null; reason:string; approvalId:string|null; version:number|null; occurredAt:string; }
+export interface AutomationRule { id:string; name:string; description:string|null; eventType:string; conditions:Array<{field:string;operator:string;value:unknown}>; actions:Array<{type:string;config:Record<string,unknown>}>; priority:number; enabled:boolean; dryRun:boolean; environment:string; version:number; maxDepth:number; retryPolicy:{maxAttempts:number;backoffSeconds:number}; createdBy:string|null; updatedBy:string|null; createdAt:string; updatedAt:string; }
+export interface AutomationRun { id:string; ruleId:string; eventId:string|null; correlationId:string; causationId:string|null; depth:number; matched:boolean; actions:Array<Record<string,unknown>>; result:"DRY_RUN"|"SUCCESS"|"FAILED"|"DEAD_LETTER"|"SKIPPED_LOOP"|"DUPLICATE"; durationMs:number; errorSafe:string|null; createdAt:string; }
+export interface AlertRule { id:string; name:string; source:string; eventType:string; severityMin:"INFO"|"LOW"|"MEDIUM"|"HIGH"|"CRITICAL"; conditions:Array<Record<string,unknown>>; recipients:string[]; channels:string[]; quietHours:Record<string,unknown>; dedupWindowMinutes:number; escalationPolicyId:string|null; acknowledgeRequired:boolean; criticalOverride:boolean; enabled:boolean; createdAt:string; updatedAt:string; }
+export interface SettingsIntegrationConnection { id:string; code:string; name:string; category:string; status:"NOT_CONFIGURED"|"CONFIGURED"|"CONNECTED"|"DEGRADED"|"ERROR"|"DISABLED"; environment:string; ownerDomain:string; configuration:Record<string,unknown>; secretReference:string|null; lastTestAt:string|null; lastSuccessAt:string|null; lastErrorSafe:string|null; lastLatencyMs:number|null; enabled:boolean; updatedAt:string; }
+export interface OutgoingWebhook { id:string; name:string; url:string; events:string[]; secretReference:string|null; enabled:boolean; retryPolicy:{maxAttempts:number;backoffSeconds:number}; status:string; createdAt:string; updatedAt:string; }
+export interface FeatureFlag { id:string; key:string; description:string; enabled:boolean; environment:string; scope:"GLOBAL"|"ROLE"|"TEAM"|"USER"|"CLIENT"|"ENVIRONMENT"; rollout:number; killSwitch:boolean; createdBy:string|null; createdAt:string; updatedAt:string; }
+export interface SystemJob { id:string; code:string; name:string; ownerDomain:string; schedule:string|null; enabled:boolean; manualRunAllowed:boolean; status:"IDLE"|"RUNNING"|"SUCCESS"|"FAILED"|"DELAYED"|"DISABLED"; lastRunAt:string|null; nextRunAt:string|null; durationMs:number|null; lastErrorSafe:string|null; updatedAt:string; }
+export interface SystemDiagnostic { id:string; service:string; status:"HEALTHY"|"DEGRADED"|"ERROR"|"NOT_CONFIGURED"; latencyMs:number|null; message:string; checkedAt:string; }
+export interface SettingsWorkspace { summary:{health:ConfigurationHealthStatus;reasons:Array<{status:ConfigurationHealthStatus;label:string;detail:string;href:string}>;activeIntegrations:number;failedIntegrations:number;activeAutomations:number;failedAutomations:number;activeAlerts:number;failedJobs:number;featureFlags:number;pendingApprovals:number;incompleteConfigurations:number;failingWebhooks:number;recentCriticalChanges:number}; configuration:ConfigurationEntry[]; history:ConfigurationHistoryItem[]; automations:AutomationRule[]; automationRuns:AutomationRun[]; alerts:AlertRule[]; integrations:SettingsIntegrationConnection[]; webhooks:OutgoingWebhook[]; webhookDeliveries:Array<Record<string,unknown>>; features:FeatureFlag[]; workflows:Array<Record<string,unknown>>; approvals:Array<Record<string,unknown>>; jobs:SystemJob[]; diagnostics:SystemDiagnostic[]; numbering:Array<Record<string,unknown>>; calendars:Array<Record<string,unknown>>; dependencies:Array<{source:string;targets:string[];status:string}>; canonical:{departments:Array<Record<string,unknown>>;teams:Array<Record<string,unknown>>;roles:Array<Record<string,unknown>>;templates:Array<Record<string,unknown>>;supportSla:Array<Record<string,unknown>>;securityPosture:SecurityPosture|null}; generatedAt:string; }

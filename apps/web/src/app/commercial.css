@@ -433,6 +433,18 @@
   background: var(--sales-soft);
 }
 
+.quoteGrid .quoteIssuePdf {
+  color: #fff;
+  border-color: var(--sales-green);
+  background: var(--sales-green);
+}
+
+.quoteGrid .quoteIssuePdf:hover:not(:disabled) {
+  color: #092f24;
+  border-color: #a3eb32;
+  background: #a3eb32;
+}
+
 .opportunityCard {
   position: relative;
   padding-left: 28px;

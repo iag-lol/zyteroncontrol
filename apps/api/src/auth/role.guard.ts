@@ -11,8 +11,6 @@ import { createServerSupabase } from "../domain/server-supabase.js";
 import { AuthorizationService } from "./authorization.service.js";
 import { PUBLIC_ROUTE, REQUIRED_AAL, REQUIRED_PERMISSIONS, REQUIRED_ROLES } from "./roles.decorator.js";
 
-const bearerClaims=(token:string)=>{try{return JSON.parse(Buffer.from(token.split(".")[1]??"","base64url").toString("utf8"))as Record<string,unknown>;}catch{return{};}};
-
 @Injectable()
 export class RoleGuard implements CanActivate {
   constructor(private readonly reflector: Reflector,private readonly authorization:AuthorizationService) {}
@@ -45,20 +43,28 @@ export class RoleGuard implements CanActivate {
       const token = rawAuthorization?.startsWith("Bearer ") ? rawAuthorization.slice(7) : undefined;
       const supabase = createServerSupabase();
       if (!token || !supabase) throw new UnauthorizedException("Sesión Supabase ausente o inválida.");
-      const { data, error } = await supabase.auth.getUser(token);
-      if (error || !data.user) throw new UnauthorizedException("Sesión Supabase ausente o inválida.");
-      const rawRole = data.user.app_metadata.role;
+      // getClaims validates the JWT signature locally when Supabase uses an
+      // asymmetric signing key and reuses the cached JWKS. This avoids an Auth
+      // network request on every protected API call.
+      const { data, error } = await supabase.auth.getClaims(token);
+      const claims = data?.claims as Record<string, unknown> | undefined;
+      if (error || !claims || typeof claims.sub !== "string") {
+        throw new UnauthorizedException("Sesión Supabase ausente o inválida.");
+      }
+      const appMetadata = claims.app_metadata && typeof claims.app_metadata === "object"
+        ? claims.app_metadata as Record<string, unknown>
+        : {};
+      const rawRole = appMetadata.role;
       role = typeof rawRole === "string" ? rawRole : undefined;
-      userId=data.user.id;
-      const claims=bearerClaims(token);
+      userId=claims.sub;
       aal=claims.aal==="aal2"?"aal2":"aal1";
       sessionId=typeof claims.session_id==="string"?claims.session_id:null;
       request.headers["x-zyteron-user-id"] = userId;
       if (role) request.headers["x-zyteron-role"] = role;
       request.headers["x-zyteron-aal"]=aal;
       if(sessionId)request.headers["x-zyteron-session-id"]=sessionId;
-      const clientId = data.user.app_metadata.client_id;
-      const contactId = data.user.app_metadata.contact_id;
+      const clientId = appMetadata.client_id;
+      const contactId = appMetadata.contact_id;
       if (typeof clientId === "string") request.headers["x-zyteron-client-id"] = clientId;
       if (typeof contactId === "string") request.headers["x-zyteron-contact-id"] = contactId;
     }

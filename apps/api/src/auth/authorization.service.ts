@@ -23,17 +23,56 @@ const os=(ua:string|null)=>!ua?null:ua.includes("Windows")?"Windows":ua.includes
 @Injectable()
 export class AuthorizationService {
   private readonly supabase=createServerSupabase();
+  private readonly permissionCache=new Map<string,{expiresAt:number;values:Set<string>}>();
+  private readonly permissionPending=new Map<string,Promise<Set<string>>>();
+  private readonly observationCache=new Map<string,number>();
+  private readonly observationPending=new Map<string,Promise<boolean>>();
+  private readonly permissionTtl=this.duration("AUTH_PERMISSION_CACHE_MS",60_000,5_000,300_000);
+  private readonly observationTtl=this.duration("AUTH_OBSERVATION_CACHE_MS",5_000,1_000,15_000);
+
+  private duration(name:string,fallback:number,min:number,max:number){
+    const parsed=Number(process.env[name]);
+    return Number.isFinite(parsed)?Math.min(max,Math.max(min,parsed)):fallback;
+  }
 
   async hasPermissions(role:string,permissions:string[]){
     if(!permissions.length)return true;
     if(!this.supabase)return process.env.AUTH_MODE==="development"&&process.env.NODE_ENV!=="production";
-    const{data,error}=await this.supabase.from("role_permissions").select("permission_code").eq("role",role).in("permission_code",permissions);
-    if(error)throw new ServiceUnavailableException("No fue posible validar los permisos de forma segura.");
-    const granted=new Set((data??[]).map(item=>String(item.permission_code)));
+    const cached=this.permissionCache.get(role);
+    let granted=cached&&cached.expiresAt>Date.now()?cached.values:undefined;
+    if(!granted){
+      let pending=this.permissionPending.get(role);
+      if(!pending){
+        pending=(async()=>{
+          const{data,error}=await this.supabase!.from("role_permissions").select("permission_code").eq("role",role);
+          if(error)throw new ServiceUnavailableException("No fue posible validar los permisos de forma segura.");
+          const values=new Set((data??[]).map(item=>String(item.permission_code)));
+          this.permissionCache.set(role,{expiresAt:Date.now()+this.permissionTtl,values});
+          return values;
+        })().finally(()=>this.permissionPending.delete(role));
+        this.permissionPending.set(role,pending);
+      }
+      granted=await pending;
+    }
     return permissions.every(permission=>granted.has(permission));
   }
 
   async observe(context:AuthorizationContext){
+    if(!this.supabase||!context.sessionId)return true;
+    const key=`${context.sessionId}:${context.userId}:${context.deviceId??"none"}`;
+    const cachedUntil=this.observationCache.get(key)??0;
+    if(cachedUntil>Date.now())return true;
+    const pending=this.observationPending.get(key);
+    if(pending)return pending;
+    const observation=this.observeFresh(context).then(allowed=>{
+      if(allowed)this.observationCache.set(key,Date.now()+this.observationTtl);
+      return allowed;
+    }).finally(()=>this.observationPending.delete(key));
+    this.observationPending.set(key,observation);
+    return observation;
+  }
+
+  private async observeFresh(context:AuthorizationContext){
     if(!this.supabase||!context.sessionId)return true;
     const{data:session,error:sessionError}=await this.supabase.from("security_session_metadata").select("id,status").eq("session_id",context.sessionId).maybeSingle();
     if(sessionError)return false;

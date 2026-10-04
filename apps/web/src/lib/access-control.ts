@@ -25,20 +25,20 @@ export const roleProfiles: RoleProfile[] = [
 
 const accessByRole: Record<Role, string[]> = {
   GERENTE_GENERAL: ["*"],
-  JEFE_DESARROLLO: ["control", "operations", "development", "monitoring", "audits", "support", "documents", "reports"],
+  JEFE_DESARROLLO: ["control", "operations", "development", "monitoring", "audits", "support", "documents", "reports", "settings"],
   EJECUTIVA_VENTAS: ["control", "commercial", "clients", "support", "documents"],
-  JEFE_VENTAS: ["control", "commercial", "clients", "finance", "support", "documents", "reports"],
+  JEFE_VENTAS: ["control", "commercial", "clients", "finance", "support", "documents", "reports", "settings"],
   PROGRAMADOR: ["control", "operations", "development", "monitoring", "audits", "support", "documents"],
   TECH_LEAD: ["control", "operations", "development", "monitoring", "audits", "support", "documents", "reports"],
   QA: ["control", "operations", "development", "audits", "support", "documents"],
   SOPORTE_TECNICO: ["control", "operations", "development", "monitoring", "support", "documents"],
-  RRHH: ["control", "hr", "support", "documents", "reports"],
-  FINANZAS: ["control", "finance", "support", "documents", "reports"],
+  RRHH: ["control", "hr", "support", "documents", "reports", "settings"],
+  FINANZAS: ["control", "finance", "support", "documents", "reports", "settings"],
   CONTADOR: ["control", "finance", "support", "documents", "reports"],
   COMERCIAL: ["control", "commercial", "clients", "finance", "support", "documents"],
   PORTAL_CLIENT: [],
   DESARROLLO: ["control", "operations", "development", "monitoring", "audits", "support", "documents"],
-  OPERACIONES: ["control", "operations", "monitoring", "support", "documents"],
+  OPERACIONES: ["control", "operations", "monitoring", "support", "documents", "settings"],
   SECURITY_ADMIN: ["control", "security", "audits", "documents", "reports", "settings"],
 };
 

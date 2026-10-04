@@ -26,7 +26,7 @@ export function effectiveStatus(item:{status:string;dueDate:string},activationDa
 }
 function integer(value:unknown,label:string,min:number,max:number){const number=Number(value);if(!Number.isInteger(number)||number<min||number>max)throw new BadRequestException(`${label} debe ser un entero entre ${min} y ${max}.`);return number;}
 /** Tipo real del archivo por su contenido (no por la extensión declarada). */
-function sniff(bytes:Buffer):"pdf"|"xml"|null{if(bytes.subarray(0,5).toString("latin1")==="%PDF-")return"pdf";const head=bytes.subarray(0,200).toString("utf8").replace(/^﻿/,"").trimStart();return head.startsWith("<")?"xml":null;}
+function sniff(bytes:Buffer):"pdf"|"xml"|null{if(bytes.subarray(0,5).toString("latin1")==="%PDF-")return"pdf";const head=bytes.subarray(0,200).toString("utf8").replace(/^\uFEFF/,"").trimStart();return head.startsWith("<")?"xml":null;}
 
 @Injectable()
 export class QuotePaymentService {

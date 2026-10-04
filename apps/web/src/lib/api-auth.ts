@@ -1,7 +1,5 @@
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Role } from "@zyteron/contracts";
-
-let browserClient: SupabaseClient | undefined;
+import { browserSupabase } from "./auth-client";
 
 export async function apiHeaders(role: Role, headers?: HeadersInit) {
   const result: Record<string, string> = { "content-type":"application/json", "x-request-id":crypto.randomUUID() };
@@ -15,8 +13,7 @@ export async function apiHeaders(role: Role, headers?: HeadersInit) {
     let deviceId=window.localStorage.getItem("zyteron_device_id");
     if(!deviceId){deviceId=crypto.randomUUID();window.localStorage.setItem("zyteron_device_id",deviceId);}
     result["x-zyteron-device-id"]=deviceId;
-    browserClient ??= createClient(url,key);
-    const { data } = await browserClient.auth.getSession();
+    const { data } = await browserSupabase()!.auth.getSession();
     if (data.session?.access_token) result.authorization = `Bearer ${data.session.access_token}`;
   }
   new Headers(headers).forEach((value,name)=>{result[name]=value;});

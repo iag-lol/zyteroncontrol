@@ -4,8 +4,25 @@ import { apiHeaders } from "./api-auth";
 const base=()=>process.env.NEXT_PUBLIC_API_URL??"http://localhost:4000/api";
 async function request<T>(role:Role,path:string,init:RequestInit={}){const response=await fetch(`${base()}${path}`,{...init,headers:await apiHeaders(role,init.headers),cache:"no-store"});if(!response.ok){let message=`Error ${response.status}`;try{const data=await response.json()as{message?:string|string[]};message=Array.isArray(data.message)?data.message.join(" "):data.message||message;}catch{/* respuesta segura no JSON */}throw new Error(message);}return response.json()as Promise<T>;}
 const post=(value:unknown):RequestInit=>({method:"POST",body:JSON.stringify(value)});
+const workspaceCache=new Map<Role,{data:SecurityWorkspace;expiresAt:number}>();
+const workspacePending=new Map<Role,Promise<SecurityWorkspace>>();
+
+async function workspace(role:Role,force=false){
+  const cached=workspaceCache.get(role);
+  if(!force&&cached&&cached.expiresAt>Date.now())return cached.data;
+  const existing=workspacePending.get(role);
+  if(existing)return existing;
+  const pending=request<SecurityWorkspace>(role,"/security/workspace").then(data=>{
+    workspaceCache.set(role,{data,expiresAt:Date.now()+10_000});
+    return data;
+  }).finally(()=>workspacePending.delete(role));
+  workspacePending.set(role,pending);
+  return pending;
+}
+
 export const securityApi={
-  workspace:(role:Role)=>request<SecurityWorkspace>(role,"/security/workspace"),
+  workspace,
+  invalidateWorkspace:(role?:Role)=>role?workspaceCache.delete(role):workspaceCache.clear(),
   revokeSession:(role:Role,id:string,reason:string)=>request(role,`/security/sessions/${id}/revoke`,post({reason})),
   device:(role:Role,id:string,action:"trust"|"block"|"revoke",reason:string)=>request(role,`/security/devices/${id}/${action}`,post({reason})),
   decideAccess:(role:Role,id:string,approved:boolean,reason:string)=>request(role,`/security/access-requests/${id}/${approved?"approve":"reject"}`,post({reason})),

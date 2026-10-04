@@ -1,4 +1,7 @@
-import { Controller, Get, Module } from "@nestjs/common";
-import { RequireRoles } from "../auth/roles.decorator.js"; import { emptyDomain } from "../domain/domain-response.js";
-@Controller("settings") class SettingsController { @Get() @RequireRoles("GERENTE_GENERAL") index() { return emptyDomain("settings", "Configuración base disponible."); } }
-@Module({ controllers: [SettingsController] }) export class SettingsModule {}
+import { Module } from "@nestjs/common";
+import { SettingsController } from "./settings.controller.js";
+import { SettingsRepository } from "./settings.repository.js";
+import { SettingsService } from "./settings.service.js";
+
+@Module({controllers:[SettingsController],providers:[SettingsRepository,SettingsService],exports:[SettingsService]})
+export class SettingsModule{}

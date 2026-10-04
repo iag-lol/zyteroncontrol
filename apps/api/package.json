@@ -17,6 +17,7 @@
     "@supabase/supabase-js": "^2.117.2",
     "@zyteron/contracts": "workspace:*",
     "dotenv": "18.0.4",
+    "pdf-lib": "^1.17.1",
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.2"
   },

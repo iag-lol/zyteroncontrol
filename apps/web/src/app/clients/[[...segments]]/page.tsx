@@ -5,6 +5,7 @@ import { ModulePage } from "@/components/module-page";
 import { notFound } from "next/navigation";
 import { ContactDirectory } from "@/components/clients/contact-directory";
 import { ContractCenter, ContractDetail } from "@/components/clients/contract-center";
+import { ContractBuilder } from "@/components/clients/contract-builder";
 import { ServiceDetail, ServiceOperations } from "@/components/clients/service-operations";
 import { RenewalCenter } from "@/components/clients/renewal-center";
 
@@ -17,6 +18,7 @@ export default async function Page({ params }: { params: Promise<{ segments?: st
   if (segments[0] === "360") return <ClientHub />;
   if (segments[0] === "contacts" && segments.length === 1) return <ContactDirectory />;
   if (segments[0] === "contracts" && segments.length === 1) return <ContractCenter />;
+  if (segments[0] === "contracts" && segments[1] === "new") return <ContractBuilder />;
   if (segments[0] === "contracts" && uuidPattern.test(segments[1] ?? "")) return <ContractDetail id={segments[1]!} />;
   if (segments[0] === "services" && uuidPattern.test(segments[1] ?? "")) return <ServiceDetail id={segments[1]!} />;
   if (segments[0] === "services" && segments.length === 1) return <ServiceOperations />;

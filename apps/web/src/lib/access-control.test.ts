@@ -18,4 +18,10 @@ describe("control de acceso por rol", () => {
     expect(groupForPath("/monitoring/incidents/active")).toBe("monitoring");
     expect(groupForPath("/finance/invoices")).toBe("finance");
   });
+
+  it("permite a managers abrir Settings y delega el alcance fino al backend", () => {
+    expect(canAccessGroup("RRHH", "settings")).toBe(true);
+    expect(canAccessGroup("FINANZAS", "settings")).toBe(true);
+    expect(canAccessGroup("JEFE_DESARROLLO", "settings")).toBe(true);
+  });
 });

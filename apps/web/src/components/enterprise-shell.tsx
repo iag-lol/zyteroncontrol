@@ -136,7 +136,7 @@ export function EnterpriseShell({ children }: { children: ReactNode }) {
                     {group.items.map((item) => {
                       const active = item.href === activeItem?.href;
                       return (
-                        <Link className={active ? "active" : ""} href={item.href} prefetch={false} key={item.href} onClick={() => setMobileOpen(false)}>
+                        <Link className={active ? "active" : ""} href={item.href} prefetch="auto" key={item.href} onClick={() => setMobileOpen(false)}>
                           <span>{item.label}</span>
                           {item.badge ? <b>{item.badge}</b> : null}
                         </Link>
