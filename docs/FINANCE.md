@@ -75,4 +75,6 @@ pnpm --filter @zyteron/api test        # incluye src/finance/finance.test.ts
 pnpm --filter @zyteron/web test
 pnpm lint && pnpm typecheck && pnpm build
 cd supabase/tests/finance && npm install && npm run scenario   # 45 controles SQL sobre PostgreSQL (PGlite)
+# E2E de API (55 controles): levantar apps/api con AUTH_MODE=development y PORT=4517, luego
+API=http://localhost:4517/api npm run e2e
 ```

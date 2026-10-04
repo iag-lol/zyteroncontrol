@@ -4,7 +4,8 @@
   "type": "module",
   "description": "Verificación de la migración de Finanzas y Contabilidad sobre PostgreSQL real (PGlite) con todas las migraciones del repositorio. No forma parte del workspace pnpm.",
   "scripts": {
-    "scenario": "node finance-scenario.mjs"
+    "scenario": "node finance-scenario.mjs",
+    "e2e": "node api-e2e.mjs"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.5.8"
