@@ -62,7 +62,7 @@ function PerformanceBody() {
   const focus = data?.monitors.find((monitor) => monitor.id === selected) ?? data?.slowest[0]?.monitor ?? data?.monitors[0];
   return <>
     <div className="relFilters"><div className="relTabs" style={{ margin: 0 }} role="tablist">{(["24h", "7d"] as const).map((value) => <a key={value} role="tab" aria-selected={period === value} className={period === value ? "active" : ""} href="#" onClick={(event) => { event.preventDefault(); setPeriod(value); }}>{value === "24h" ? "24 h" : "7 días"}</a>)}</div>
-      {data?.monitors.length ? <label>Endpoint<select value={focus?.id ?? ""} onChange={(event) => setSelected(event.target.value)}>{data.monitors.map((monitor) => <option key={monitor.id} value={monitor.id}>{monitor.endpointName} · {monitor.projectName}</option>)}</select></label> : null}
+      {data?.monitors.length ? <label>Endpoint<select value={focus?.id ?? ""} onChange={(event) => setSelected(event.target.value)}>{data.monitors.map((monitor) => <option key={monitor.id} value={monitor.id}>{monitor.endpointName} · {monitor.projectName ?? "Sin proyecto"}</option>)}</select></label> : null}
     </div>
     {query.loading && !data ? <Loading height={320} /> : query.error ? <ErrorBox error={query.error} retry={() => void query.reload()} /> : !data?.monitors.length ? <Empty title="Este alcance todavía no posee endpoints monitoreados." icon={Timer} /> : <div className="relGrid command">
       <Panel title={`Tendencia · ${focus?.endpointName ?? ""}`} icon={TrendingUp}>{focus ? <LatencyChart buckets={data.buckets[focus.id] ?? []} granularity={period === "24h" ? "hour" : "day"} /> : null}</Panel>
@@ -117,4 +117,3 @@ function HistoryBody() {
     </Panel>
   </>;
 }
-

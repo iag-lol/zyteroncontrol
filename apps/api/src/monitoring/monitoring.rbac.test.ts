@@ -24,7 +24,7 @@ describe("RBAC y alcance (anti-IDOR)", () => {
     await expect(service.getMonitor(actors.dev, monitorB.id)).rejects.toBeInstanceOf(ForbiddenException);
     await expect(service.checkNow(actors.dev, monitorB.id)).rejects.toBeInstanceOf(ForbiddenException);
     await expect(service.listChecks(actors.dev, monitorB.id, {})).rejects.toBeInstanceOf(ForbiddenException);
-    await expect(service.projectStatus(actors.dev, monitorB.projectId)).rejects.toBeInstanceOf(ForbiddenException);
+    await expect(service.projectStatus(actors.dev, monitorB.projectId!)).rejects.toBeInstanceOf(ForbiddenException);
     expect((await service.listMonitors(actors.dev, {})).map((monitor) => monitor.id)).toEqual([monitorA.id]);
     expect((await service.dashboard(actors.dev)).totals.total).toBe(1);
   });

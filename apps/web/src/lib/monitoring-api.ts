@@ -34,7 +34,7 @@ const qs = (params: Record<string, string | number | undefined | null>) => { con
 
 export interface CheckNowResult { result: { success: boolean; statusCode: number | null; latencyMs: number | null; errorMessage: string | null }; status: string; statusReason: string; incidentId: string | null; incidentNumber: string | null; monitor: MonitorView }
 export interface MonitorStatsResponse { stats: MonitorStats; hourly: UptimeBucket[]; daily: UptimeBucket[]; incidents: Incident[] }
-export interface EndpointDetail { endpoint: ProjectEndpoint & { clientId: string | null; clientName: string | null; projectName: string; projectNumber: string | null }; monitors: MonitorView[]; maintenance: MaintenanceWindow[]; incidents: Incident[] }
+export interface EndpointDetail { endpoint: Omit<ProjectEndpoint, "projectId"> & { projectId: string | null; clientId: string | null; clientName: string | null; projectName: string | null; projectNumber: string | null }; monitors: MonitorView[]; maintenance: MaintenanceWindow[]; incidents: Incident[] }
 export interface StatusBoard { monitors: MonitorView[]; fleet: Record<string, MonitoringFleetEntry>; generatedAt: string }
 export interface UptimeReport { period: string; granularity: "hour" | "day"; monitors: MonitorView[]; fleet: Record<string, MonitoringFleetEntry>; buckets: Record<string, UptimeBucket[]>; incidents: Incident[]; maintenancePolicy: "EXCLUDE" | "INCLUDE"; retention: { rawDays: number; dailyDays: number } }
 export interface PerformanceReport { period: string; monitors: MonitorView[]; ranking: Record<string, LatencyWindow>; buckets: Record<string, UptimeBucket[]>; slowest: Array<{ monitor: MonitorView; latency: LatencyWindow }> }

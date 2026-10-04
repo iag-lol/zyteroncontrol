@@ -73,7 +73,7 @@ function IncidentBody({ id }: { id: string }) {
       <div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center" }}><span className="relMono" style={{ fontWeight: 900 }}>{incident.incidentNumber}</span><SeverityBadge severity={incident.severity} /><IncidentStatusChip status={incident.status} />{incident.reopenedCount ? <span className="relChip">Reabierto {incident.reopenedCount}×</span> : null}{incident.clientVisibility === "CLIENT_VISIBLE" ? <span className="relChip"><Eye size={11} aria-hidden />Visible al cliente</span> : null}</div>
         <h2>{incident.title}</h2>
-        <p>{incident.clientName ?? "Sin cliente"} · {incident.projectName} · {incident.endpointName ?? "Sin endpoint"} {incident.environment ? `· ${environmentLabel[incident.environment] ?? incident.environment}` : ""}</p>
+        <p>{incident.clientName ?? "Sin cliente"} · {incident.projectName ?? "Sin proyecto"} · {incident.endpointName ?? "Sin endpoint"} {incident.environment ? `· ${environmentLabel[incident.environment] ?? incident.environment}` : ""}</p>
       </div>
       <div className="relClock">{active ? <><small>Abierto hace</small><strong>{formatDuration(elapsed)}</strong><small>Confirmado {formatDateTime(incident.confirmedAt)}</small></> : <><small>Downtime</small><strong>{formatDuration(incident.downtimeSeconds)}</strong><small>Resuelto {formatDateTime(incident.resolvedAt)}</small></>}</div>
     </section>
@@ -190,4 +190,3 @@ function VisibilityDialog({ incident, onClose, onSubmit }: { incident: Incident;
     <footer><button type="button" className="relBtn" onClick={onClose}>Cancelar</button><button className="relBtn primary" disabled={visible && !summary.trim()}>Guardar</button></footer>
   </form></Modal>;
 }
-

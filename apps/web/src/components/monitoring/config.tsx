@@ -106,7 +106,7 @@ function RuleModal({ rule, onClose, onSave }: { rule: AlertRule | null; onClose:
   const [steps, setSteps] = useState(rule?.escalationPolicy.steps ?? [{ afterMinutes: 0, targets: ["ENDPOINT_RESPONSIBLE"] as AlertTarget[] }, { afterMinutes: 5, targets: ["PROJECT_LEAD"] as AlertTarget[] }, { afterMinutes: 15, targets: ["DEVELOPMENT_MANAGER"] as AlertTarget[] }]);
   const [critical, setCritical] = useState<AlertTarget[]>(rule?.escalationPolicy.criticalImmediateTargets ?? ["GENERAL_MANAGER"]);
   const clients = useMemo(() => [...new Map((monitors.data ?? []).filter((m) => m.clientId).map((m) => [m.clientId!, m.clientName ?? "Cliente"])).entries()], [monitors.data]);
-  const projects = useMemo(() => [...new Map((monitors.data ?? []).map((m) => [m.projectId, m.projectName])).entries()], [monitors.data]);
+  const projects = useMemo(() => [...new Map((monitors.data ?? []).filter((m) => m.projectId).map((m) => [m.projectId!, m.projectName ?? "Proyecto"])).entries()], [monitors.data]);
   const toggle = <T,>(list: T[], item: T) => list.includes(item) ? list.filter((entry) => entry !== item) : [...list, item];
   return <Modal title={rule ? "Editar regla" : "Nueva regla de alerta"} onClose={onClose}><form className="relForm" onSubmit={(event) => { event.preventDefault(); void onSave({ ...value, clientId: value.clientId || null, projectId: value.projectId || null, monitorId: value.monitorId || null, escalationPolicy: { steps, criticalImmediateTargets: critical } }); }}>
     <label className="relField wide">Nombre<input required maxLength={120} value={value.name} onChange={(event) => setValue({ ...value, name: event.target.value })} /></label>
@@ -151,4 +151,3 @@ function PoliciesPanel({ settings, severityRules, canEdit, onSave }: { settings:
     <Panel title="Reglas de severidad" icon={SlidersHorizontal} count={severityRules.length}><table className="relTable"><thead><tr><th>Regla</th><th>Ambiente</th><th>Prioridad</th><th>Severidad</th></tr></thead><tbody>{severityRules.map((rule) => <tr key={rule.id}><td>{rule.name}</td><td>{rule.environment ?? "Cualquiera"}</td><td>{rule.projectPriority ?? "Cualquiera"}</td><td>{severityLabel[rule.severity]}</td></tr>)}</tbody></table><small className="relMuted">Orden de resolución: severidad fijada en el monitor → regla más específica → Media. Postmortem requerido para: {settings.postmortemSeverities.map((severity) => severityLabel[severity]).join(", ")}.</small></Panel>
   </div>;
 }
-

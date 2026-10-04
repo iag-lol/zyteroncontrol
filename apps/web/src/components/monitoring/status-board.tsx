@@ -34,8 +34,8 @@ function StatusBoardBody() {
   const grouped = useMemo(() => {
     const map = new Map<string, Map<string, Map<string, MonitorView[]>>>();
     for (const monitor of query.data?.monitors ?? []) {
-      const client = monitor.clientName ?? "Sin cliente", projects = map.get(client) ?? new Map<string, Map<string, MonitorView[]>>(), environments = projects.get(monitor.projectName) ?? new Map<string, MonitorView[]>();
-      environments.set(monitor.environment, [...(environments.get(monitor.environment) ?? []), monitor]); projects.set(monitor.projectName, environments); map.set(client, projects);
+      const client = monitor.clientName ?? "Sin cliente", project = monitor.projectName ?? "Sin proyecto", projects = map.get(client) ?? new Map<string, Map<string, MonitorView[]>>(), environments = projects.get(project) ?? new Map<string, MonitorView[]>();
+      environments.set(monitor.environment, [...(environments.get(monitor.environment) ?? []), monitor]); projects.set(project, environments); map.set(client, projects);
     }
     return [...map.entries()].sort(([, a], [, b]) => worst(a) - worst(b));
   }, [query.data]);

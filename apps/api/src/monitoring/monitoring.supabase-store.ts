@@ -14,7 +14,7 @@ import {
 import type { ApplyCheckPayload, ApplyCheckResult, EngineContext, EngineIncident, IncidentEventDraft, IncidentPatch, MonitorExecution, MonitoringEventDraft, OutboxDraft } from "./monitoring.types.js";
 
 const ACTIVE = ["DETECTED", "CONFIRMED", "ACKNOWLEDGED", "INVESTIGATING", "MITIGATING", "MONITORING"];
-const MONITOR_SELECT = "*,project_endpoints!inner(id,name,url,environment,endpoint_type,responsible_user_id,active),projects!inner(id,name,project_number,priority,project_lead_id,development_manager_id),clients(legal_name,trade_name)";
+const MONITOR_SELECT = "*,project_endpoints!inner(id,name,url,environment,endpoint_type,responsible_user_id,active),projects(id,name,project_number,priority,project_lead_id,development_manager_id),clients(legal_name,trade_name)";
 const INCIDENT_SELECT = "*,projects(name),project_endpoints(name,url,environment),clients(legal_name,trade_name)";
 const rel = (value: unknown): Record<string, any> | null => Array.isArray(value) ? (value[0] as Record<string, any>) ?? null : (value as Record<string, any>) ?? null;
 const clientName = (value: unknown) => { const row = rel(value); return row ? String(row.trade_name || row.legal_name || "") || null : null; };
@@ -57,18 +57,18 @@ export class SupabaseMonitoringStore implements MonitoringStore {
 
   private async decorateMonitors(rows: any[]): Promise<MonitorView[]> {
     if (!rows.length) return [];
-    const ids = rows.map((row) => row.id), projectIds = [...new Set(rows.map((row) => row.project_id as string))], now = new Date().toISOString();
+    const ids = rows.map((row) => row.id), projectIds = [...new Set(rows.map((row) => row.project_id).filter((id): id is string => typeof id === "string"))], now = new Date().toISOString();
     const [incidents, windows] = await Promise.all([
       this.db.from("incidents").select("id,monitor_id,incident_number,severity,status,confirmed_at").in("monitor_id", ids).in("status", ACTIVE),
-      this.db.from("maintenance_windows").select("id,project_id,endpoint_id,title,ends_at,suppress_alerts").in("project_id", projectIds).in("status", ["PLANNED", "ACTIVE"]).lte("starts_at", now).gt("ends_at", now),
+      projectIds.length ? this.db.from("maintenance_windows").select("id,project_id,endpoint_id,title,ends_at,suppress_alerts").in("project_id", projectIds).in("status", ["PLANNED", "ACTIVE"]).lte("starts_at", now).gt("ends_at", now) : Promise.resolve({ data: [], error: null }),
     ]);
     if (incidents.error) throw incidents.error; if (windows.error) throw windows.error;
     return rows.map((r) => {
-      const endpoint = rel(r.project_endpoints)!, project = rel(r.projects)!, incident = (incidents.data ?? []).find((item) => item.monitor_id === r.id);
+      const endpoint = rel(r.project_endpoints)!, project = rel(r.projects), incident = (incidents.data ?? []).find((item) => item.monitor_id === r.id);
       const window = (windows.data ?? []).filter((item) => item.project_id === r.project_id && (!item.endpoint_id || item.endpoint_id === r.endpoint_id)).sort((a, b) => Number(b.suppress_alerts) - Number(a.suppress_alerts))[0];
       return {
         id: r.id, endpointId: r.endpoint_id, endpointName: endpoint.name, url: endpoint.url, environment: endpoint.environment, endpointType: endpoint.endpoint_type, responsibleUserId: endpoint.responsible_user_id,
-        projectId: r.project_id, projectName: project.name, projectNumber: project.project_number, projectPriority: project.priority, projectLeadId: project.project_lead_id, developmentManagerId: project.development_manager_id,
+        projectId: r.project_id, projectName: project?.name ?? null, projectNumber: project?.project_number ?? null, projectPriority: project?.priority ?? null, projectLeadId: project?.project_lead_id ?? null, developmentManagerId: project?.development_manager_id ?? null,
         clientId: r.client_id, clientName: clientName(r.clients), monitorType: r.monitor_type, enabled: r.enabled, intervalSeconds: r.interval_seconds, timeoutMs: r.timeout_ms, httpMethod: r.http_method,
         expectedStatusMin: r.expected_status_min, expectedStatusMax: r.expected_status_max, expectedContent: r.expected_content, followRedirects: r.follow_redirects, maxRedirects: r.max_redirects,
         failureThreshold: r.failure_threshold, recoveryThreshold: r.recovery_threshold, sslMonitoringEnabled: r.ssl_monitoring_enabled, warningLatencyMs: r.warning_latency_ms, criticalLatencyMs: r.critical_latency_ms,
@@ -93,7 +93,7 @@ export class SupabaseMonitoringStore implements MonitoringStore {
     const { data, error } = await query.limit(1000); if (error) throw error;
     const search = filter.search?.toLowerCase();
     return (await this.decorateMonitors(data ?? [])).filter((item) => (!filter.environment || item.environment === filter.environment) && (!filter.responsibleUserId || item.responsibleUserId === filter.responsibleUserId) && (!search || [item.endpointName, item.url, item.projectName, item.clientName].some((value) => value?.toLowerCase().includes(search))))
-      .sort((a, b) => (a.clientName ?? "").localeCompare(b.clientName ?? "") || a.projectName.localeCompare(b.projectName) || a.endpointName.localeCompare(b.endpointName));
+      .sort((a, b) => (a.clientName ?? "").localeCompare(b.clientName ?? "") || (a.projectName ?? "").localeCompare(b.projectName ?? "") || a.endpointName.localeCompare(b.endpointName));
   }
   async getMonitor(id: string) { const { data, error } = await this.db.from("monitors").select(MONITOR_SELECT).eq("id", id).maybeSingle(); if (error) throw error; return data ? (await this.decorateMonitors([data]))[0] : undefined; }
   async createMonitor(endpointId: string, config: MonitorConfig, actorId: string | null) {
@@ -106,7 +106,7 @@ export class SupabaseMonitoringStore implements MonitoringStore {
   async updateMonitor(id: string, patch: Partial<MonitorConfig>) { const { error } = await this.db.from("monitors").update(configToRow(patch)).eq("id", id); if (error) throw error; return (await this.getMonitor(id))!; }
   async setMonitorEnabled(id: string, enabled: boolean) { const { error } = await this.db.rpc("monitoring_set_enabled", { p_monitor: id, p_enabled: enabled }); if (error) throw rpcError(error); return (await this.getMonitor(id))!; }
 
-  private endpointFromRow = (r: any): EndpointView => ({ id: r.id, projectId: r.project_id, name: r.name, url: r.url, environment: r.environment, endpointType: r.endpoint_type, monitoringEnabled: r.monitoring_enabled, responsibleUserId: r.responsible_user_id, active: r.active, createdAt: r.created_at, updatedAt: r.updated_at, clientId: r.client_id, clientName: clientName(r.clients), projectName: rel(r.projects)?.name ?? "", projectNumber: rel(r.projects)?.project_number ?? null });
+  private endpointFromRow = (r: any): EndpointView => ({ id: r.id, projectId: r.project_id, name: r.name, url: r.url, environment: r.environment, endpointType: r.endpoint_type, monitoringEnabled: r.monitoring_enabled, responsibleUserId: r.responsible_user_id, active: r.active, createdAt: r.created_at, updatedAt: r.updated_at, clientId: r.client_id, clientName: clientName(r.clients), projectName: rel(r.projects)?.name ?? null, projectNumber: rel(r.projects)?.project_number ?? null });
   async getEndpoint(id: string) { const { data, error } = await this.db.from("project_endpoints").select("*,projects(name,project_number),clients(legal_name,trade_name)").eq("id", id).maybeSingle(); if (error) throw error; return data ? this.endpointFromRow(data) : undefined; }
   async listEndpoints(projectIds: string[] | null, projectId?: string) {
     if (projectIds && !projectIds.length) return [];
@@ -114,8 +114,21 @@ export class SupabaseMonitoringStore implements MonitoringStore {
     if (projectIds) query = query.in("project_id", projectIds); if (projectId) query = query.eq("project_id", projectId);
     const { data, error } = await query.order("name").limit(1000); if (error) throw error; return (data ?? []).map(this.endpointFromRow);
   }
-  async createEndpoint(projectId: string, input: Partial<ProjectEndpoint>) { const endpoint = await this.operations.createEndpoint(projectId, input); return (await this.getEndpoint(endpoint.id))!; }
-  async updateEndpoint(id: string, patch: Partial<ProjectEndpoint>) { await this.operations.updateEndpoint(id, patch); return (await this.getEndpoint(id))!; }
+  async createEndpoint(projectId: string | null, input: Partial<ProjectEndpoint> & { clientId?: string | null }) {
+    if (projectId) { const endpoint = await this.operations.createEndpoint(projectId, input); return (await this.getEndpoint(endpoint.id))!; }
+    const { data, error } = await this.db.from("project_endpoints").insert({ project_id: null, client_id: input.clientId ?? null, name: input.name, url: input.url, environment: input.environment ?? "PRODUCTION", endpoint_type: input.endpointType ?? "WEB", monitoring_enabled: true, responsible_user_id: input.responsibleUserId ?? null, active: true }).select("id").single();
+    if (error) throw error;
+    return (await this.getEndpoint(data.id))!;
+  }
+  async updateEndpoint(id: string, patch: Partial<ProjectEndpoint>) {
+    const endpoint = await this.getEndpoint(id);
+    if (!endpoint) throw new MonitoringError("MONITOR_NOT_FOUND", "Endpoint no encontrado.");
+    if (endpoint.projectId) { await this.operations.updateEndpoint(id, patch); return (await this.getEndpoint(id))!; }
+    const map: Record<string, string> = { name: "name", url: "url", environment: "environment", endpointType: "endpoint_type", monitoringEnabled: "monitoring_enabled", responsibleUserId: "responsible_user_id", active: "active" };
+    const row = Object.fromEntries(Object.entries(patch).filter(([key]) => map[key]).map(([key, value]) => [map[key]!, value]));
+    const { error } = await this.db.from("project_endpoints").update(row).eq("id", id); if (error) throw error;
+    return (await this.getEndpoint(id))!;
+  }
 
   async claimDue(workerId: string, limit: number, leaseSeconds: number) { const { data, error } = await this.db.rpc("monitoring_claim_due_monitors", { p_worker: workerId, p_limit: limit, p_lease_seconds: leaseSeconds }); if (error) throw error; return (data ?? []) as MonitorExecution[]; }
   async claimMonitor(id: string, workerId: string, leaseSeconds: number, cooldownSeconds: number) { const { data, error } = await this.db.rpc("monitoring_claim_monitor", { p_monitor: id, p_worker: workerId, p_lease_seconds: leaseSeconds, p_cooldown_seconds: cooldownSeconds }); if (error) throw rpcError(error); return data as MonitorExecution; }

@@ -72,16 +72,20 @@ export class MonitoringService {
     const scope = await this.projectScope(actor);
     if (scope && !scope.includes(projectId)) throw new ForbiddenException("No tienes acceso a este proyecto.");
   }
+  private async assertMonitoringScope(actor: MonitoringActor, projectId: string | null) {
+    if (projectId) return this.assertProject(actor, projectId);
+    if (!hasFleetScope(actor.role)) throw new ForbiddenException("Sólo gerencia, jefaturas y operaciones pueden acceder a monitores sin proyecto.");
+  }
   private async monitorFor(actor: MonitoringActor, id: string) {
     const monitor = await this.store.getMonitor(uuid(id, "Monitor"));
     if (!monitor) throw new NotFoundException("Monitor no encontrado.");
-    await this.assertProject(actor, monitor.projectId);
+    await this.assertMonitoringScope(actor, monitor.projectId);
     return monitor;
   }
   private async incidentFor(actor: MonitoringActor, id: string) {
     const incident = await this.store.getIncident(uuid(id, "Incidente"));
     if (!incident) throw new NotFoundException("Incidente no encontrado.");
-    await this.assertProject(actor, incident.projectId);
+    await this.assertMonitoringScope(actor, incident.projectId);
     return incident;
   }
   me(actor: MonitoringActor) { this.require(actor, "monitoring.dashboard.view", "monitoring.summary.view"); return scopeFor(actor.role); }
@@ -123,11 +127,11 @@ export class MonitoringService {
     try { return await assertMonitorTarget(normalizeMonitorUrl(url), this.resolver, publicAddressPolicy, configuredAllowedPorts()); }
     catch (error) { if (error instanceof SsrfError) throw new BadRequestException(`URL rechazada por la política de seguridad: ${error.message}`); throw error; }
   }
-  private async validateResponsible(projectId: string, responsibleUserId: string | null) {
+  private async validateResponsible(projectId: string | null, responsibleUserId: string | null) {
     if (!responsibleUserId || !this.directory) return;
     const selected = (await this.directory.list()).find((user) => user.id === responsibleUserId && user.active);
     if (!selected || !selected.role || !endpointResponsibleRoles.has(selected.role)) throw new BadRequestException("El responsable debe ser un usuario activo de Desarrollo u Operaciones.");
-    if (["PROGRAMADOR", "DESARROLLO", "TECH_LEAD", "SOPORTE_TECNICO"].includes(selected.role)) {
+    if (projectId && ["PROGRAMADOR", "DESARROLLO", "TECH_LEAD", "SOPORTE_TECNICO"].includes(selected.role)) {
       const members = await this.store.projectMemberIds(projectId);
       if (!members.includes(selected.id)) throw new BadRequestException("El responsable técnico debe pertenecer al proyecto seleccionado.");
     }
@@ -139,7 +143,7 @@ export class MonitoringService {
   }
   async getMonitor(actor: MonitoringActor, id: string) { this.require(actor, "monitor.view"); return this.monitorFor(actor, id); }
 
-  /** Registra (o reutiliza) el endpoint del proyecto y crea su monitor con validación SSRF previa. */
+  /** Registra (o reutiliza) un endpoint con cliente y proyecto opcional, con validación SSRF previa. */
   async createMonitor(actor: MonitoringActor, body: Record<string, unknown>) {
     this.require(actor, "monitor.create");
     let endpointId = optionalUuid(body.endpointId, "Endpoint");
@@ -147,18 +151,21 @@ export class MonitoringService {
     if (endpointId) {
       const endpoint = await this.store.getEndpoint(endpointId);
       if (!endpoint) throw new NotFoundException("Endpoint no encontrado.");
-      await this.assertProject(actor, endpoint.projectId);
+      await this.assertMonitoringScope(actor, endpoint.projectId);
       await this.validateResponsible(endpoint.projectId, endpoint.responsibleUserId);
       url = await this.validateTarget(endpoint.url);
     } else {
-      const projectId = uuid(body.projectId, "Proyecto");
-      await this.assertProject(actor, projectId);
-      if (!(await this.store.getProject(projectId))) throw new NotFoundException("Proyecto no encontrado.");
+      const projectId = optionalUuid(body.projectId, "Proyecto");
+      const clientId = optionalUuid(body.clientId, "Cliente");
+      if (!projectId && !clientId) throw new BadRequestException("Selecciona un cliente; el proyecto es opcional.");
+      await this.assertMonitoringScope(actor, projectId);
+      if (projectId && !(await this.store.getProject(projectId))) throw new NotFoundException("Proyecto no encontrado.");
       url = await this.validateTarget(text(body.url, "URL", 2048));
       const responsibleUserId = optionalUuid(body.responsibleUserId, "Responsable");
       await this.validateResponsible(projectId, responsibleUserId);
-      const existing = (await this.store.listEndpoints(null, projectId)).find((endpoint) => endpoint.url.replace(/\/$/, "").toLowerCase() === url.toString().replace(/\/$/, "").toLowerCase());
+      const existing = (await this.store.listEndpoints(null, projectId ?? undefined)).find((endpoint) => endpoint.projectId === projectId && endpoint.clientId === (projectId ? endpoint.clientId : clientId) && endpoint.url.replace(/\/$/, "").toLowerCase() === url.toString().replace(/\/$/, "").toLowerCase());
       endpointId = existing?.id ?? (await this.store.createEndpoint(projectId, {
+        clientId: projectId ? undefined : clientId,
         name: text(body.name, "Nombre", 120), url: url.toString(), environment: oneOf(body.environment ?? "PRODUCTION", endpointEnvironments, "Ambiente"),
         endpointType: oneOf(body.endpointType ?? "WEB", endpointTypes, "Tipo de endpoint"), monitoringEnabled: true, responsibleUserId,
       })).id;
@@ -241,10 +248,10 @@ export class MonitoringService {
     this.require(actor, "endpoint.view");
     const endpoint = await this.store.getEndpoint(uuid(id, "Endpoint"));
     if (!endpoint) throw new NotFoundException("Endpoint no encontrado.");
-    await this.assertProject(actor, endpoint.projectId);
+    await this.assertMonitoringScope(actor, endpoint.projectId);
     const [monitors, maintenance, incidents] = await Promise.all([
       this.store.listMonitors({ projectIds: null, endpointId: endpoint.id }),
-      this.store.listMaintenance({ projectIds: null, projectId: endpoint.projectId, from: new Date(Date.now() - 30 * 86_400_000).toISOString() }),
+      endpoint.projectId ? this.store.listMaintenance({ projectIds: null, projectId: endpoint.projectId, from: new Date(Date.now() - 30 * 86_400_000).toISOString() }) : Promise.resolve([]),
       this.store.listIncidents({ projectIds: null, endpointId: endpoint.id, state: "all", page: 1, pageSize: 20 }),
     ]);
     return { endpoint, monitors, maintenance: maintenance.filter((window) => !window.endpointId || window.endpointId === endpoint.id), incidents: incidents.items };
@@ -270,7 +277,7 @@ export class MonitoringService {
     const [events, links, checks, deployments, monitor] = await Promise.all([
       this.store.incidentEvents(incident.id), this.store.incidentLinks(incident.id),
       incident.monitorId ? this.store.checksBetween(incident.monitorId, windowStart, new Date(new Date(windowEnd).getTime() + 10 * 60_000).toISOString(), 60) : Promise.resolve([]),
-      this.store.recentDeployments(incident.projectId, incident.detectedAt, 5),
+      incident.projectId ? this.store.recentDeployments(incident.projectId, incident.detectedAt, 5) : Promise.resolve([]),
       incident.monitorId ? this.store.getMonitor(incident.monitorId) : Promise.resolve(undefined),
     ]);
     // Contexto, no causalidad: se listan deployments de las 48 h previas a la primera falla.
@@ -388,6 +395,7 @@ export class MonitoringService {
   async createTask(actor: MonitoringActor, id: string, body: Record<string, unknown>, idempotencyKey?: string) {
     this.require(actor, "incident.manage");
     const incident = await this.incidentFor(actor, id);
+    if (!incident.projectId) throw new BadRequestException("Vincula el monitor a un proyecto antes de crear una tarea operativa.");
     const cacheKey = idempotencyKey ? `${incident.id}:${idempotencyKey}` : null;
     const cached = cacheKey ? this.taskKeys.get(cacheKey) : undefined;
     const previous = cached && Date.now() - cached.at < 600_000 ? await this.store.getTask(cached.taskId) : undefined;

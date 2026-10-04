@@ -16,7 +16,8 @@ export interface IncidentFilter { projectIds: string[] | null; state?: "open" | 
 export interface CheckFilter { page: number; pageSize: number; success?: boolean; statusCode?: number; from?: string; to?: string }
 export interface MaintenanceFilter { projectIds: string[] | null; projectId?: string; clientId?: string; status?: string; from?: string; to?: string }
 export interface EventFilter { projectIds: string[] | null; projectId?: string; clientId?: string; monitorId?: string; incidentId?: string; eventType?: string; from?: string; to?: string; page: number; pageSize: number }
-export interface EndpointView extends ProjectEndpoint { clientId: string | null; clientName: string | null; projectName: string; projectNumber: string | null }
+export interface EndpointView extends Omit<ProjectEndpoint, "projectId"> { projectId: string | null; clientId: string | null; clientName: string | null; projectName: string | null; projectNumber: string | null }
+export interface MonitoringEndpointInput extends Partial<ProjectEndpoint> { clientId?: string | null }
 export interface AlertDeliveryDraft extends Omit<AlertDelivery, "id" | "createdAt" | "readAt"> { maintenanceWindowId?: string | null }
 export interface IncidentMutationGuard { escalationBelow?: number; unacknowledged?: boolean }
 export interface MaintenanceInput { projectId: string; endpointId: string | null; title: string; description: string | null; clientSummary: string | null; startsAt: string; endsAt: string; suppressAlerts: boolean; clientVisibility: "INTERNAL" | "CLIENT_VISIBLE"; createdBy: string | null }
@@ -39,7 +40,7 @@ export interface MonitoringStore {
   setMonitorEnabled(id: string, enabled: boolean): Promise<MonitorView>;
   getEndpoint(id: string): Promise<EndpointView | undefined>;
   listEndpoints(projectIds: string[] | null, projectId?: string): Promise<EndpointView[]>;
-  createEndpoint(projectId: string, input: Partial<ProjectEndpoint>): Promise<EndpointView>;
+  createEndpoint(projectId: string | null, input: MonitoringEndpointInput): Promise<EndpointView>;
   updateEndpoint(id: string, patch: Partial<ProjectEndpoint>): Promise<EndpointView>;
 
   claimDue(workerId: string, limit: number, leaseSeconds: number): Promise<MonitorExecution[]>;

@@ -206,7 +206,7 @@ describe("Alertas, escalamiento y acciones", () => {
 
   it("muestra deployments recientes como contexto sin afirmar causalidad", async () => {
     const { tick, checker, monitor, service, operations } = await monitored();
-    await operations.createDeployment({ projectId: monitor.projectId, environment: "PRODUCTION", version: "v2.4.0", status: "SUCCESS" });
+    await operations.createDeployment({ projectId: monitor.projectId!, environment: "PRODUCTION", version: "v2.4.0", status: "SUCCESS" });
     checker.script(URL_A, fail(), fail(), fail());
     for (let i = 0; i < 3; i++) await tick(monitor.id);
     const [incident] = (await service.listIncidents(actors.jefe, {})).items;
@@ -247,6 +247,16 @@ describe("Configuración y validaciones del monitor", () => {
     const monitor = await kit.service.createMonitor(actors.jefe, { projectId: kit.projectA.id, name: "Web", url: "www.zyteron.cl" });
     expect(monitor.url).toBe("https://www.zyteron.cl/");
     expect(monitor.monitorType).toBe("HTTPS");
+  });
+  it("crea y ejecuta un monitor asociado al cliente sin exigir proyecto", async () => {
+    const kit = await createKit();
+    const monitor = await kit.service.createMonitor(actors.jefe, { clientId: ids.client, name: "Portal externo", url: "https://www.zyteron.cl" });
+    expect(monitor).toMatchObject({ projectId: null, projectName: null, clientId: ids.client });
+    expect((await kit.service.listMonitors(actors.jefe, { clientId: ids.client })).map((item) => item.id)).toContain(monitor.id);
+    expect(await kit.service.listMonitors(actors.dev, {})).toHaveLength(0);
+    kit.checker.script(URL_A, ok());
+    await kit.tick(monitor.id);
+    expect((await kit.store.getMonitor(monitor.id))?.status).toBe("ONLINE");
   });
 });
 

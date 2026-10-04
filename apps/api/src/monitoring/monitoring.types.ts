@@ -4,11 +4,11 @@ import type {
 
 /** Contexto que el scheduler entrega al worker (equivale a monitoring_execution_payload en SQL). */
 export interface MonitorExecution extends Omit<MonitorConfig, "clientVisibility"> {
-  id: string; endpointId: string; projectId: string; clientId: string | null; status: MonitorStatus; statusReason: string | null;
+  id: string; endpointId: string; projectId: string | null; clientId: string | null; status: MonitorStatus; statusReason: string | null;
   consecutiveFailures: number; consecutiveSuccesses: number; failureStreakStartedAt: string | null; lastLatencyMs: number | null;
   stateVersion: number; sslFingerprint: string | null; sslStatus: SslStatus; leaseOwner: string;
   endpoint: { id: string; name: string; url: string; environment: string; endpointType: string; responsibleUserId: string | null; active: boolean };
-  project: { id: string; name: string; projectNumber: string | null; priority: string | null; projectLeadId: string | null; developmentManagerId: string | null; clientId: string | null; clientName: string | null };
+  project: { id: string | null; name: string | null; projectNumber: string | null; priority: string | null; projectLeadId: string | null; developmentManagerId: string | null; clientId: string | null; clientName: string | null };
 }
 
 export interface CheckOutcome {

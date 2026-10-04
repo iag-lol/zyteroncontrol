@@ -8,7 +8,7 @@ import type { AlertTriggerType } from "./monitoring.types.js";
 
 export interface Recipient { userId: string | null; role: string | null; key: string }
 export interface AlertScope {
-  monitorId: string | null; projectId: string; clientId: string | null; alertRuleId: string | null; endpointName: string; responsibleUserId: string | null;
+  monitorId: string | null; projectId: string | null; clientId: string | null; alertRuleId: string | null; endpointName: string; responsibleUserId: string | null;
   projectLeadId: string | null; developmentManagerId: string | null; assignedTo: string | null; memberIds?: string[];
 }
 
@@ -47,7 +47,7 @@ export function scopeFromMonitor(monitor: MonitorView, assignedTo: string | null
   return { monitorId: monitor.id, projectId: monitor.projectId, clientId: monitor.clientId, alertRuleId: monitor.alertRuleId, endpointName: monitor.endpointName, responsibleUserId: monitor.responsibleUserId, projectLeadId: monitor.projectLeadId, developmentManagerId: monitor.developmentManagerId, assignedTo };
 }
 
-interface DispatchInput { rule: AlertRule; recipients: Recipient[]; stage: string; eventType: string; title: string; body: string; href: string; severity: IncidentSeverity; incidentId: string | null; monitorId: string | null; projectId: string; maintenanceWindowId?: string | null; sound?: SoundProfile }
+interface DispatchInput { rule: AlertRule; recipients: Recipient[]; stage: string; eventType: string; title: string; body: string; href: string; severity: IncidentSeverity; incidentId: string | null; monitorId: string | null; projectId: string | null; maintenanceWindowId?: string | null; sound?: SoundProfile }
 
 @Injectable()
 export class MonitoringMailer {
@@ -201,7 +201,7 @@ export class MonitoringAlerts {
   }
 
   private async projectScope(incident: Incident): Promise<AlertScope> {
-    const project = await this.store.getProject(incident.projectId);
+    const project = incident.projectId ? await this.store.getProject(incident.projectId) : undefined;
     return { monitorId: incident.monitorId, projectId: incident.projectId, clientId: incident.clientId, alertRuleId: null, endpointName: incident.endpointName ?? project?.name ?? "Servicio", responsibleUserId: null, projectLeadId: project?.projectLeadId ?? null, developmentManagerId: project?.developmentManagerId ?? null, assignedTo: incident.assignedTo };
   }
 

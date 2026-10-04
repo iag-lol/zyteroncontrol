@@ -40,7 +40,7 @@ export interface MonitorSslState { status: SslStatus; expiresAt: string | null; 
 
 export interface MonitorView extends MonitorConfig {
   id: string; endpointId: string; endpointName: string; url: string; environment: string; endpointType: string; responsibleUserId: string | null;
-  projectId: string; projectName: string; projectNumber: string | null; projectPriority: string | null; projectLeadId: string | null; developmentManagerId: string | null;
+  projectId: string | null; projectName: string | null; projectNumber: string | null; projectPriority: string | null; projectLeadId: string | null; developmentManagerId: string | null;
   clientId: string | null; clientName: string | null;
   status: MonitorStatus; statusReason: string | null; statusChangedAt: string | null; consecutiveFailures: number; consecutiveSuccesses: number;
   lastCheckedAt: string | null; lastSuccessAt: string | null; lastFailureAt: string | null; lastStatusCode: number | null; lastLatencyMs: number | null;
@@ -66,7 +66,7 @@ export interface MonitorStats {
 export interface UptimeBucket { periodStart: string; checks: number; successes: number; failures: number; maintenanceChecks: number; uptime: number | null; avgLatencyMs: number | null; p95LatencyMs: number | null; }
 
 export interface Incident {
-  id: string; incidentNumber: string; projectId: string; projectName: string | null; endpointId: string | null; endpointName: string | null; endpointUrl: string | null;
+  id: string; incidentNumber: string; projectId: string | null; projectName: string | null; endpointId: string | null; endpointName: string | null; endpointUrl: string | null;
   environment: string | null; monitorId: string | null; clientId: string | null; clientName: string | null; source: "MONITOR" | "MANUAL"; title: string;
   description: string | null; clientSummary: string | null; severity: IncidentSeverity; status: IncidentStatus; failureType: string | null;
   detectedAt: string; confirmedAt: string | null; acknowledgedAt: string | null; acknowledgedBy: string | null; assignedTo: string | null; assignedAt: string | null;

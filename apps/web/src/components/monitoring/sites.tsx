@@ -17,7 +17,7 @@ import { can, MonitoringShell, useScope } from "./shell";
 import { Empty, ErrorBox, Loading, Modal, Notice, Panel, SslChip, StatusPill, useAction, useMonitoringQuery } from "./ui";
 
 export function SitesPage() {
-  return <MonitoringShell section="sites" title="Sitios monitoreados" subtitle="Inventario de endpoints bajo vigilancia: cada monitor pertenece a un proyecto real de Operaciones y hereda su cliente."><SitesBody /></MonitoringShell>;
+  return <MonitoringShell section="sites" title="Sitios monitoreados" subtitle="Inventario de endpoints bajo vigilancia: cada monitor pertenece a un cliente y puede vincularse opcionalmente a un proyecto."><SitesBody /></MonitoringShell>;
 }
 
 function SitesBody() {
@@ -54,7 +54,7 @@ function SiteRow({ monitor, fleet, onCheck, busy }: { monitor: MonitorView; flee
   const freshness = observationFreshness(monitor);
   return <tr>
     <td><Link href={`/monitoring/endpoints/${monitor.endpointId}`} style={{ fontWeight: 800, color: "inherit" }}>{monitor.endpointName}</Link><br /><small className="relMuted relMono">{monitor.url}</small></td>
-    <td>{monitor.projectName}<br /><small className="relMuted">{monitor.clientName ?? "Sin cliente"}</small></td>
+    <td>{monitor.projectName ?? "Sin proyecto"}<br /><small className="relMuted">{monitor.clientName ?? "Sin cliente"}</small></td>
     <td>{environmentLabel[monitor.environment] ?? monitor.environment}<br /><small className="relMuted">{endpointTypeLabel[monitor.endpointType] ?? monitor.endpointType} · cada {formatInterval(monitor.intervalSeconds)}</small></td>
     <td><StatusPill status={monitor.status} />{monitor.activeIncident ? <><br /><Link href={`/monitoring/incidents/${monitor.activeIncident.id}`} className="relMono" style={{ fontSize: 10 }}>{monitor.activeIncident.incidentNumber}</Link></> : null}</td>
     <td className="num">{formatPercent(fleet?.uptime24h ?? null)}</td><td className="num">{formatPercent(fleet?.uptime30d ?? null)}</td>
@@ -95,7 +95,8 @@ export function CreateMonitorModal({ onClose, onCreated, presetProjectId }: { on
     setBusy(true); setError("");
     try {
       const payload: Record<string, unknown> = { ...value };
-      delete payload.clientId;
+      if (value.projectId || value.endpointId) delete payload.clientId;
+      payload.projectId = value.projectId || null;
       if (value.endpointId) {
         for (const key of ["projectId", "name", "url", "environment", "endpointType", "responsibleUserId"]) delete payload[key];
       } else delete payload.endpointId;
@@ -109,8 +110,8 @@ export function CreateMonitorModal({ onClose, onCreated, presetProjectId }: { on
     {error ? <ErrorBox error={error} /> : null}
     <form className="relForm" onSubmit={(event) => { event.preventDefault(); void submit(); }}>
       <label className="relField wide">1. Cliente<select required value={String(value.clientId)} onChange={(event) => setValue((current) => ({ ...current, clientId: event.target.value, projectId: "", endpointId: "" }))}><option value="">Seleccionar cliente</option>{clients.map((item) => <option key={item.id} value={item.id}>{item.tradeName ?? item.legalName}</option>)}</select></label>
-      <label className="relField wide">2. Proyecto<select required value={String(value.projectId)} onChange={(event) => setValue((current) => ({ ...current, projectId: event.target.value, endpointId: "" }))} disabled={!value.clientId}><option value="">Seleccionar proyecto</option>{visibleProjects.map((item) => <option key={item.id} value={item.id}>{item.projectNumber} · {item.name}</option>)}</select>{value.clientId && !visibleProjects.length ? <small>Este cliente aún no tiene proyectos. <Link href={`/operations/work-orders?new=1&clientId=${value.clientId}`}>Crear orden de trabajo</Link> para iniciar el flujo autorizado.</small> : <small>El cliente se deriva del proyecto; no se envía un UUID editable al backend.</small>}</label>
-      <label className="relField wide">3. Endpoint<select value={String(value.endpointId)} onChange={(event) => set("endpointId", event.target.value)} disabled={!project}><option value="">Crear endpoint nuevo</option>{endpoints.filter((item) => item.active).map((item) => <option key={item.id} value={item.id}>{item.name} · {item.url}</option>)}</select><small>Selecciona uno existente o registra un endpoint nuevo debajo.</small></label>
+      <label className="relField wide">2. Proyecto (opcional)<select value={String(value.projectId)} onChange={(event) => setValue((current) => ({ ...current, projectId: event.target.value, endpointId: "" }))} disabled={!value.clientId}><option value="">Sin proyecto</option>{visibleProjects.map((item) => <option key={item.id} value={item.id}>{item.projectNumber} · {item.name}</option>)}</select><small>{value.clientId && !visibleProjects.length ? "Este cliente no tiene proyectos; puedes crear el monitor igualmente." : "Vincúlalo sólo cuando el endpoint forme parte de un proyecto de Operaciones."}</small></label>
+      <label className="relField wide">3. Endpoint<select value={String(value.endpointId)} onChange={(event) => set("endpointId", event.target.value)} disabled={!project}><option value="">{project ? "Crear endpoint nuevo" : "Se creará un endpoint independiente"}</option>{endpoints.filter((item) => item.active).map((item) => <option key={item.id} value={item.id}>{item.name} · {item.url}</option>)}</select><small>{project ? "Selecciona uno existente o registra un endpoint nuevo debajo." : "El endpoint quedará asociado directamente al cliente, sin exigir proyecto."}</small></label>
       {!value.endpointId ? <>
         <label className="relField">Nombre<input required maxLength={120} value={String(value.name)} onChange={(event) => set("name", event.target.value)} placeholder="Web principal" /></label>
         <label className="relField">URL<input required type="text" inputMode="url" value={String(value.url)} onChange={(event) => set("url", event.target.value)} placeholder="www.zyteron.cl" /><small>{normalizedUrl ? `Se comprobará: ${normalizedUrl}` : "Se agregará HTTPS si omites el protocolo."} Sólo destinos públicos autorizados.</small></label>

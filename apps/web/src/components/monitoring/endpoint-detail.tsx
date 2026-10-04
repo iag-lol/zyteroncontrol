@@ -29,7 +29,7 @@ function EndpointBody({ id }: { id: string }) {
   return <>
     <div className="relActions"><Link className="relBtn small" href="/monitoring/websites"><ArrowLeft size={13} aria-hidden />Sitios monitoreados</Link>{monitors.length > 1 ? monitors.map((item) => <button key={item.id} className={`relBtn small ${item.id === monitor?.id ? "lime" : ""}`} onClick={() => setSelected(item.id)}>{item.monitorType}</button>) : null}</div>
     <section className="relBanner resolved" style={{ background: "#fff", borderColor: "var(--rel-line)" }}>
-      <div><small className="relMuted" style={{ fontSize: 10, fontWeight: 900, letterSpacing: ".1em", textTransform: "uppercase" }}>{endpoint.clientName ?? "Sin cliente"} · {endpoint.projectNumber} {endpoint.projectName}</small>
+      <div><small className="relMuted" style={{ fontSize: 10, fontWeight: 900, letterSpacing: ".1em", textTransform: "uppercase" }}>{endpoint.clientName ?? "Sin cliente"} · {endpoint.projectName ? `${endpoint.projectNumber ?? ""} ${endpoint.projectName}`.trim() : "Sin proyecto"}</small>
         <h2>{endpoint.name}</h2><p className="relMono">{endpoint.url}</p>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 }}>{monitor ? <StatusPill status={monitor.status} /> : <span className="relChip">Sin monitor</span>}<span className="relChip">{environmentLabel[endpoint.environment] ?? endpoint.environment}</span><span className="relChip">{endpointTypeLabel[endpoint.endpointType] ?? endpoint.endpointType}</span>{monitor?.activeIncident ? <Link className="relChip" style={{ background: "#fdebe9", color: "#9b2a23" }} href={`/monitoring/incidents/${monitor.activeIncident.id}`}>{monitor.activeIncident.incidentNumber}</Link> : null}</div>
       </div>

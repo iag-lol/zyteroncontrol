@@ -12,7 +12,7 @@ import { bucketize, latencyOf, uptimeOf } from "./monitoring.stats.js";
 import {
   applyIncidentPatch, defaultEscalationPolicy, defaultNotifyEvents, defaultSettings, MonitoringError, paged,
   type AlertDeliveryDraft, type CheckFilter, type EndpointView, type EventFilter, type IncidentFilter, type IncidentMutationGuard, type MaintenanceFilter,
-  type MaintenanceInput, type MonitorFilter, type MonitoringStore,
+  type MaintenanceInput, type MonitorFilter, type MonitoringEndpointInput, type MonitoringStore,
 } from "./monitoring.store.js";
 import type { ApplyCheckPayload, ApplyCheckResult, EngineContext, EngineIncident, IncidentEventDraft, IncidentPatch, MonitorExecution, MonitoringEventDraft, OutboxDraft } from "./monitoring.types.js";
 
@@ -40,6 +40,7 @@ export class MemoryMonitoringStore implements MonitoringStore {
   ];
   private readonly alertRules = new Map<string, AlertRule>();
   private readonly monitors = new Map<string, MonitorRow>();
+  private readonly standaloneEndpoints = new Map<string, EndpointView>();
   private readonly checks: MonitorCheck[] = [];
   private readonly incidents = new Map<string, Incident>();
   private readonly incidentEventLog: IncidentEvent[] = [];
@@ -71,18 +72,36 @@ export class MemoryMonitoringStore implements MonitoringStore {
     if (!project) return undefined;
     return { ...endpoint, clientId: project.clientId, clientName: project.clientName, projectName: project.name, projectNumber: project.projectNumber };
   }
-  async getEndpoint(id: string) { const endpoint = await this.operations.getEndpoint(id); return endpoint ? this.endpointView(endpoint) : undefined; }
+  async getEndpoint(id: string) { const standalone = this.standaloneEndpoints.get(id); if (standalone) return { ...standalone }; const endpoint = await this.operations.getEndpoint(id); return endpoint ? this.endpointView(endpoint) : undefined; }
   async listEndpoints(projectIds: string[] | null, projectId?: string) {
     const ids = projectId ? [projectId] : projectIds ?? (await this.operations.listProjects({ page: 1, pageSize: 1000 })).items.map((project) => project.id);
-    const result: EndpointView[] = [];
+    const result: EndpointView[] = projectId || projectIds ? [] : [...this.standaloneEndpoints.values()].map((endpoint) => ({ ...endpoint }));
     for (const id of ids) for (const endpoint of await this.operations.listEndpoints(id)) { const view = await this.endpointView(endpoint); if (view) result.push(view); }
     return result;
   }
-  async createEndpoint(projectId: string, input: Partial<ProjectEndpoint>) { return (await this.endpointView(await this.operations.createEndpoint(projectId, input)))!; }
-  async updateEndpoint(id: string, patch: Partial<ProjectEndpoint>) { return (await this.endpointView(await this.operations.updateEndpoint(id, patch)))!; }
+  async createEndpoint(projectId: string | null, input: MonitoringEndpointInput) {
+    if (projectId) return (await this.endpointView(await this.operations.createEndpoint(projectId, input)))!;
+    const stamp = iso();
+    const endpoint: EndpointView = {
+      id: randomUUID(), projectId: null, projectName: null, projectNumber: null, clientId: input.clientId ?? null, clientName: null,
+      name: input.name ?? "Endpoint", url: input.url ?? "", environment: input.environment ?? "PRODUCTION", endpointType: input.endpointType ?? "WEB",
+      monitoringEnabled: input.monitoringEnabled ?? true, responsibleUserId: input.responsibleUserId ?? null, active: input.active ?? true,
+      createdAt: stamp, updatedAt: stamp,
+    };
+    this.standaloneEndpoints.set(endpoint.id, endpoint);
+    return { ...endpoint };
+  }
+  async updateEndpoint(id: string, patch: Partial<ProjectEndpoint>) {
+    const standalone = this.standaloneEndpoints.get(id);
+    if (!standalone) return (await this.endpointView(await this.operations.updateEndpoint(id, patch)))!;
+    const next = { ...standalone, ...patch, projectId: null, updatedAt: iso() };
+    this.standaloneEndpoints.set(id, next);
+    return { ...next };
+  }
 
   private activeIncidentFor(monitorId: string) { return [...this.incidents.values()].find((item) => item.monitorId === monitorId && activeStatuses.has(item.status)) ?? null; }
-  private activeWindow(projectId: string, endpointId: string | null, at = new Date()) {
+  private activeWindow(projectId: string | null, endpointId: string | null, at = new Date()) {
+    if (!projectId) return null;
     return [...this.windows.values()].filter((w) => w.projectId === projectId && (!w.endpointId || w.endpointId === endpointId) && ["PLANNED", "ACTIVE"].includes(w.status) && new Date(w.startsAt) <= at && new Date(w.endsAt) > at)
       .sort((a, b) => Number(b.suppressAlerts) - Number(a.suppressAlerts) || b.endsAt.localeCompare(a.endsAt))[0] ?? null;
   }
@@ -90,13 +109,13 @@ export class MemoryMonitoringStore implements MonitoringStore {
   private async view(row: MonitorRow): Promise<MonitorView | undefined> {
     const endpoint = await this.getEndpoint(row.endpointId);
     if (!endpoint) return undefined;
-    const project = (await this.operations.getProject(endpoint.projectId))!;
+    const project = endpoint.projectId ? await this.operations.getProject(endpoint.projectId) : undefined;
     const incident = this.activeIncidentFor(row.id);
     const window = this.activeWindow(endpoint.projectId, endpoint.id);
     return {
       ...row, endpointName: endpoint.name, url: endpoint.url, environment: endpoint.environment, endpointType: endpoint.endpointType, responsibleUserId: endpoint.responsibleUserId,
-      projectId: project.id, projectName: project.name, projectNumber: project.projectNumber, projectPriority: project.priority, projectLeadId: project.projectLeadId, developmentManagerId: project.developmentManagerId,
-      clientId: project.clientId, clientName: project.clientName,
+      projectId: project?.id ?? null, projectName: project?.name ?? null, projectNumber: project?.projectNumber ?? null, projectPriority: project?.priority ?? null, projectLeadId: project?.projectLeadId ?? null, developmentManagerId: project?.developmentManagerId ?? null,
+      clientId: project?.clientId ?? endpoint.clientId, clientName: project?.clientName ?? endpoint.clientName,
       ssl: { status: row.sslStatus, expiresAt: row.sslExpiresAt, daysRemaining: daysUntil(row.sslExpiresAt), issuer: row.sslIssuer, subject: row.sslSubject, errorType: row.sslErrorType, checkedAt: row.sslCheckedAt },
       activeIncident: incident ? { id: incident.id, incidentNumber: incident.incidentNumber, severity: incident.severity, status: incident.status, confirmedAt: incident.confirmedAt } : null,
       activeMaintenance: window ? { id: window.id, title: window.title, endsAt: window.endsAt, suppressAlerts: window.suppressAlerts } : null,
@@ -106,10 +125,10 @@ export class MemoryMonitoringStore implements MonitoringStore {
   async listMonitors(filter: MonitorFilter) {
     const search = filter.search?.toLowerCase();
     const views = (await Promise.all([...this.monitors.values()].map((row) => this.view(row)))).filter((item): item is MonitorView => Boolean(item));
-    return views.filter((item) => (!filter.projectIds || filter.projectIds.includes(item.projectId)) && (!filter.projectId || item.projectId === filter.projectId) && (!filter.clientId || item.clientId === filter.clientId)
+    return views.filter((item) => (!filter.projectIds || (item.projectId !== null && filter.projectIds.includes(item.projectId))) && (!filter.projectId || item.projectId === filter.projectId) && (!filter.clientId || item.clientId === filter.clientId)
       && (!filter.status || item.status === filter.status) && (!filter.environment || item.environment === filter.environment) && (!filter.responsibleUserId || item.responsibleUserId === filter.responsibleUserId)
       && (!filter.endpointId || item.endpointId === filter.endpointId) && (!search || [item.endpointName, item.url, item.projectName, item.clientName].some((value) => value?.toLowerCase().includes(search))))
-      .sort((a, b) => (a.clientName ?? "").localeCompare(b.clientName ?? "") || a.projectName.localeCompare(b.projectName) || a.endpointName.localeCompare(b.endpointName));
+      .sort((a, b) => (a.clientName ?? "").localeCompare(b.clientName ?? "") || (a.projectName ?? "").localeCompare(b.projectName ?? "") || a.endpointName.localeCompare(b.endpointName));
   }
   async getMonitor(id: string) { const row = this.monitors.get(id); return row ? this.view(row) : undefined; }
   async createMonitor(endpointId: string, config: MonitorConfig, actorId: string | null) {
@@ -132,8 +151,8 @@ export class MemoryMonitoringStore implements MonitoringStore {
 
   private async execution(row: MonitorRow, workerId: string): Promise<MonitorExecution> {
     const view = (await this.view(row))!;
-    const project = (await this.operations.getProject(view.projectId))!;
-    return { ...row, projectId: view.projectId, clientId: view.clientId, leaseOwner: workerId, endpoint: { id: view.endpointId, name: view.endpointName, url: view.url, environment: view.environment, endpointType: view.endpointType, responsibleUserId: view.responsibleUserId, active: true }, project: { id: project.id, name: project.name, projectNumber: project.projectNumber, priority: project.priority, projectLeadId: project.projectLeadId, developmentManagerId: project.developmentManagerId, clientId: project.clientId, clientName: project.clientName } };
+    const project = view.projectId ? await this.operations.getProject(view.projectId) : undefined;
+    return { ...row, projectId: view.projectId, clientId: view.clientId, leaseOwner: workerId, endpoint: { id: view.endpointId, name: view.endpointName, url: view.url, environment: view.environment, endpointType: view.endpointType, responsibleUserId: view.responsibleUserId, active: true }, project: { id: project?.id ?? null, name: project?.name ?? null, projectNumber: project?.projectNumber ?? null, priority: project?.priority ?? null, projectLeadId: project?.projectLeadId ?? null, developmentManagerId: project?.developmentManagerId ?? null, clientId: project?.clientId ?? view.clientId, clientName: project?.clientName ?? view.clientName } };
   }
   async claimDue(workerId: string, limit: number, leaseSeconds: number) {
     const now = new Date(), result: MonitorExecution[] = [];
@@ -230,7 +249,7 @@ export class MemoryMonitoringStore implements MonitoringStore {
   }
 
   async listIncidents(filter: IncidentFilter) {
-    const items = [...this.incidents.values()].filter((item) => (!filter.projectIds || filter.projectIds.includes(item.projectId)) && (!filter.state || filter.state === "all" || (filter.state === "open" ? activeStatuses.has(item.status) : !activeStatuses.has(item.status)))
+    const items = [...this.incidents.values()].filter((item) => (!filter.projectIds || (item.projectId !== null && filter.projectIds.includes(item.projectId))) && (!filter.state || filter.state === "all" || (filter.state === "open" ? activeStatuses.has(item.status) : !activeStatuses.has(item.status)))
       && (!filter.status || item.status === filter.status) && (!filter.severity || item.severity === filter.severity) && (!filter.projectId || item.projectId === filter.projectId) && (!filter.clientId || item.clientId === filter.clientId)
       && (!filter.monitorId || item.monitorId === filter.monitorId) && (!filter.endpointId || item.endpointId === filter.endpointId) && (!filter.assignedTo || item.assignedTo === filter.assignedTo) && (!filter.from || item.detectedAt >= filter.from) && (!filter.to || item.detectedAt <= filter.to))
       .sort((a, b) => b.detectedAt.localeCompare(a.detectedAt));

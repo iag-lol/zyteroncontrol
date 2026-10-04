@@ -63,7 +63,7 @@ export function HealthMatrix({ monitors, fleet }: { monitors: MonitorView[]; fle
   for (const monitor of monitors) groups.set(monitor.clientName ?? "Sin cliente", [...(groups.get(monitor.clientName ?? "Sin cliente") ?? []), monitor]);
   return <div className="relMatrix">{[...groups.entries()].map(([client, items]) => <div className="relMatrixGroup" key={client}><h4>{client}<span className="relCount">{items.length}</span></h4><div className="relMatrixTiles">
     {[...items].sort((a, b) => rank[a.status] - rank[b.status]).map((monitor) => <Link key={monitor.id} href={`/monitoring/endpoints/${monitor.endpointId}`} className={`relTile ${monitor.status}`} title={monitor.statusReason ?? undefined}>
-      <strong>{monitor.endpointName}</strong><small>{monitor.projectName} · {environmentLabel[monitor.environment] ?? monitor.environment}</small>
+      <strong>{monitor.endpointName}</strong><small>{monitor.projectName ?? "Sin proyecto"} · {environmentLabel[monitor.environment] ?? monitor.environment}</small>
       <footer><StatusPill status={monitor.status} /><span className="relMono">{formatPercent(fleet[monitor.id]?.uptime24h ?? null, 1)}</span></footer>
     </Link>)}
   </div></div>)}</div>;
@@ -72,7 +72,7 @@ export function HealthMatrix({ monitors, fleet }: { monitors: MonitorView[]; fle
 export function LogicalMap({ monitors }: { monitors: MonitorView[] }) {
   if (!monitors.length) return <Empty title="Sin relaciones para mostrar." text="El mapa se arma con Cliente → Proyecto → Endpoint a partir de los monitores registrados." icon={GitBranch} />;
   const tree = new Map<string, Map<string, MonitorView[]>>();
-  for (const monitor of monitors) { const client = monitor.clientName ?? "Sin cliente"; const projects = tree.get(client) ?? new Map(); projects.set(monitor.projectName, [...(projects.get(monitor.projectName) ?? []), monitor]); tree.set(client, projects); }
+  for (const monitor of monitors) { const client = monitor.clientName ?? "Sin cliente", project = monitor.projectName ?? "Sin proyecto"; const projects = tree.get(client) ?? new Map(); projects.set(project, [...(projects.get(project) ?? []), monitor]); tree.set(client, projects); }
   return <div className="relMap">{[...tree.entries()].map(([client, projects]) => <div className="relMapClient" key={client}><header><Globe2 size={14} aria-hidden />{client}</header>
     {[...projects.entries()].map(([project, items]) => <div className="relMapProject" key={project}><span>{project}</span><div className="relMapEndpoints">{items.map((monitor) => <Link key={monitor.id} href={`/monitoring/endpoints/${monitor.endpointId}`}><StatusPill status={monitor.status} compact />{monitor.endpointName}<small className="relMuted">{environmentLabel[monitor.environment] ?? monitor.environment}</small></Link>)}</div></div>)}
   </div>)}</div>;
@@ -82,7 +82,7 @@ export function IncidentQueue({ incidents, empty }: { incidents: Incident[]; emp
   if (!incidents.length) return <Empty title={empty} />;
   return <div className="relQueue">{incidents.map((incident) => <Link key={incident.id} className="relIncidentRow" href={`/monitoring/incidents/${incident.id}`}>
     <i className={incident.severity} />
-    <div><strong>{incident.incidentNumber} · {incident.title}</strong><small>{incident.clientName ?? "Sin cliente"} · {incident.projectName}</small><span className="relMeta"><SeverityBadge severity={incident.severity} /><IncidentStatusChip status={incident.status} />{!incident.acknowledgedAt && ["CONFIRMED", "DETECTED"].includes(incident.status) ? <span className="relChip" style={{ background: "#fdebe9", color: "#9b2a23" }}>Sin reconocer</span> : null}</span></div>
+    <div><strong>{incident.incidentNumber} · {incident.title}</strong><small>{incident.clientName ?? "Sin cliente"} · {incident.projectName ?? "Sin proyecto"}</small><span className="relMeta"><SeverityBadge severity={incident.severity} /><IncidentStatusChip status={incident.status} />{!incident.acknowledgedAt && ["CONFIRMED", "DETECTED"].includes(incident.status) ? <span className="relChip" style={{ background: "#fdebe9", color: "#9b2a23" }}>Sin reconocer</span> : null}</span></div>
     <aside><span className="relMono">{since(incident.confirmedAt ?? incident.detectedAt)}</span><span>{formatTime(incident.confirmedAt ?? incident.detectedAt)}</span></aside>
   </Link>)}</div>;
 }
