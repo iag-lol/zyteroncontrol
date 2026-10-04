@@ -5,13 +5,17 @@ import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
 import type { AuditFinding, AuditRun, Client, Role, SupportTicket } from "@zyteron/contracts";
+import { roles } from "@zyteron/contracts";
+import type { Session } from "@supabase/supabase-js";
 import {
   Bell,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  LogOut,
   Menu,
   Search,
+  ShieldCheck,
 } from "lucide-react";
 import { enterpriseNavigation } from "@/lib/navigation";
 import { canAccessGroup, roleProfiles } from "@/lib/access-control";
@@ -23,6 +27,8 @@ import { commercialApi } from "@/lib/commercial-api";
 import type { Sale, SalesLead, SalesOpportunity, SalesQuote } from "@zyteron/contracts";
 import { auditsApi } from "@/lib/audits-api";
 import { supportApi } from "@/lib/support-api";
+import { AuthScreen, PasswordRecoveryScreen } from "@/components/auth-screen";
+import { browserSupabase,developmentAuth } from "@/lib/auth-client";
 
 export function EnterpriseShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -31,16 +37,28 @@ export function EnterpriseShell({ children }: { children: ReactNode }) {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [openGroups, setOpenGroups] = useState(() => new Set(["control", "commercial"]));
   const [currentRole, setCurrentRole] = useState<Role>("GERENTE_GENERAL");
+  const [authReady,setAuthReady]=useState(false);
+  const [authenticated,setAuthenticated]=useState(false);
+  const [passwordRecovery,setPasswordRecovery]=useState(false);
+  const [authError,setAuthError]=useState("");
   const [globalQuery, setGlobalQuery] = useState("");
   const [clientResults, setClientResults] = useState<Client[]>([]);
   const [commercialResults, setCommercialResults] = useState<{leads:SalesLead[];opportunities:SalesOpportunity[];quotes:SalesQuote[];sales:Sale[]}>({leads:[],opportunities:[],quotes:[],sales:[]});
   const [auditResults,setAuditResults]=useState<{audits:AuditRun[];findings:AuditFinding[]}>({audits:[],findings:[]});
   const [supportResults,setSupportResults]=useState<SupportTicket[]>([]);
+  const isDevelopment=developmentAuth();
+
+  useEffect(()=>{
+    if(isDevelopment){const configured=process.env.NEXT_PUBLIC_DEV_ROLE;setCurrentRole(roles.includes(configured as Role)?configured as Role:"GERENTE_GENERAL");setAuthenticated(true);setAuthReady(true);return;}
+    const client=browserSupabase();if(!client){setAuthError("El acceso empresarial no está disponible en este momento.");setAuthReady(true);return;}
+    const apply=(session:Session|null)=>{const value=session?.user?.app_metadata?.role;if(session&&roles.includes(value as Role)){setCurrentRole(value as Role);setAuthenticated(true);setAuthError("");}else{setAuthenticated(false);if(session)setAuthError("Tu cuenta no tiene acceso habilitado. Contacta al administrador.");}setAuthReady(true);};
+    void client.auth.getSession().then(({data})=>apply(data.session));const{data:listener}=client.auth.onAuthStateChange((event,session)=>{if(event==="PASSWORD_RECOVERY")setPasswordRecovery(true);apply(session);});return()=>listener.subscription.unsubscribe();
+  },[isDevelopment]);
 
   const visibleNavigation = useMemo(
     () => enterpriseNavigation
       .filter((group) => canAccessGroup(currentRole, group.id))
-      .map((group) => group.id === "security" && currentRole !== "GERENTE_GENERAL"
+      .map((group) => group.id === "security" && !["GERENTE_GENERAL","SECURITY_ADMIN"].includes(currentRole)
         ? { ...group, items: group.items.filter((item) => item.href === "/security/vault") }
         : group.id === "finance" ? { ...group, items: group.items.filter((item) => canSeeFinancePath(currentRole, item.href)) } : group),
     [currentRole],
@@ -83,6 +101,9 @@ export function EnterpriseShell({ children }: { children: ReactNode }) {
 
   // Portal de pago público (link con token): sin navegación interna ni datos de la sesión.
   if (pathname.startsWith("/payments/")) return <>{children}</>;
+  if(!authReady)return <main className="authBoot"><ShieldCheck/><span>Verificando sesión…</span></main>;
+  if(passwordRecovery)return <PasswordRecoveryScreen onComplete={()=>setPasswordRecovery(false)}/>;
+  if(!authenticated)return <AuthScreen configurationError={authError}/>;
 
   return (
     <AccessContext.Provider value={{ role: currentRole }}>
@@ -153,14 +174,14 @@ export function EnterpriseShell({ children }: { children: ReactNode }) {
               onClick={() => setNotificationsOpen((value) => !value)}
             ><Bell size={18} /></button>
             {notificationsOpen ? <NotificationCenter /> : null}
-            <label className="roleSwitcher">
+            {isDevelopment?<label className="roleSwitcher">
               <span className="avatar small">{profile.initials}</span>
               <span className="roleSwitcherText"><strong>{profile.userName}</strong><small>{profile.label}</small></span>
               <select aria-label="Cambiar usuario o rol" value={currentRole} onChange={(event) => setCurrentRole(event.target.value as Role)}>
                 {roleProfiles.map((item) => <option value={item.role} key={item.role}>{item.label}</option>)}
               </select>
               <ChevronDown size={14} />
-            </label>
+            </label>:<div className="roleSwitcher authenticatedRole"><span className="avatar small">{profile.initials}</span><span className="roleSwitcherText"><strong>{profile.userName}</strong><small>{profile.label}</small></span><button type="button" aria-label="Cerrar sesión" onClick={()=>void browserSupabase()?.auth.signOut()}><LogOut size={15}/></button></div>}
           </div>
         </header>
         <div className="enterpriseContent">{children}</div>

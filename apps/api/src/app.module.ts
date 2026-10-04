@@ -5,8 +5,6 @@ import { CrmModule } from "./crm/crm.module.js";
 import { HealthController } from "./health.controller.js";
 import { AuthModule } from "./auth/auth.module.js";
 import { UsersModule } from "./users/users.module.js";
-import { RolesModule } from "./roles/roles.module.js";
-import { PermissionsModule } from "./permissions/permissions.module.js";
 import { ClientsModule } from "./clients/clients.module.js";
 import { OperationsModule } from "./operations/operations.module.js";
 import { DevelopmentModule } from "./development/development.module.js";
@@ -18,7 +16,6 @@ import { HrModule } from "./hr/hr.module.js";
 import { FinanceModule } from "./finance/finance.module.js";
 import { NotificationsModule } from "./notifications/notifications.module.js";
 import { SecurityModule } from "./security/security.module.js";
-import { VaultModule } from "./vault/vault.module.js";
 import { ReportsModule } from "./reports/reports.module.js";
 import { SettingsModule } from "./settings/settings.module.js";
 import { SupportModule } from "./support/support.module.js";
@@ -33,8 +30,6 @@ import { CommercialModule } from "./commercial/commercial.module.js";
     AuthModule,
     CrmModule,
     UsersModule,
-    RolesModule,
-    PermissionsModule,
     ClientsModule,
     ContactsModule,
     ContractsModule,
@@ -51,7 +46,6 @@ import { CommercialModule } from "./commercial/commercial.module.js";
     FinanceModule,
     NotificationsModule,
     SecurityModule,
-    VaultModule,
     ReportsModule,
     SettingsModule,
     SupportModule,

@@ -74,7 +74,30 @@ create table if not exists public.commissions(id uuid primary key default gen_ra
 create table if not exists public.sales_handoffs(id uuid primary key default gen_random_uuid(),sale_id uuid not null unique references public.sales(id) on delete restrict,client_id uuid references public.clients(id) on delete restrict,quote_id uuid not null references public.quotes(id) on delete restrict,work_order_id uuid references public.work_orders(id) on delete restrict,status text not null default 'DRAFT' check(status in('DRAFT','READY','ACKNOWLEDGED')),scope text not null,committed_deadline date,risks text,dependencies text,commercial_owner_id uuid,development_owner_id uuid,override_reason text,created_at timestamptz not null default now(),updated_at timestamptz not null default now());
 create table if not exists public.commercial_events(id uuid primary key default gen_random_uuid(),aggregate_type text not null,aggregate_id uuid not null,event_type text not null,actor_id uuid,payload jsonb not null default '{}'::jsonb,occurred_at timestamptz not null default now());
 create index if not exists commercial_events_aggregate_idx on public.commercial_events(aggregate_type,aggregate_id,occurred_at desc);
-create table if not exists public.commercial_notifications(id uuid primary key default gen_random_uuid(),event_key text not null unique,user_id uuid,audience_role text,type text not null,title text not null,body text,entity_type text,entity_id uuid,read_at timestamptz,created_at timestamptz not null default now());
+create table if not exists public.commercial_notifications(id uuid primary key default gen_random_uuid(),event_key text not null unique,owner_id uuid,audience_role text,type text not null,title text not null,body text,entity_type text,entity_id uuid,read_at timestamptz,created_at timestamptz not null default now());
+-- Reconcile installations where an older version of this table already exists.
+-- CREATE TABLE IF NOT EXISTS does not add columns to an existing relation.
+alter table public.commercial_notifications add column if not exists owner_id uuid;
+alter table public.commercial_notifications add column if not exists audience_role text;
+alter table public.commercial_notifications add column if not exists event_key text;
+alter table public.commercial_notifications add column if not exists type text;
+alter table public.commercial_notifications add column if not exists title text;
+alter table public.commercial_notifications add column if not exists body text;
+alter table public.commercial_notifications add column if not exists entity_type text;
+alter table public.commercial_notifications add column if not exists entity_id uuid;
+alter table public.commercial_notifications add column if not exists read_at timestamptz;
+alter table public.commercial_notifications add column if not exists created_at timestamptz default now();
+do $$begin
+ if exists(select 1 from information_schema.columns where table_schema='public' and table_name='commercial_notifications' and column_name='user_id')then
+  execute 'update public.commercial_notifications set owner_id=coalesce(owner_id,user_id) where owner_id is null';
+ end if;
+ if exists(select 1 from information_schema.columns where table_schema='public' and table_name='commercial_notifications' and column_name='recipient_role')then
+  execute 'update public.commercial_notifications set audience_role=coalesce(audience_role,recipient_role::text) where audience_role is null';
+ elsif exists(select 1 from information_schema.columns where table_schema='public' and table_name='commercial_notifications' and column_name='role')then
+  execute 'update public.commercial_notifications set audience_role=coalesce(audience_role,role::text) where audience_role is null';
+ end if;
+end$$;
+create unique index if not exists commercial_notifications_event_key_uidx on public.commercial_notifications(event_key);
 create table if not exists public.commercial_idempotency_keys(idempotency_key text primary key,operation text not null,resource_id uuid,created_at timestamptz not null default now());
 
 create or replace function public.touch_updated_at() returns trigger language plpgsql as $$ begin new.updated_at=now();return new;end $$;
@@ -132,22 +155,22 @@ declare q public.quotes%rowtype;s public.sales%rowtype;work_id uuid;existing uui
  insert into public.business_event_outbox(aggregate_type,aggregate_id,event_type,payload) values('WORK_ORDER',work_id,'WORK_ORDER_CREATED',jsonb_build_object('quoteId',q.id,'clientId',q.client_id));return jsonb_build_object('workOrderId',work_id,'created',true);end $$;
 
 create or replace function public.process_commercial_due_notifications(reference_time timestamptz default now()) returns integer language plpgsql security definer set search_path=public as $$ declare inserted_count integer;begin
- insert into public.commercial_notifications(event_key,user_id,type,title,body,entity_type,entity_id)
+ insert into public.commercial_notifications(event_key,owner_id,type,title,body,entity_type,entity_id)
  select 'FOLLOW_UP_OVERDUE:'||f.id,f.assigned_to,'FOLLOW_UP_OVERDUE','Seguimiento vencido',f.title,'FOLLOW_UP',f.id from public.follow_ups f where f.status='PENDING' and f.scheduled_at<reference_time on conflict(event_key) do nothing;
  get diagnostics inserted_count=row_count;
- insert into public.commercial_notifications(event_key,user_id,type,title,body,entity_type,entity_id)
+ insert into public.commercial_notifications(event_key,owner_id,type,title,body,entity_type,entity_id)
  select 'QUOTE_EXPIRING:'||q.id||':'||d.days,q.owner_id,'QUOTE_EXPIRING','Cotización próxima a vencer',q.quote_number,'QUOTE',q.id from public.quotes q cross join(values(7),(3),(1))d(days) where q.status in('SENT','NEGOTIATING') and q.valid_until=current_date+d.days on conflict(event_key) do nothing;
  return inserted_count;end $$;
 
 create or replace function public.project_commercial_event_notification() returns trigger language plpgsql security definer set search_path=public as $$
 declare owner_user uuid;recipient_role text;begin
  if new.event_type='LEAD_ASSIGNED' then
-  insert into public.commercial_notifications(event_key,user_id,type,title,body,entity_type,entity_id) values('LEAD_ASSIGNED:'||new.aggregate_id,nullif(new.payload->>'assignedTo','')::uuid,'LEAD_ASSIGNED','Nuevo lead asignado','Revisa el Lead Inbox','LEAD',new.aggregate_id) on conflict(event_key) do nothing;
+  insert into public.commercial_notifications(event_key,owner_id,type,title,body,entity_type,entity_id) values('LEAD_ASSIGNED:'||new.aggregate_id,nullif(new.payload->>'assignedTo','')::uuid,'LEAD_ASSIGNED','Nuevo lead asignado','Revisa el Lead Inbox','LEAD',new.aggregate_id) on conflict(event_key) do nothing;
  elsif new.event_type='QUOTE_APPROVAL_REQUIRED' then
   insert into public.commercial_notifications(event_key,audience_role,type,title,body,entity_type,entity_id) values('QUOTE_APPROVAL_REQUIRED:'||new.aggregate_id,'JEFE_VENTAS','QUOTE_APPROVAL_REQUIRED','Cotización requiere aprobación','El descuento excede la política del rol creador','QUOTE',new.aggregate_id) on conflict(event_key) do nothing;
  elsif new.event_type in('QUOTE_APPROVED','QUOTE_REJECTED') then
   select owner_id into owner_user from public.quotes where id=new.aggregate_id;
-  insert into public.commercial_notifications(event_key,user_id,type,title,body,entity_type,entity_id) values(new.event_type||':'||new.aggregate_id,owner_user,new.event_type,case when new.event_type='QUOTE_APPROVED' then 'Cotización aprobada' else 'Cotización rechazada' end,null,'QUOTE',new.aggregate_id) on conflict(event_key) do nothing;
+  insert into public.commercial_notifications(event_key,owner_id,type,title,body,entity_type,entity_id) values(new.event_type||':'||new.aggregate_id,owner_user,new.event_type,case when new.event_type='QUOTE_APPROVED' then 'Cotización aprobada' else 'Cotización rechazada' end,null,'QUOTE',new.aggregate_id) on conflict(event_key) do nothing;
  elsif new.event_type in('QUOTE_ACCEPTED','SALE_WON') then
   foreach recipient_role in array array['GERENTE_GENERAL','JEFE_DESARROLLO'] loop
    insert into public.commercial_notifications(event_key,audience_role,type,title,body,entity_type,entity_id) values(new.event_type||':'||new.aggregate_id||':'||recipient_role,recipient_role,new.event_type,case when new.event_type='QUOTE_ACCEPTED' then 'Cotización aceptada' else 'Venta ganada' end,null,new.aggregate_type,new.aggregate_id) on conflict(event_key) do nothing;
@@ -161,6 +184,10 @@ declare owner_user uuid;recipient_role text;begin
 end $$;
 drop trigger if exists commercial_event_notification_projection on public.commercial_events;
 create trigger commercial_event_notification_projection after insert on public.commercial_events for each row execute function public.project_commercial_event_notification();
+
+revoke all on function public.process_commercial_due_notifications(timestamptz) from public,anon,authenticated;
+grant execute on function public.process_commercial_due_notifications(timestamptz) to service_role;
+revoke all on function public.project_commercial_event_notification() from public,anon,authenticated;
 
 revoke all on function public.change_opportunity_stage(uuid,uuid,uuid,text) from public,anon,authenticated;
 revoke all on function public.create_quote_version(uuid,uuid) from public,anon,authenticated;
@@ -198,7 +225,7 @@ do $$ begin
  drop policy if exists commercial_commissions_scope on public.commissions;create policy commercial_commissions_scope on public.commissions for select to authenticated using(private.can_manage_sales() or private.zyteron_role()='FINANZAS' or user_id=auth.uid());
  drop policy if exists commercial_handoffs_scope on public.sales_handoffs;create policy commercial_handoffs_scope on public.sales_handoffs for select to authenticated using(private.can_manage_sales() or private.zyteron_role() in('JEFE_DESARROLLO','DESARROLLO','OPERACIONES') or commercial_owner_id=auth.uid() or development_owner_id=auth.uid());
  drop policy if exists commercial_work_orders_scope on public.work_orders;create policy commercial_work_orders_scope on public.work_orders for select to authenticated using(private.can_manage_sales() or private.zyteron_role() in('JEFE_DESARROLLO','DESARROLLO','OPERACIONES') or commercial_owner_id=auth.uid() or development_owner_id=auth.uid());
- drop policy if exists commercial_notifications_own on public.commercial_notifications;create policy commercial_notifications_own on public.commercial_notifications for select to authenticated using(user_id=auth.uid() or audience_role=private.zyteron_role() or private.can_manage_sales());
+ drop policy if exists commercial_notifications_own on public.commercial_notifications;create policy commercial_notifications_own on public.commercial_notifications for select to authenticated using(owner_id=auth.uid() or audience_role=private.zyteron_role() or private.can_manage_sales());
 end $$;
 
 do $$ declare table_name text;begin foreach table_name in array array['leads','opportunities','follow_ups','quotes','sales','sales_handoffs'] loop if not exists(select 1 from pg_publication_tables where pubname='supabase_realtime' and schemaname='public' and tablename=table_name)then execute format('alter publication supabase_realtime add table public.%I',table_name);end if;end loop;end $$;

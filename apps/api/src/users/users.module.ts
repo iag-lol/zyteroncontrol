@@ -12,7 +12,7 @@ class UsersDirectoryService {
     const { data, error } = await this.supabase.auth.admin.listUsers({ page:1, perPage:1000 });
     if (error) throw error;
     return data.users.map((user) => {
-      const rawRole = user.app_metadata.role ?? user.user_metadata.role;
+      const rawRole = user.app_metadata.role;
       return {
         id:user.id,
         email:user.email ?? "",

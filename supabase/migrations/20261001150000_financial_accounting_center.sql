@@ -533,6 +533,66 @@ create table if not exists public.tax_documents(
   created_by uuid,created_at timestamptz not null default now(),updated_at timestamptz not null default now(),
   unique(environment,document_type_code,folio)
 );
+-- Reconcile legacy installations. CREATE TABLE IF NOT EXISTS leaves an older
+-- tax_documents relation untouched, so every column consumed below must exist
+-- before indexes, triggers, views and RLS policies are created.
+alter table public.tax_documents add column if not exists id uuid default gen_random_uuid();
+alter table public.tax_documents add column if not exists invoice_id uuid;
+alter table public.tax_documents add column if not exists document_type_code integer;
+alter table public.tax_documents add column if not exists folio bigint;
+alter table public.tax_documents add column if not exists provider text default 'EXTERNAL';
+alter table public.tax_documents add column if not exists environment text default 'CERTIFICATION';
+alter table public.tax_documents add column if not exists status text default 'DRAFT';
+alter table public.tax_documents add column if not exists track_id text;
+alter table public.tax_documents add column if not exists submission_id text;
+alter table public.tax_documents add column if not exists submitted_at timestamptz;
+alter table public.tax_documents add column if not exists status_code text;
+alter table public.tax_documents add column if not exists status_message text;
+alter table public.tax_documents add column if not exists last_checked_at timestamptz;
+alter table public.tax_documents add column if not exists accepted_at timestamptz;
+alter table public.tax_documents add column if not exists rejected_at timestamptz;
+alter table public.tax_documents add column if not exists xml_unsigned_path text;
+alter table public.tax_documents add column if not exists xml_unsigned_sha256 text;
+alter table public.tax_documents add column if not exists xml_signed_path text;
+alter table public.tax_documents add column if not exists xml_signed_sha256 text;
+alter table public.tax_documents add column if not exists response_path text;
+alter table public.tax_documents add column if not exists pdf_path text;
+alter table public.tax_documents add column if not exists emitter_rut text;
+alter table public.tax_documents add column if not exists receiver_rut text;
+alter table public.tax_documents add column if not exists issue_date date;
+alter table public.tax_documents add column if not exists net_amount numeric(18,2);
+alter table public.tax_documents add column if not exists exempt_amount numeric(18,2);
+alter table public.tax_documents add column if not exists tax_amount numeric(18,2);
+alter table public.tax_documents add column if not exists total_amount numeric(18,2);
+alter table public.tax_documents add column if not exists created_by uuid;
+alter table public.tax_documents add column if not exists created_at timestamptz default now();
+alter table public.tax_documents add column if not exists updated_at timestamptz default now();
+update public.tax_documents set
+  id=coalesce(id,gen_random_uuid()),
+  provider=coalesce(provider,'EXTERNAL'),
+  environment=coalesce(environment,'CERTIFICATION'),
+  status=coalesce(status,'DRAFT'),
+  created_at=coalesce(created_at,now()),
+  updated_at=coalesce(updated_at,created_at,now())
+where id is null or provider is null or environment is null or status is null or created_at is null or updated_at is null;
+create unique index if not exists tax_documents_id_uidx on public.tax_documents(id);
+do $$begin
+  if not exists(select 1 from pg_constraint where conrelid='public.tax_documents'::regclass and conname='tax_documents_invoice_id_fkey') then
+    alter table public.tax_documents add constraint tax_documents_invoice_id_fkey foreign key(invoice_id) references public.invoices(id) on delete restrict not valid;
+  end if;
+  if not exists(select 1 from pg_constraint where conrelid='public.tax_documents'::regclass and conname='tax_documents_document_type_code_fkey') then
+    alter table public.tax_documents add constraint tax_documents_document_type_code_fkey foreign key(document_type_code) references public.tax_document_types(code) on delete restrict not valid;
+  end if;
+  if not exists(select 1 from pg_constraint where conrelid='public.tax_documents'::regclass and conname='tax_documents_provider_check') then
+    alter table public.tax_documents add constraint tax_documents_provider_check check(provider in('SII_DIRECT','EXTERNAL')) not valid;
+  end if;
+  if not exists(select 1 from pg_constraint where conrelid='public.tax_documents'::regclass and conname='tax_documents_environment_check') then
+    alter table public.tax_documents add constraint tax_documents_environment_check check(environment in('CERTIFICATION','PRODUCTION')) not valid;
+  end if;
+  if not exists(select 1 from pg_constraint where conrelid='public.tax_documents'::regclass and conname='tax_documents_status_check') then
+    alter table public.tax_documents add constraint tax_documents_status_check check(status in('DRAFT','VALIDATED','SIGNED','SUBMITTED','RECEIVED_BY_SII','ACCEPTED','ACCEPTED_WITH_REPAIRS','REJECTED','CANCELLED')) not valid;
+  end if;
+end $$;
 -- Un DTE vigente por factura; uno rechazado/anulado queda como historia y permite un nuevo intento con otro folio.
 create unique index if not exists tax_documents_invoice_active on public.tax_documents(invoice_id) where status not in('REJECTED','CANCELLED');
 alter table public.invoices drop constraint if exists invoices_tax_document_fk;

@@ -706,6 +706,20 @@
   min-height: 86px;
 }
 
+.quoteWizard .wide {
+  grid-column: 1 / -1;
+}
+
+.quoteWizard label {
+  font-size: 10px;
+}
+
+.quoteWizard input,
+.quoteWizard select,
+.quoteWizard textarea {
+  font-size: 13px;
+}
+
 .salesForm footer {
   padding-top: 12px;
   display: flex;
@@ -733,14 +747,24 @@
 }
 
 .quoteSteps span {
-  height: 25px;
+  min-height: 43px;
   display: grid;
   place-items: center;
+  align-content: center;
+  gap: 2px;
   border-radius: 7px;
   color: #76827c;
   background: #eef2ef;
-  font-size: 8px;
   font-weight: 900;
+}
+
+.quoteSteps b {
+  font-size: 10px;
+}
+
+.quoteSteps small {
+  font-size: 7px;
+  font-weight: 800;
 }
 
 .quoteSteps .active {
@@ -758,6 +782,318 @@
   border: 1px solid #dbe8e0;
   border-radius: 10px;
   background: #f4f9f5;
+}
+
+.quoteFormError {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border: 1px solid #efb9b4;
+  border-radius: 8px;
+  color: #922c23;
+  background: #ffebe8;
+  font-size: 11px;
+}
+
+.quoteSource {
+  display: grid;
+  gap: 13px;
+}
+
+.quoteSource > p {
+  margin: 0;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.quoteSource > div[role="group"] {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.quoteSource > div[role="group"] > button {
+  min-height: 72px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--sales-line);
+  border-radius: 10px;
+  color: #405049;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+}
+
+.quoteSource > div[role="group"] > button.active {
+  color: var(--sales-green);
+  border-color: #79a691;
+  background: var(--sales-soft);
+  box-shadow: 0 0 0 3px rgba(13, 91, 67, .07);
+}
+
+.quoteSource button span {
+  display: grid;
+  gap: 3px;
+}
+
+.quoteSource button strong {
+  font-size: 11px;
+}
+
+.quoteSource button small,
+.quoteSource label em {
+  color: #708079;
+  font-size: 9px;
+  font-style: normal;
+  line-height: 1.35;
+}
+
+.quoteSourceSummary {
+  padding: 11px 13px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 9px;
+  background: #f3f7f4;
+}
+
+.quoteSourceSummary span {
+  padding: 5px 7px;
+  border-radius: 99px;
+  color: var(--sales-green);
+  background: #dff2c8;
+  font-size: 8px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.quoteSourceSummary strong {
+  font-size: 12px;
+}
+
+.quoteItems,
+.quotePricing {
+  display: grid;
+  gap: 10px;
+}
+
+.quoteItems > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.quoteItems > header div {
+  display: grid;
+  gap: 3px;
+}
+
+.quoteItems > header span {
+  color: var(--sales-green);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .12em;
+}
+
+.quoteItems > header strong {
+  font-size: 15px;
+}
+
+.quoteItems > header button {
+  min-height: 35px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #9ebcad;
+  border-radius: 8px;
+  color: var(--sales-green);
+  background: var(--sales-soft);
+  font-size: 9px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.quoteItems > article,
+.quotePricing > article {
+  padding: 13px;
+  border: 1px solid var(--sales-line);
+  border-radius: 11px;
+  background: #fbfcfb;
+}
+
+.quoteItems > article > div {
+  display: grid;
+  grid-template-columns: 28px 1fr 32px;
+  align-items: end;
+  gap: 8px;
+}
+
+.quoteItems > article > div > b {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  align-self: center;
+  border-radius: 8px;
+  color: var(--sales-green);
+  background: var(--sales-soft);
+  font-size: 10px;
+}
+
+.quoteItems > article > label {
+  margin-top: 10px;
+}
+
+.quoteRemove {
+  width: 32px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #f0c9c5;
+  border-radius: 8px;
+  color: #9b3930;
+  background: #fff5f4;
+  cursor: pointer;
+}
+
+.quotePricing {
+  grid-template-columns: 1fr 1fr;
+}
+
+.quotePricing > article,
+.quotePricing > .quoteTotals {
+  grid-column: 1 / -1;
+}
+
+.quotePricing > article {
+  display: grid;
+  grid-template-columns: 1.4fr .7fr 1fr .7fr auto auto;
+  align-items: end;
+  gap: 8px;
+}
+
+.quotePricing > article > strong {
+  align-self: center;
+  font-size: 11px;
+}
+
+.quotePricing > article > b {
+  align-self: center;
+  color: var(--sales-green);
+  font-size: 11px;
+}
+
+.quotePricing .quoteTax {
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.quotePricing .quoteTax input {
+  min-height: auto;
+}
+
+.quoteTotals {
+  margin: 0;
+  padding: 13px;
+  display: grid;
+  gap: 5px;
+  border-radius: 10px;
+  background: #edf5f0;
+}
+
+.quoteTotals div {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  color: #5e6d66;
+  font-size: 10px;
+}
+
+.quoteTotals dd {
+  margin: 0;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.quoteTotals div:last-child {
+  margin-top: 4px;
+  padding-top: 7px;
+  border-top: 1px solid #cbdcd2;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.quoteReview > header {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.quoteReview > header div {
+  display: grid;
+  gap: 3px;
+}
+
+.quoteReview > header span,
+.quoteReview > header small {
+  color: #65736c;
+  font-size: 8px;
+}
+
+.quoteReview > header strong {
+  font-size: 18px;
+}
+
+.quoteReview > header > b {
+  height: fit-content;
+  padding: 5px 7px;
+  border-radius: 99px;
+  color: #6a5208;
+  background: #fff0c4;
+  font-size: 8px;
+}
+
+.quoteReviewItems {
+  margin: 14px 0;
+  display: grid;
+}
+
+.quoteReviewItems > div {
+  padding: 9px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  border-bottom: 1px solid #dbe7df;
+  font-size: 11px;
+}
+
+.quoteReviewItems span {
+  display: grid;
+  gap: 3px;
+}
+
+.quoteReviewItems small {
+  color: #6c7973;
+  font-size: 8px;
+}
+
+.quoteReview > footer {
+  margin-top: 13px;
+  padding-top: 10px;
+  display: grid;
+  grid-template-columns: auto 1fr auto 1fr;
+  gap: 8px;
+  border-top: 1px solid #dbe7df;
+  font-size: 9px;
 }
 
 .salesQuickActions {
@@ -911,6 +1247,34 @@
   .salesForm footer,
   .quoteReview {
     grid-column: 1;
+  }
+
+  .quoteWizard .wide,
+  .quotePricing > article,
+  .quotePricing > .quoteTotals {
+    grid-column: 1;
+  }
+
+  .quoteSteps {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .quoteSource > div[role="group"],
+  .quotePricing {
+    grid-template-columns: 1fr;
+  }
+
+  .quotePricing > article {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .quotePricing > article > strong,
+  .quotePricing > article > b {
+    grid-column: 1 / -1;
+  }
+
+  .quoteReview > footer {
+    grid-template-columns: auto 1fr;
   }
 
   .salesTabs {
