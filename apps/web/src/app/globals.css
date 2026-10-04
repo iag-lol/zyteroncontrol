@@ -382,3 +382,10 @@ button, input, select { font: inherit; }
 @media (max-width: 480px) {
   .portfolioMetrics { grid-template-columns:1fr 1fr; }.portfolioMetrics button { min-height:78px; }.clientHubHeader h1,.wizardHeader h1 { font-size:30px; }.clientCompanyIdentity { align-items:flex-start; }.clientLogo { width:52px;height:52px;border-radius:15px;font-size:17px; }.client360Header h1 { font-size:24px; }.clientOwnership { grid-template-columns:1fr; }.financeClientPanel { grid-template-columns:1fr; }.clientTimeline article { grid-template-columns:10px 1fr; }.clientTimeline time { grid-column:2;text-align:left; }.clientTimeline article>span { grid-row:1/3; }.clientTimeline article>div { grid-column:2; }
 }
+
+.authPasswordRules {
+  margin:-4px 0 14px;
+  color:#6d8078;
+  font-size:9px;
+  line-height:1.45;
+}

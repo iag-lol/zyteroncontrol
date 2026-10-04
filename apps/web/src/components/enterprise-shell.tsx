@@ -26,7 +26,7 @@ import { commercialApi } from "@/lib/commercial-api";
 import type { Sale, SalesLead, SalesOpportunity, SalesQuote } from "@zyteron/contracts";
 import { auditsApi } from "@/lib/audits-api";
 import { supportApi } from "@/lib/support-api";
-import { AuthScreen } from "@/components/auth-screen";
+import { AuthScreen, PasswordRecoveryScreen } from "@/components/auth-screen";
 import { browserSupabase,developmentAuth } from "@/lib/auth-client";
 
 export function EnterpriseShell({ children }: { children: ReactNode }) {
@@ -38,6 +38,7 @@ export function EnterpriseShell({ children }: { children: ReactNode }) {
   const [currentRole, setCurrentRole] = useState<Role>("GERENTE_GENERAL");
   const [authReady,setAuthReady]=useState(false);
   const [authenticated,setAuthenticated]=useState(false);
+  const [passwordRecovery,setPasswordRecovery]=useState(false);
   const [authError,setAuthError]=useState("");
   const [globalQuery, setGlobalQuery] = useState("");
   const [clientResults, setClientResults] = useState<Client[]>([]);
@@ -50,7 +51,7 @@ export function EnterpriseShell({ children }: { children: ReactNode }) {
     if(isDevelopment){const configured=process.env.NEXT_PUBLIC_DEV_ROLE;setCurrentRole(roles.includes(configured as Role)?configured as Role:"GERENTE_GENERAL");setAuthenticated(true);setAuthReady(true);return;}
     const client=browserSupabase();if(!client){setAuthError("Faltan NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_ANON_KEY.");setAuthReady(true);return;}
     const apply=(session:Session|null)=>{const value=session?.user?.app_metadata?.role;if(session&&roles.includes(value as Role)){setCurrentRole(value as Role);setAuthenticated(true);setAuthError("");}else{setAuthenticated(false);if(session)setAuthError("La identidad no posee un rol válido en app_metadata.");}setAuthReady(true);};
-    void client.auth.getSession().then(({data})=>apply(data.session));const{data:listener}=client.auth.onAuthStateChange((_event,session)=>apply(session));return()=>listener.subscription.unsubscribe();
+    void client.auth.getSession().then(({data})=>apply(data.session));const{data:listener}=client.auth.onAuthStateChange((event,session)=>{if(event==="PASSWORD_RECOVERY")setPasswordRecovery(true);apply(session);});return()=>listener.subscription.unsubscribe();
   },[isDevelopment]);
 
   const visibleNavigation = useMemo(
@@ -98,6 +99,7 @@ export function EnterpriseShell({ children }: { children: ReactNode }) {
   }
 
   if(!authReady)return <main className="authBoot"><ShieldCheck/><span>Verificando sesión…</span></main>;
+  if(passwordRecovery)return <PasswordRecoveryScreen onComplete={()=>setPasswordRecovery(false)}/>;
   if(!authenticated)return <AuthScreen configurationError={authError}/>;
 
   return (
