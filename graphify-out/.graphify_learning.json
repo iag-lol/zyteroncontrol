@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-10-04T06:15:03.402428+00:00",
+  "generated_at": "2026-10-04T11:27:07.320585+00:00",
   "nodes": {
     "apps_api_package": {
-      "code_fingerprint": "98bdb1552236a1aa206a586d0ff99889f551a63c327e46156d77cd2abe17c4f0",
+      "code_fingerprint": "f50f972ab97c6e8c3e9775804afaf098480fde94ad3136bf6e944716d3377239",
       "label": "api/package.json",
       "last": "2026-09-30T09:15:35.768642+00:00",
       "provenance": [
@@ -22,7 +22,7 @@
           "q": "¿Qué directorio raíz y comandos de build/start requiere Render para desplegar la aplicación web Next.js dentro de este monorepo pnpm?"
         }
       ],
-      "score": 2.742212336,
+      "score": 2.728516093,
       "source_file": "apps/api/package.json",
       "status": "preferred",
       "uses": 3
@@ -38,13 +38,13 @@
           "q": "¿Cómo se conectan los dominios, permisos y rutas empresariales?"
         }
       ],
-      "score": 0.912183628,
+      "score": 0.907627639,
       "source_file": "apps/api/src/app.module.ts",
       "status": "tentative",
       "uses": 1
     },
     "apps_api_src_auth_role_guard": {
-      "code_fingerprint": "962e366054ec8f69d0dd883753c2e66053e61c1eab15fee71384b15be0ca4c3f",
+      "code_fingerprint": "af707567a49d980e05c0e6bd126064f1d00a30dcf7274c09a9cc15c4c24cc698",
       "label": "role.guard.ts",
       "last": "2026-09-30T09:25:25.442959+00:00",
       "provenance": [
@@ -54,7 +54,7 @@
           "q": "¿Qué causa el 500 en GET /api/clients del despliegue Render si /api/health responde 200 y CORS ya es correcto?"
         }
       ],
-      "score": 0.914511564,
+      "score": 0.909943948,
       "source_file": "apps/api/src/auth/role.guard.ts",
       "status": "tentative",
       "uses": 1
@@ -70,13 +70,13 @@
           "q": "¿Cómo se conectan los dominios, permisos y rutas empresariales?"
         }
       ],
-      "score": 0.912183628,
+      "score": 0.907627639,
       "source_file": "apps/api/src/auth/roles.decorator.ts",
       "status": "tentative",
       "uses": 1
     },
     "apps_api_src_clients_client_integrations_service_clientdomainmodules": {
-      "code_fingerprint": "5475b0244e9d4d29c77bcc5b4b66e2ace576cb62a3e507e98ef3f74f5463ee60",
+      "code_fingerprint": "68e013e686d682844478028aaa1d33a00e129e37e726cda926ae53ffdeff3179",
       "label": "clientDomainModules",
       "last": "2026-09-30T07:58:15.448453+00:00",
       "provenance": [
@@ -86,13 +86,13 @@
           "q": "¿Cómo conecta Client 360 con los dominios empresariales?"
         }
       ],
-      "score": 0.913233428,
+      "score": 0.908672195,
       "source_file": "apps/api/src/clients/client-integrations.service.ts",
       "status": "tentative",
       "uses": 1
     },
     "apps_api_src_clients_client_integrations_service_clientintegrationsservice": {
-      "code_fingerprint": "5475b0244e9d4d29c77bcc5b4b66e2ace576cb62a3e507e98ef3f74f5463ee60",
+      "code_fingerprint": "68e013e686d682844478028aaa1d33a00e129e37e726cda926ae53ffdeff3179",
       "label": "ClientIntegrationsService",
       "last": "2026-09-30T07:58:15.448453+00:00",
       "provenance": [
@@ -102,7 +102,7 @@
           "q": "¿Cómo conecta Client 360 con los dominios empresariales?"
         }
       ],
-      "score": 0.913233428,
+      "score": 0.908672195,
       "source_file": "apps/api/src/clients/client-integrations.service.ts",
       "status": "tentative",
       "uses": 1
@@ -118,7 +118,7 @@
           "q": "¿Qué puertos externos prepara Client 360 sin simular integraciones?"
         }
       ],
-      "score": 0.913286693,
+      "score": 0.908725195,
       "source_file": "apps/api/src/clients/client-provider-ports.ts",
       "status": "tentative",
       "uses": 1
@@ -134,39 +134,7 @@
           "q": "¿Qué puertos externos prepara Client 360 sin simular integraciones?"
         }
       ],
-      "score": 0.913286693,
-      "source_file": "apps/api/src/clients/client-provider-ports.ts",
-      "status": "tentative",
-      "uses": 1
-    },
-    "apps_api_src_clients_client_provider_ports_paymentprovider": {
-      "code_fingerprint": "d216429c70c9da13d8ab9759fe2c66ae03a455683dccbc40325b4397f8793d7b",
-      "label": "PaymentProvider",
-      "last": "2026-09-30T08:01:53.552676+00:00",
-      "provenance": [
-        {
-          "date": "2026-09-30T08:01:53.552676+00:00",
-          "outcome": "useful",
-          "q": "¿Qué puertos externos prepara Client 360 sin simular integraciones?"
-        }
-      ],
-      "score": 0.913286693,
-      "source_file": "apps/api/src/clients/client-provider-ports.ts",
-      "status": "tentative",
-      "uses": 1
-    },
-    "apps_api_src_clients_client_provider_ports_taxdocumentprovider": {
-      "code_fingerprint": "d216429c70c9da13d8ab9759fe2c66ae03a455683dccbc40325b4397f8793d7b",
-      "label": "TaxDocumentProvider",
-      "last": "2026-09-30T08:01:53.552676+00:00",
-      "provenance": [
-        {
-          "date": "2026-09-30T08:01:53.552676+00:00",
-          "outcome": "useful",
-          "q": "¿Qué puertos externos prepara Client 360 sin simular integraciones?"
-        }
-      ],
-      "score": 0.913286693,
+      "score": 0.908725195,
       "source_file": "apps/api/src/clients/client-provider-ports.ts",
       "status": "tentative",
       "uses": 1
@@ -192,7 +160,7 @@
           "q": "¿Cómo conecta Client 360 con los dominios empresariales?"
         }
       ],
-      "score": 2.742464615,
+      "score": 2.728767112,
       "source_file": "apps/api/src/clients/clients.repository.ts",
       "status": "preferred",
       "uses": 3
@@ -208,13 +176,13 @@
           "q": "¿Cómo conecta Client 360 con los dominios empresariales?"
         }
       ],
-      "score": 0.913233428,
+      "score": 0.908672195,
       "source_file": "apps/api/src/clients/clients.service.ts",
       "status": "tentative",
       "uses": 1
     },
     "apps_api_src_documents_documents_service": {
-      "code_fingerprint": "2d13ea2c478e7b30acd148edd299771939bbacf7ad3e52fe873ba6f7cacd6f25",
+      "code_fingerprint": "dc0de7135e381d8ac3d5c475b334597964b0a9725bf0ab5490d541e80f11bb39",
       "label": "documents.service.ts",
       "last": "2026-10-04T06:15:03.331691+00:00",
       "provenance": [
@@ -222,12 +190,22 @@
           "date": "2026-10-04T06:15:03.331691+00:00",
           "outcome": "useful",
           "q": "Security SQL falla con ERROR 42P01 relation public.documents does not exist"
+        },
+        {
+          "date": "2026-10-04T06:15:03.331691+00:00",
+          "outcome": "useful",
+          "q": "Security SQL falla con ERROR 42P01 relation public.documents does not exist"
+        },
+        {
+          "date": "2026-10-04T06:15:03.331691+00:00",
+          "outcome": "useful",
+          "q": "Security SQL falla con ERROR 42P01 relation public.documents does not exist"
         }
       ],
-      "score": 0.999999981,
+      "score": 2.985016155,
       "source_file": "apps/api/src/documents/documents.service.ts",
-      "status": "tentative",
-      "uses": 1
+      "status": "preferred",
+      "uses": 3
     },
     "apps_api_src_health_controller": {
       "code_fingerprint": "57a8839da27758da05c62ffca79a73baba163b7fce19e898c47c251c8cd1c881",
@@ -240,13 +218,13 @@
           "q": "¿Qué causa el 500 en GET /api/clients del despliegue Render si /api/health responde 200 y CORS ya es correcto?"
         }
       ],
-      "score": 0.914511564,
+      "score": 0.909943948,
       "source_file": "apps/api/src/health.controller.ts",
       "status": "tentative",
       "uses": 1
     },
     "apps_api_src_main": {
-      "code_fingerprint": "18926ca5f904553bc6429296d0a79dee13f2682745d9e8e841eef6088636eee4",
+      "code_fingerprint": "a5c849715fab444f4dde53f3ca88d9ea640976804c9532aba0aeb5cf4b946337",
       "label": "main.ts",
       "last": "2026-09-30T09:15:35.768642+00:00",
       "provenance": [
@@ -261,63 +239,10 @@
           "q": "¿Por qué Render muestra Failed to fetch y CORS al llamar localhost:4000 desde zyteroncontrol.onrender.com?"
         }
       ],
-      "score": 1.828700768,
+      "score": 1.819567146,
       "source_file": "apps/api/src/main.ts",
       "status": "preferred",
       "uses": 2
-    },
-    "apps_api_src_security_security_controller_securitycontroller": {
-      "code_fingerprint": "a69dad1a29c94e2f6c1b0d59264ce8de97682b513d1f2bc52b762b5e7ad7f28b",
-      "label": "SecurityController",
-      "last": "2026-10-04T06:15:03.331691+00:00",
-      "provenance": [
-        {
-          "date": "2026-10-04T06:15:03.331691+00:00",
-          "outcome": "useful",
-          "q": "Security SQL falla con ERROR 42P01 relation public.documents does not exist"
-        },
-        {
-          "date": "2026-10-04T05:28:34.049347+00:00",
-          "outcome": "useful",
-          "q": "Cómo se conecta el nuevo módulo Security 11 entre UI, API, autorización, repositorio, contratos y migración, y existen referencias rotas"
-        }
-      ],
-      "score": 1.999254336,
-      "source_file": "apps/api/src/security/security.controller.ts",
-      "status": "preferred",
-      "uses": 2
-    },
-    "apps_api_src_security_security_repository_securityrepository": {
-      "code_fingerprint": "e5e69e92657e261c6de4acd60a02fff0f7bb698f62c98a4e63e3475d678498f3",
-      "label": "SecurityRepository",
-      "last": "2026-10-04T05:28:34.049347+00:00",
-      "provenance": [
-        {
-          "date": "2026-10-04T05:28:34.049347+00:00",
-          "outcome": "useful",
-          "q": "Cómo se conecta el nuevo módulo Security 11 entre UI, API, autorización, repositorio, contratos y migración, y existen referencias rotas"
-        }
-      ],
-      "score": 0.999254355,
-      "source_file": "apps/api/src/security/security.repository.ts",
-      "status": "tentative",
-      "uses": 1
-    },
-    "apps_api_src_security_security_service_securityservice": {
-      "code_fingerprint": "0c41cbf718eb8ce2717fdaffa83a3a2dd49533a53e15c469133486fa3995ca99",
-      "label": "SecurityService",
-      "last": "2026-10-04T05:28:34.049347+00:00",
-      "provenance": [
-        {
-          "date": "2026-10-04T05:28:34.049347+00:00",
-          "outcome": "useful",
-          "q": "Cómo se conecta el nuevo módulo Security 11 entre UI, API, autorización, repositorio, contratos y migración, y existen referencias rotas"
-        }
-      ],
-      "score": 0.999254355,
-      "source_file": "apps/api/src/security/security.service.ts",
-      "status": "tentative",
-      "uses": 1
     },
     "apps_web_next_config": {
       "code_fingerprint": "c6d2333f86cfb95b582b91ae0cd132ad9eb828aa1f9c38c3d2dd58f04d1ffa6f",
@@ -330,7 +255,7 @@
           "q": "¿Qué directorio raíz y comandos de build/start requiere Render para desplegar la aplicación web Next.js dentro de este monorepo pnpm?"
         }
       ],
-      "score": 0.913511569,
+      "score": 0.908948947,
       "source_file": "apps/web/next.config.ts",
       "status": "tentative",
       "uses": 1
@@ -356,13 +281,13 @@
           "q": "¿Qué directorio raíz y comandos de build/start requiere Render para desplegar la aplicación web Next.js dentro de este monorepo pnpm?"
         }
       ],
-      "score": 2.742212336,
+      "score": 2.728516093,
       "source_file": "apps/web/package.json",
       "status": "preferred",
       "uses": 3
     },
     "apps_web_src_app_clients_segments_page": {
-      "code_fingerprint": "0b8f37b31988e27fe355a9cdd66cb22476ba7c6dd58457fed008a250dfe54c78",
+      "code_fingerprint": "e40b2378c4ab48d87d5ae39bc1af80e929b0b59c09466a4ed1a41ee73d453c97",
       "label": "clients/[[...segments]]/page.tsx",
       "last": "2026-09-30T10:10:21.841033+00:00",
       "provenance": [
@@ -372,13 +297,13 @@
           "q": "¿Por qué sólo funciona Todos los clientes y las demás secciones del menú devuelven Internal server error?"
         }
       ],
-      "score": 0.915171224,
+      "score": 0.910600314,
       "source_file": "apps/web/src/app/clients/[[...segments]]/page.tsx",
       "status": "tentative",
       "uses": 1
     },
     "apps_web_src_components_clients_client_360_client360": {
-      "code_fingerprint": "ae5fd51c61dac24f21d507ea410b575a02803759e0d5cba4a33e0f853455458c",
+      "code_fingerprint": "6ae4dd13c0c2a430c019b5738c310a4577db923178dedaea19de1b1842be29ea",
       "label": "Client360()",
       "last": "2026-09-30T10:10:21.841033+00:00",
       "provenance": [
@@ -393,7 +318,7 @@
           "q": "¿Cómo conecta Client 360 con los dominios empresariales?"
         }
       ],
-      "score": 1.828404652,
+      "score": 1.819272509,
       "source_file": "apps/web/src/components/clients/client-360.tsx",
       "status": "preferred",
       "uses": 2
@@ -409,7 +334,7 @@
           "q": "¿Por qué sólo funciona Todos los clientes y las demás secciones del menú devuelven Internal server error?"
         }
       ],
-      "score": 0.915171224,
+      "score": 0.910600314,
       "source_file": "apps/web/src/components/clients/client-hub.tsx",
       "status": "tentative",
       "uses": 1
@@ -430,7 +355,7 @@
           "q": "¿Por qué POST /api/clients devuelve 500 en producción mientras GET /api/clients funciona y la lista sigue vacía?"
         }
       ],
-      "score": 1.829663367,
+      "score": 1.820524937,
       "source_file": "apps/web/src/components/clients/new-client-wizard.tsx",
       "status": "preferred",
       "uses": 2
@@ -446,13 +371,13 @@
           "q": "¿Cómo se conectan los dominios, permisos y rutas empresariales?"
         }
       ],
-      "score": 0.912183628,
+      "score": 0.907627639,
       "source_file": "apps/web/src/components/enterprise/access.tsx",
       "status": "tentative",
       "uses": 1
     },
     "apps_web_src_components_enterprise_shell_enterpriseshell": {
-      "code_fingerprint": "04bcef4a7b8042e9b41c249e01d94b557e88f7fa37e8d958515e58d4cc92b88a",
+      "code_fingerprint": "55aae2b283bcdded386e4cedc47e4adfcf1330a064c941f6f398d79e143de8de",
       "label": "EnterpriseShell()",
       "last": "2026-09-30T06:46:34.303786+00:00",
       "provenance": [
@@ -462,7 +387,7 @@
           "q": "¿Cómo se conectan los dominios, permisos y rutas empresariales?"
         }
       ],
-      "score": 0.912183628,
+      "score": 0.907627639,
       "source_file": "apps/web/src/components/enterprise-shell.tsx",
       "status": "tentative",
       "uses": 1
@@ -483,13 +408,13 @@
           "q": "¿Cómo se conectan los dominios, permisos y rutas empresariales?"
         }
       ],
-      "score": 1.827354852,
+      "score": 1.818227952,
       "source_file": "apps/web/src/components/module-page.tsx",
       "status": "preferred",
       "uses": 2
     },
     "apps_web_src_components_security_security_workspace": {
-      "code_fingerprint": "f1d333a882383bacfee0a6236ebd461f49a1d555d08b85789d7ffd46d528d523",
+      "code_fingerprint": "50c388aaef1c008f49cff1d7444c7fae5a60a6772d630bc127bdacb89de5172d",
       "label": "security-workspace.tsx",
       "last": "2026-10-04T05:28:34.049347+00:00",
       "provenance": [
@@ -497,15 +422,25 @@
           "date": "2026-10-04T05:28:34.049347+00:00",
           "outcome": "useful",
           "q": "Cómo se conecta el nuevo módulo Security 11 entre UI, API, autorización, repositorio, contratos y migración, y existen referencias rotas"
+        },
+        {
+          "date": "2026-10-04T05:28:34.049347+00:00",
+          "outcome": "useful",
+          "q": "Cómo se conecta el nuevo módulo Security 11 entre UI, API, autorización, repositorio, contratos y migración, y existen referencias rotas"
+        },
+        {
+          "date": "2026-10-04T05:28:34.049347+00:00",
+          "outcome": "useful",
+          "q": "Cómo se conecta el nuevo módulo Security 11 entre UI, API, autorización, repositorio, contratos y migración, y existen referencias rotas"
         }
       ],
-      "score": 0.999254355,
+      "score": 2.98279045,
       "source_file": "apps/web/src/components/security/security-workspace.tsx",
-      "status": "tentative",
-      "uses": 1
+      "status": "preferred",
+      "uses": 3
     },
     "apps_web_src_lib_access_control_canaccessgroup": {
-      "code_fingerprint": "b94c83b13c48c6d84e29243d8390c1fcba3ea67bc0d2b06e0376da927e3d83d4",
+      "code_fingerprint": "a8e423c7261864510fedf3fb87c4bf4c588ed540fccb3c19178d539b18daa2a2",
       "label": "canAccessGroup()",
       "last": "2026-09-30T06:46:34.303786+00:00",
       "provenance": [
@@ -515,7 +450,7 @@
           "q": "¿Cómo se conectan los dominios, permisos y rutas empresariales?"
         }
       ],
-      "score": 0.912183628,
+      "score": 0.907627639,
       "source_file": "apps/web/src/lib/access-control.ts",
       "status": "tentative",
       "uses": 1
@@ -541,7 +476,7 @@
           "q": "¿Qué directorio raíz y comandos de build/start requiere Render para desplegar la aplicación web Next.js dentro de este monorepo pnpm?"
         }
       ],
-      "score": 2.742212336,
+      "score": 2.728516093,
       "source_file": "apps/web/src/lib/clients-api.ts",
       "status": "preferred",
       "uses": 3
@@ -557,13 +492,13 @@
           "q": "¿Por qué aparecen alertas de UUID después de desplegar el wizard corregido?"
         }
       ],
-      "score": 0.914943743,
+      "score": 0.910373969,
       "source_file": "apps/web/src/lib/clients-api.ts",
       "status": "tentative",
       "uses": 1
     },
     "apps_web_src_lib_security_api": {
-      "code_fingerprint": "9af7c09f1bef468ef3dc26ff918f6c3a269f34c1cd1a1eeee1ef4ccbd4538610",
+      "code_fingerprint": "b8a26e6147a23bf7859601f1342e6dcb04456eb4cee790f92e3d2d3a1104d7ab",
       "label": "security-api.ts",
       "last": "2026-10-04T05:28:34.049347+00:00",
       "provenance": [
@@ -571,12 +506,22 @@
           "date": "2026-10-04T05:28:34.049347+00:00",
           "outcome": "useful",
           "q": "Cómo se conecta el nuevo módulo Security 11 entre UI, API, autorización, repositorio, contratos y migración, y existen referencias rotas"
+        },
+        {
+          "date": "2026-10-04T05:28:34.049347+00:00",
+          "outcome": "useful",
+          "q": "Cómo se conecta el nuevo módulo Security 11 entre UI, API, autorización, repositorio, contratos y migración, y existen referencias rotas"
+        },
+        {
+          "date": "2026-10-04T05:28:34.049347+00:00",
+          "outcome": "useful",
+          "q": "Cómo se conecta el nuevo módulo Security 11 entre UI, API, autorización, repositorio, contratos y migración, y existen referencias rotas"
         }
       ],
-      "score": 0.999254355,
+      "score": 2.98279045,
       "source_file": "apps/web/src/lib/security-api.ts",
-      "status": "tentative",
-      "uses": 1
+      "status": "preferred",
+      "uses": 3
     },
     "supabase_migrations_20260930160000_commercial_sales_operations": {
       "code_fingerprint": "c061dd06c729d5802ce723a15745cedcd22cbfbedd946b9a13b8bafd5b8a2ef9",
@@ -589,15 +534,30 @@
           "q": "Failed to run sql query: ERROR 42703: column audience_role does not exist en commercial_notifications"
         },
         {
+          "date": "2026-10-04T05:59:06.448567+00:00",
+          "outcome": "useful",
+          "q": "Failed to run sql query: ERROR 42703: column audience_role does not exist en commercial_notifications"
+        },
+        {
+          "date": "2026-10-04T05:59:06.448567+00:00",
+          "outcome": "useful",
+          "q": "Failed to run sql query: ERROR 42703: column audience_role does not exist en commercial_notifications"
+        },
+        {
+          "date": "2026-10-04T05:52:35.213310+00:00",
+          "outcome": "useful",
+          "q": "Ayúdame con ERROR 42703: column user_id does not exist en commercial_notifications_own de Comercial Sales SQL"
+        },
+        {
           "date": "2026-10-04T05:52:35.213310+00:00",
           "outcome": "useful",
           "q": "Ayúdame con ERROR 42703: column user_id does not exist en commercial_notifications_own de Comercial Sales SQL"
         }
       ],
-      "score": 1.999383661,
+      "score": 5.968192642,
       "source_file": "supabase/migrations/20260930160000_commercial_sales_operations.sql",
       "status": "preferred",
-      "uses": 2
+      "uses": 6
     },
     "supabase_migrations_20261001010000_delivery_operations_center": {
       "code_fingerprint": "78b0eebe93ed629b7a34cf8ac8d33abe6513d8e6bc8dd93b83c148b327e7111a",
@@ -608,12 +568,22 @@
           "date": "2026-10-04T06:04:27.272893+00:00",
           "outcome": "useful",
           "q": "Site Reliability falla porque public.project_endpoints no existe; Financial y Security fallan porque public.projects no existe"
+        },
+        {
+          "date": "2026-10-04T06:04:27.272893+00:00",
+          "outcome": "useful",
+          "q": "Site Reliability falla porque public.project_endpoints no existe; Financial y Security fallan porque public.projects no existe"
+        },
+        {
+          "date": "2026-10-04T06:04:27.272893+00:00",
+          "outcome": "useful",
+          "q": "Site Reliability falla porque public.project_endpoints no existe; Financial y Security fallan porque public.projects no existe"
         }
       ],
-      "score": 0.999829902,
+      "score": 2.984508467,
       "source_file": "supabase/migrations/20261001010000_delivery_operations_center.sql",
-      "status": "tentative",
-      "uses": 1
+      "status": "preferred",
+      "uses": 3
     },
     "supabase_migrations_20261001050000_site_reliability_monitoring": {
       "code_fingerprint": "6af5ce37e172fc547e5820bc8952cd988633197275a8129e5d206b0de50a3c6e",
@@ -624,12 +594,22 @@
           "date": "2026-10-04T06:04:27.272893+00:00",
           "outcome": "useful",
           "q": "Site Reliability falla porque public.project_endpoints no existe; Financial y Security fallan porque public.projects no existe"
+        },
+        {
+          "date": "2026-10-04T06:04:27.272893+00:00",
+          "outcome": "useful",
+          "q": "Site Reliability falla porque public.project_endpoints no existe; Financial y Security fallan porque public.projects no existe"
+        },
+        {
+          "date": "2026-10-04T06:04:27.272893+00:00",
+          "outcome": "useful",
+          "q": "Site Reliability falla porque public.project_endpoints no existe; Financial y Security fallan porque public.projects no existe"
         }
       ],
-      "score": 0.999829902,
+      "score": 2.984508467,
       "source_file": "supabase/migrations/20261001050000_site_reliability_monitoring.sql",
-      "status": "tentative",
-      "uses": 1
+      "status": "preferred",
+      "uses": 3
     },
     "supabase_migrations_20261001080000_document_control_center": {
       "code_fingerprint": "1ef4e8f8817fd1dc90be42ac21e2e1626fed78e7ad888b0157932737959a756e",
@@ -640,12 +620,22 @@
           "date": "2026-10-04T06:15:03.331691+00:00",
           "outcome": "useful",
           "q": "Security SQL falla con ERROR 42P01 relation public.documents does not exist"
+        },
+        {
+          "date": "2026-10-04T06:15:03.331691+00:00",
+          "outcome": "useful",
+          "q": "Security SQL falla con ERROR 42P01 relation public.documents does not exist"
+        },
+        {
+          "date": "2026-10-04T06:15:03.331691+00:00",
+          "outcome": "useful",
+          "q": "Security SQL falla con ERROR 42P01 relation public.documents does not exist"
         }
       ],
-      "score": 0.999999981,
+      "score": 2.985016155,
       "source_file": "supabase/migrations/20261001080000_document_control_center.sql",
-      "status": "tentative",
-      "uses": 1
+      "status": "preferred",
+      "uses": 3
     },
     "supabase_migrations_20261001150000_financial_accounting_center": {
       "code_fingerprint": "a1378727ed57d3b7b69a8325ca2d9275c4eade782c32a3a6b27be5e126f80e81",
@@ -658,69 +648,46 @@
           "q": "Financial SQL falla con ERROR 42703 column status does not exist al crear tax_documents_invoice_active"
         },
         {
+          "date": "2026-10-04T06:13:24.064794+00:00",
+          "outcome": "useful",
+          "q": "Financial SQL falla con ERROR 42703 column status does not exist al crear tax_documents_invoice_active"
+        },
+        {
+          "date": "2026-10-04T06:13:24.064794+00:00",
+          "outcome": "useful",
+          "q": "Financial SQL falla con ERROR 42703 column status does not exist al crear tax_documents_invoice_active"
+        },
+        {
+          "date": "2026-10-04T06:04:27.272893+00:00",
+          "outcome": "useful",
+          "q": "Site Reliability falla porque public.project_endpoints no existe; Financial y Security fallan porque public.projects no existe"
+        },
+        {
           "date": "2026-10-04T06:04:27.272893+00:00",
           "outcome": "useful",
           "q": "Site Reliability falla porque public.project_endpoints no existe; Financial y Security fallan porque public.projects no existe"
         }
       ],
-      "score": 1.999803338,
+      "score": 5.969445384,
       "source_file": "supabase/migrations/20261001150000_financial_accounting_center.sql",
       "status": "preferred",
-      "uses": 2
-    },
-    "supabase_migrations_20261001150000_financial_accounting_center_public_tax_documents": {
-      "code_fingerprint": "a1378727ed57d3b7b69a8325ca2d9275c4eade782c32a3a6b27be5e126f80e81",
-      "label": "public.tax_documents",
-      "last": "2026-10-04T06:13:24.064794+00:00",
-      "provenance": [
-        {
-          "date": "2026-10-04T06:13:24.064794+00:00",
-          "outcome": "useful",
-          "q": "Financial SQL falla con ERROR 42703 column status does not exist al crear tax_documents_invoice_active"
-        }
-      ],
-      "score": 0.999973436,
-      "source_file": "supabase/migrations/20261001150000_financial_accounting_center.sql",
-      "status": "tentative",
-      "uses": 1
-    },
-    "supabase_migrations_20261001150000_financial_accounting_center_tax_documents_invoice_active": {
-      "code_fingerprint": "a1378727ed57d3b7b69a8325ca2d9275c4eade782c32a3a6b27be5e126f80e81",
-      "label": "tax_documents_invoice_active",
-      "last": "2026-10-04T06:13:24.064794+00:00",
-      "provenance": [
-        {
-          "date": "2026-10-04T06:13:24.064794+00:00",
-          "outcome": "useful",
-          "q": "Financial SQL falla con ERROR 42703 column status does not exist al crear tax_documents_invoice_active"
-        }
-      ],
-      "score": 0.999973436,
-      "source_file": "supabase/migrations/20261001150000_financial_accounting_center.sql",
-      "status": "tentative",
-      "uses": 1
-    },
-    "supabase_migrations_20261001150000_financial_accounting_center_tax_documents_status_idx": {
-      "code_fingerprint": "a1378727ed57d3b7b69a8325ca2d9275c4eade782c32a3a6b27be5e126f80e81",
-      "label": "tax_documents_status_idx",
-      "last": "2026-10-04T06:13:24.064794+00:00",
-      "provenance": [
-        {
-          "date": "2026-10-04T06:13:24.064794+00:00",
-          "outcome": "useful",
-          "q": "Financial SQL falla con ERROR 42703 column status does not exist al crear tax_documents_invoice_active"
-        }
-      ],
-      "score": 0.999973436,
-      "source_file": "supabase/migrations/20261001150000_financial_accounting_center.sql",
-      "status": "tentative",
-      "uses": 1
+      "uses": 6
     },
     "supabase_migrations_20261004010000_security_control_plane": {
-      "code_fingerprint": "c5afdc8a1d95e7098d444720f0a5e55421323d77249868bd20f0c1da60f4c832",
+      "code_fingerprint": "e272a8e98c9531c0c76c3db0544c23946ca0e323f977fe49a7544d8a26821ff6",
       "label": "20261004010000_security_control_plane.sql",
       "last": "2026-10-04T06:15:03.331691+00:00",
       "provenance": [
+        {
+          "date": "2026-10-04T06:15:03.331691+00:00",
+          "outcome": "useful",
+          "q": "Security SQL falla con ERROR 42P01 relation public.documents does not exist"
+        },
+        {
+          "date": "2026-10-04T06:15:03.331691+00:00",
+          "outcome": "useful",
+          "q": "Security SQL falla con ERROR 42P01 relation public.documents does not exist"
+        },
         {
           "date": "2026-10-04T06:15:03.331691+00:00",
           "outcome": "useful",
@@ -732,15 +699,15 @@
           "q": "Site Reliability falla porque public.project_endpoints no existe; Financial y Security fallan porque public.projects no existe"
         },
         {
-          "date": "2026-10-04T05:28:34.049347+00:00",
+          "date": "2026-10-04T06:04:27.272893+00:00",
           "outcome": "useful",
-          "q": "Cómo se conecta el nuevo módulo Security 11 entre UI, API, autorización, repositorio, contratos y migración, y existen referencias rotas"
+          "q": "Site Reliability falla porque public.project_endpoints no existe; Financial y Security fallan porque public.projects no existe"
         }
       ],
-      "score": 2.999084238,
+      "score": 8.952315072,
       "source_file": "supabase/migrations/20261004010000_security_control_plane.sql",
       "status": "preferred",
-      "uses": 3
+      "uses": 9
     },
     "supabase_migrations_20261004020000_commercial_notifications_owner_fix": {
       "code_fingerprint": "999cc0a72c029578f7a7dfc9b93365ca06f5d62c5dbf1394e623173f7e9c685f",
@@ -753,15 +720,30 @@
           "q": "Failed to run sql query: ERROR 42703: column audience_role does not exist en commercial_notifications"
         },
         {
+          "date": "2026-10-04T05:59:06.448567+00:00",
+          "outcome": "useful",
+          "q": "Failed to run sql query: ERROR 42703: column audience_role does not exist en commercial_notifications"
+        },
+        {
+          "date": "2026-10-04T05:59:06.448567+00:00",
+          "outcome": "useful",
+          "q": "Failed to run sql query: ERROR 42703: column audience_role does not exist en commercial_notifications"
+        },
+        {
+          "date": "2026-10-04T05:52:35.213310+00:00",
+          "outcome": "useful",
+          "q": "Ayúdame con ERROR 42703: column user_id does not exist en commercial_notifications_own de Comercial Sales SQL"
+        },
+        {
           "date": "2026-10-04T05:52:35.213310+00:00",
           "outcome": "useful",
           "q": "Ayúdame con ERROR 42703: column user_id does not exist en commercial_notifications_own de Comercial Sales SQL"
         }
       ],
-      "score": 1.999383661,
+      "score": 5.968192642,
       "source_file": "supabase/migrations/20261004020000_commercial_notifications_owner_fix.sql",
       "status": "preferred",
-      "uses": 2
+      "uses": 6
     }
   },
   "version": 1
