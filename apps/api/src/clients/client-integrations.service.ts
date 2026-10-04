@@ -2,7 +2,6 @@ import { Injectable } from "@nestjs/common";
 import { AuditsModule } from "../audits/audits.module.js";
 import { CrmModule } from "../crm/crm.module.js";
 import { DocumentsModule } from "../documents/documents.module.js";
-import { FinanceModule } from "../finance/finance.module.js";
 import { MonitoringModule } from "../monitoring/monitoring.module.js";
 import { NotificationsModule } from "../notifications/notifications.module.js";
 import { ProjectsModule } from "../projects/projects.module.js";
@@ -17,7 +16,8 @@ export const clientDomainModules = {
   WORK_ORDERS: WorkOrdersModule,
   PROJECTS: ProjectsModule,
   DOCUMENTS: DocumentsModule,
-  FINANCE: FinanceModule,
+  // Referencia por nombre: Finanzas consume Clientes y un import directo crearía un ciclo de módulos ES.
+  FINANCE: "FinanceModule",
   SUPPORT: SupportModule,
   MONITORING: MonitoringModule,
   AUDITS: AuditsModule,

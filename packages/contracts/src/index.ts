@@ -19,6 +19,7 @@ export const roles = [
   "SOPORTE_TECNICO",
   "RRHH",
   "FINANZAS",
+  "CONTADOR",
   "COMERCIAL",
   "DESARROLLO",
   "OPERACIONES",
@@ -640,3 +641,5 @@ export interface SecurityGate { id:string; releaseReference:string; status:"PASS
 export interface SecurityPosture { status:SecurityPostureStatus; reasons:Array<{key:string;label:string;status:"HEALTHY"|"ATTENTION"|"AT_RISK"|"CRITICAL"|"UNKNOWN";explanation:string;href:string}>; evaluatedAt:string; }
 export interface SecuritySummary { criticalEvents:number; highEvents:number; loginFailures:number; newDevices:number; mfaCoverage:number|null; privilegedAccounts:number; activePrivilegedSessions:number; accessRequests:number; vaultAccesses:number; rlsFindings:number; openVulnerabilities:number; exposedSecretFindings:number; openIncidents:number; backupStatus:"HEALTHY"|"ATTENTION"|"AT_RISK"|"CRITICAL"|"NOT_CONFIGURED"; restoreStatus:"VALIDATED"|"STALE"|"FAILED"|"NEVER_VALIDATED"; gateStatus:"PASS"|"PASS_WITH_EXCEPTION"|"FAIL"|"NOT_EVALUATED"; }
 export interface SecurityWorkspace { summary:SecuritySummary; posture:SecurityPosture; identities:SecurityIdentity[]; sessions:SecuritySession[]; devices:SecurityDevice[]; accessRequests:SecurityAccessRequest[]; accessGrants:SecurityAccessGrant[]; accessReviews:Array<Record<string,unknown>>; vaultItems:SecurityVaultItem[]; vaultAccesses:SecurityVaultAccess[]; events:SecurityEvent[]; incidents:SecurityIncident[]; incidentEvents:SecurityIncidentEvent[]; vulnerabilities:SecurityVulnerability[]; controls:SecurityControl[]; scans:SecurityScan[]; dataAssets:DataAsset[]; processingActivities:ProcessingActivity[]; subjectRequests:DataSubjectRequest[]; dpias:PrivacyImpactAssessment[]; privacyBreaches:Array<Record<string,unknown>>; retentionPolicies:Array<Record<string,unknown>>; dataExports:Array<Record<string,unknown>>; vendors:VendorSecurityRecord[]; backupTargets:Array<Record<string,unknown>>; recoveryTests:RecoveryTest[]; disasterRecoveryPlans:Array<Record<string,unknown>>; threatModels:Array<Record<string,unknown>>; gates:SecurityGate[]; settings:Array<Record<string,unknown>>; roles:Array<{role:string;permissionCount:number;classification:"STANDARD"|"SENSITIVE"|"PRIVILEGED"|"SECURITY_CRITICAL"}>; permissions:Array<{code:string;description:string}>; providers:{vault:string;secretScan:string;sast:string;sca:string;dast:string;backup:string;waf:string;malware:string}; generatedAt:string; }
+
+export * from "./finance.js";

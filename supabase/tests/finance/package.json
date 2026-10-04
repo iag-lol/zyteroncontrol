@@ -1,0 +1,15 @@
+{
+  "name": "zyteron-finance-sql-tests",
+  "private": true,
+  "type": "module",
+  "description": "Verificación de la migración de Finanzas y Contabilidad sobre PostgreSQL real (PGlite) con todas las migraciones del repositorio. No forma parte del workspace pnpm.",
+  "scripts": {
+    "scenario": "node finance-scenario.mjs",
+    "e2e": "node api-e2e.mjs",
+    "scenario:quotes": "node quote-payments-scenario.mjs",
+    "e2e:quotes": "node quote-payments-e2e.mjs"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.8"
+  }
+}

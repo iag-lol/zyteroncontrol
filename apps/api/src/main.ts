@@ -1,5 +1,6 @@
 import "reflect-metadata";
 import { NestFactory } from "@nestjs/core";
+import type { NestExpressApplication } from "@nestjs/platform-express";
 import { config } from "dotenv";
 import { resolve } from "node:path";
 import { randomUUID } from "node:crypto";
@@ -15,7 +16,9 @@ async function bootstrap() {
     if(!process.env.WEB_ORIGIN)throw new Error("WEB_ORIGIN es obligatorio en producción y debe contener la allowlist del frontend.");
     for(const name of["RATE_LIMIT_DEFAULT_PER_MINUTE","RATE_LIMIT_AUTH_PER_MINUTE","RATE_LIMIT_VAULT_PER_MINUTE","RATE_LIMIT_EXPORT_PER_MINUTE","RATE_LIMIT_WEBHOOK_PER_MINUTE"])if(!process.env[name])throw new Error(`${name} es obligatorio en producción.`);
   }
-  const app = await NestFactory.create(AppModule, { rawBody: true });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, { rawBody: true });
+  // Respaldos (comprobantes, XML/CAF, cartolas, facturas SII) viajan en base64: límite acotado y explícito.
+  app.useBodyParser("json", { limit: "25mb" });
   const http=app.getHttpAdapter().getInstance();
   http.disable?.("x-powered-by");
   if(process.env.NODE_ENV==="production")http.set?.("trust proxy",1);
