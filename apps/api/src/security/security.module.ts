@@ -1,4 +1,8 @@
-import { Controller, Get, Module } from "@nestjs/common";
-import { RequireRoles } from "../auth/roles.decorator.js"; import { emptyDomain } from "../domain/domain-response.js";
-@Controller("security") class SecurityController { @Get() @RequireRoles("GERENTE_GENERAL") index() { return emptyDomain("security", "No existen eventos de seguridad."); } }
-@Module({ controllers: [SecurityController] }) export class SecurityModule {}
+import { Module } from "@nestjs/common";
+import { SecurityController } from "./security.controller.js";
+import { DeferredVaultSecretProvider,SecurityProviderStatus,VaultSecretProvider } from "./security.providers.js";
+import { SecurityRepository } from "./security.repository.js";
+import { SecurityService } from "./security.service.js";
+
+@Module({controllers:[SecurityController],providers:[SecurityRepository,SecurityService,SecurityProviderStatus,DeferredVaultSecretProvider,{provide:VaultSecretProvider,useExisting:DeferredVaultSecretProvider}],exports:[SecurityService]})
+export class SecurityModule{}

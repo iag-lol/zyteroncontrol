@@ -19,23 +19,25 @@ export const roleProfiles: RoleProfile[] = [
   { role: "RRHH", label: "Recursos Humanos", userName: "Equipo RR.HH.", initials: "RH" },
   { role: "FINANZAS", label: "Finanzas", userName: "Equipo Finanzas", initials: "FI" },
   { role: "COMERCIAL", label: "Administración Comercial", userName: "Equipo Comercial", initials: "CO" },
+  { role: "SECURITY_ADMIN", label: "Security Admin", userName: "Security Operations", initials: "SA" },
 ];
 
 const accessByRole: Record<Role, string[]> = {
   GERENTE_GENERAL: ["*"],
-  JEFE_DESARROLLO: ["control", "operations", "development", "monitoring", "audits", "support", "documents", "security", "reports"],
+  JEFE_DESARROLLO: ["control", "operations", "development", "monitoring", "audits", "support", "documents", "reports"],
   EJECUTIVA_VENTAS: ["control", "commercial", "clients", "support", "documents"],
   JEFE_VENTAS: ["control", "commercial", "clients", "support", "documents", "reports"],
-  PROGRAMADOR: ["control", "operations", "development", "monitoring", "audits", "support", "documents", "security"],
-  TECH_LEAD: ["control", "operations", "development", "monitoring", "audits", "support", "documents", "security", "reports"],
+  PROGRAMADOR: ["control", "operations", "development", "monitoring", "audits", "support", "documents"],
+  TECH_LEAD: ["control", "operations", "development", "monitoring", "audits", "support", "documents", "reports"],
   QA: ["control", "operations", "development", "audits", "support", "documents"],
-  SOPORTE_TECNICO: ["control", "operations", "development", "monitoring", "support", "documents", "security"],
+  SOPORTE_TECNICO: ["control", "operations", "development", "monitoring", "support", "documents"],
   RRHH: ["control", "hr", "support", "documents", "reports"],
   FINANZAS: ["control", "finance", "support", "documents", "reports"],
   COMERCIAL: ["control", "commercial", "clients", "support", "documents"],
   PORTAL_CLIENT: [],
   DESARROLLO: ["control", "operations", "development", "monitoring", "audits", "support", "documents"],
   OPERACIONES: ["control", "operations", "monitoring", "support", "documents"],
+  SECURITY_ADMIN: ["control", "security", "audits", "documents", "reports", "settings"],
 };
 
 export function canAccessGroup(role: Role, groupId: string) {

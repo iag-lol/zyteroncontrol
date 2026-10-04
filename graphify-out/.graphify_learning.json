@@ -1,213 +1,767 @@
 {
-  "generated_at": "2026-09-30T05:06:43.857794+00:00",
+  "generated_at": "2026-10-04T06:15:03.402428+00:00",
   "nodes": {
-    "texto_pegado_backend_nestjs": {
-      "code_fingerprint": "648316257989174f72073f0ea49166c2d852d2c5a21b90bf300f7cff2cb743e8",
-      "label": "Backend Node.js TypeScript NestJS",
-      "last": "2026-09-30T05:06:43.822519+00:00",
+    "apps_api_package": {
+      "code_fingerprint": "98bdb1552236a1aa206a586d0ff99889f551a63c327e46156d77cd2abe17c4f0",
+      "label": "api/package.json",
+      "last": "2026-09-30T09:15:35.768642+00:00",
       "provenance": [
         {
-          "date": "2026-09-30T05:06:43.822519+00:00",
+          "date": "2026-09-30T09:15:35.768642+00:00",
           "outcome": "useful",
-          "q": "¿Qué arquitectura y postura de seguridad exige el arranque?"
+          "q": "¿Por qué Zyteron Control necesita dos servicios en Render?"
+        },
+        {
+          "date": "2026-09-30T09:13:16.859192+00:00",
+          "outcome": "useful",
+          "q": "¿Por qué Render muestra Failed to fetch y CORS al llamar localhost:4000 desde zyteroncontrol.onrender.com?"
+        },
+        {
+          "date": "2026-09-30T08:17:14.193944+00:00",
+          "outcome": "useful",
+          "q": "¿Qué directorio raíz y comandos de build/start requiere Render para desplegar la aplicación web Next.js dentro de este monorepo pnpm?"
         }
       ],
-      "score": 0.999999991,
-      "source_file": "Texto pegado.txt",
+      "score": 2.742212336,
+      "source_file": "apps/api/package.json",
+      "status": "preferred",
+      "uses": 3
+    },
+    "apps_api_src_app_module": {
+      "code_fingerprint": "6be21a6aa17c101285916d6c63ca94212a092fa17b3706bdf8331c94dd550519",
+      "label": "app.module.ts",
+      "last": "2026-09-30T06:46:34.303786+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T06:46:34.303786+00:00",
+          "outcome": "useful",
+          "q": "¿Cómo se conectan los dominios, permisos y rutas empresariales?"
+        }
+      ],
+      "score": 0.912183628,
+      "source_file": "apps/api/src/app.module.ts",
       "status": "tentative",
       "uses": 1
     },
-    "texto_pegado_cotizacion": {
-      "code_fingerprint": "648316257989174f72073f0ea49166c2d852d2c5a21b90bf300f7cff2cb743e8",
-      "label": "Cotización",
-      "last": "2026-09-30T05:06:43.786664+00:00",
+    "apps_api_src_auth_role_guard": {
+      "code_fingerprint": "962e366054ec8f69d0dd883753c2e66053e61c1eab15fee71384b15be0ca4c3f",
+      "label": "role.guard.ts",
+      "last": "2026-09-30T09:25:25.442959+00:00",
       "provenance": [
         {
-          "date": "2026-09-30T05:06:43.786664+00:00",
+          "date": "2026-09-30T09:25:25.442959+00:00",
           "outcome": "useful",
-          "q": "¿Cuál es el primer vertical funcional para iniciar Zyteron Control?"
+          "q": "¿Qué causa el 500 en GET /api/clients del despliegue Render si /api/health responde 200 y CORS ya es correcto?"
+        }
+      ],
+      "score": 0.914511564,
+      "source_file": "apps/api/src/auth/role.guard.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_api_src_auth_roles_decorator_requireroles": {
+      "code_fingerprint": "563442a840fa1c8f7de7a8b9c29c65fd4dffdb250ec9847933323505152eca2a",
+      "label": "RequireRoles()",
+      "last": "2026-09-30T06:46:34.303786+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T06:46:34.303786+00:00",
+          "outcome": "useful",
+          "q": "¿Cómo se conectan los dominios, permisos y rutas empresariales?"
+        }
+      ],
+      "score": 0.912183628,
+      "source_file": "apps/api/src/auth/roles.decorator.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_api_src_clients_client_integrations_service_clientdomainmodules": {
+      "code_fingerprint": "5475b0244e9d4d29c77bcc5b4b66e2ace576cb62a3e507e98ef3f74f5463ee60",
+      "label": "clientDomainModules",
+      "last": "2026-09-30T07:58:15.448453+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T07:58:15.448453+00:00",
+          "outcome": "useful",
+          "q": "¿Cómo conecta Client 360 con los dominios empresariales?"
+        }
+      ],
+      "score": 0.913233428,
+      "source_file": "apps/api/src/clients/client-integrations.service.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_api_src_clients_client_integrations_service_clientintegrationsservice": {
+      "code_fingerprint": "5475b0244e9d4d29c77bcc5b4b66e2ace576cb62a3e507e98ef3f74f5463ee60",
+      "label": "ClientIntegrationsService",
+      "last": "2026-09-30T07:58:15.448453+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T07:58:15.448453+00:00",
+          "outcome": "useful",
+          "q": "¿Cómo conecta Client 360 con los dominios empresariales?"
+        }
+      ],
+      "score": 0.913233428,
+      "source_file": "apps/api/src/clients/client-integrations.service.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_api_src_clients_client_provider_ports_clientproviderports": {
+      "code_fingerprint": "d216429c70c9da13d8ab9759fe2c66ae03a455683dccbc40325b4397f8793d7b",
+      "label": "clientProviderPorts",
+      "last": "2026-09-30T08:01:53.552676+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T08:01:53.552676+00:00",
+          "outcome": "useful",
+          "q": "¿Qué puertos externos prepara Client 360 sin simular integraciones?"
+        }
+      ],
+      "score": 0.913286693,
+      "source_file": "apps/api/src/clients/client-provider-ports.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_api_src_clients_client_provider_ports_electronicsignatureprovider": {
+      "code_fingerprint": "d216429c70c9da13d8ab9759fe2c66ae03a455683dccbc40325b4397f8793d7b",
+      "label": "ElectronicSignatureProvider",
+      "last": "2026-09-30T08:01:53.552676+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T08:01:53.552676+00:00",
+          "outcome": "useful",
+          "q": "¿Qué puertos externos prepara Client 360 sin simular integraciones?"
+        }
+      ],
+      "score": 0.913286693,
+      "source_file": "apps/api/src/clients/client-provider-ports.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_api_src_clients_client_provider_ports_paymentprovider": {
+      "code_fingerprint": "d216429c70c9da13d8ab9759fe2c66ae03a455683dccbc40325b4397f8793d7b",
+      "label": "PaymentProvider",
+      "last": "2026-09-30T08:01:53.552676+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T08:01:53.552676+00:00",
+          "outcome": "useful",
+          "q": "¿Qué puertos externos prepara Client 360 sin simular integraciones?"
+        }
+      ],
+      "score": 0.913286693,
+      "source_file": "apps/api/src/clients/client-provider-ports.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_api_src_clients_client_provider_ports_taxdocumentprovider": {
+      "code_fingerprint": "d216429c70c9da13d8ab9759fe2c66ae03a455683dccbc40325b4397f8793d7b",
+      "label": "TaxDocumentProvider",
+      "last": "2026-09-30T08:01:53.552676+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T08:01:53.552676+00:00",
+          "outcome": "useful",
+          "q": "¿Qué puertos externos prepara Client 360 sin simular integraciones?"
+        }
+      ],
+      "score": 0.913286693,
+      "source_file": "apps/api/src/clients/client-provider-ports.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_api_src_clients_clients_repository_clientsrepository": {
+      "code_fingerprint": "d02a50a1428bfefde1f417d6bcb9ea7b3ef84af65f659f8c7d7d223b05441e6d",
+      "label": "ClientsRepository",
+      "last": "2026-09-30T09:39:36.107309+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T09:39:36.107309+00:00",
+          "outcome": "useful",
+          "q": "¿Por qué POST /api/clients devuelve 500 en producción mientras GET /api/clients funciona y la lista sigue vacía?"
+        },
+        {
+          "date": "2026-09-30T09:25:25.442959+00:00",
+          "outcome": "useful",
+          "q": "¿Qué causa el 500 en GET /api/clients del despliegue Render si /api/health responde 200 y CORS ya es correcto?"
+        },
+        {
+          "date": "2026-09-30T07:58:15.448453+00:00",
+          "outcome": "useful",
+          "q": "¿Cómo conecta Client 360 con los dominios empresariales?"
+        }
+      ],
+      "score": 2.742464615,
+      "source_file": "apps/api/src/clients/clients.repository.ts",
+      "status": "preferred",
+      "uses": 3
+    },
+    "apps_api_src_clients_clients_service_clientsservice": {
+      "code_fingerprint": "c2036536733659d1c580af22ea98b40c3350c3766840b6096d844e1b7e3ddd96",
+      "label": "ClientsService",
+      "last": "2026-09-30T07:58:15.448453+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T07:58:15.448453+00:00",
+          "outcome": "useful",
+          "q": "¿Cómo conecta Client 360 con los dominios empresariales?"
+        }
+      ],
+      "score": 0.913233428,
+      "source_file": "apps/api/src/clients/clients.service.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_api_src_documents_documents_service": {
+      "code_fingerprint": "2d13ea2c478e7b30acd148edd299771939bbacf7ad3e52fe873ba6f7cacd6f25",
+      "label": "documents.service.ts",
+      "last": "2026-10-04T06:15:03.331691+00:00",
+      "provenance": [
+        {
+          "date": "2026-10-04T06:15:03.331691+00:00",
+          "outcome": "useful",
+          "q": "Security SQL falla con ERROR 42P01 relation public.documents does not exist"
         }
       ],
       "score": 0.999999981,
-      "source_file": "Texto pegado.txt",
+      "source_file": "apps/api/src/documents/documents.service.ts",
       "status": "tentative",
       "uses": 1
     },
-    "texto_pegado_crm": {
-      "code_fingerprint": "648316257989174f72073f0ea49166c2d852d2c5a21b90bf300f7cff2cb743e8",
-      "label": "CRM",
-      "last": "2026-09-30T05:06:43.786664+00:00",
+    "apps_api_src_health_controller": {
+      "code_fingerprint": "57a8839da27758da05c62ffca79a73baba163b7fce19e898c47c251c8cd1c881",
+      "label": "health.controller.ts",
+      "last": "2026-09-30T09:25:25.442959+00:00",
       "provenance": [
         {
-          "date": "2026-09-30T05:06:43.786664+00:00",
+          "date": "2026-09-30T09:25:25.442959+00:00",
           "outcome": "useful",
-          "q": "¿Cuál es el primer vertical funcional para iniciar Zyteron Control?"
+          "q": "¿Qué causa el 500 en GET /api/clients del despliegue Render si /api/health responde 200 y CORS ya es correcto?"
+        }
+      ],
+      "score": 0.914511564,
+      "source_file": "apps/api/src/health.controller.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_api_src_main": {
+      "code_fingerprint": "18926ca5f904553bc6429296d0a79dee13f2682745d9e8e841eef6088636eee4",
+      "label": "main.ts",
+      "last": "2026-09-30T09:15:35.768642+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T09:15:35.768642+00:00",
+          "outcome": "useful",
+          "q": "¿Por qué Zyteron Control necesita dos servicios en Render?"
+        },
+        {
+          "date": "2026-09-30T09:13:16.859192+00:00",
+          "outcome": "useful",
+          "q": "¿Por qué Render muestra Failed to fetch y CORS al llamar localhost:4000 desde zyteroncontrol.onrender.com?"
+        }
+      ],
+      "score": 1.828700768,
+      "source_file": "apps/api/src/main.ts",
+      "status": "preferred",
+      "uses": 2
+    },
+    "apps_api_src_security_security_controller_securitycontroller": {
+      "code_fingerprint": "a69dad1a29c94e2f6c1b0d59264ce8de97682b513d1f2bc52b762b5e7ad7f28b",
+      "label": "SecurityController",
+      "last": "2026-10-04T06:15:03.331691+00:00",
+      "provenance": [
+        {
+          "date": "2026-10-04T06:15:03.331691+00:00",
+          "outcome": "useful",
+          "q": "Security SQL falla con ERROR 42P01 relation public.documents does not exist"
+        },
+        {
+          "date": "2026-10-04T05:28:34.049347+00:00",
+          "outcome": "useful",
+          "q": "Cómo se conecta el nuevo módulo Security 11 entre UI, API, autorización, repositorio, contratos y migración, y existen referencias rotas"
+        }
+      ],
+      "score": 1.999254336,
+      "source_file": "apps/api/src/security/security.controller.ts",
+      "status": "preferred",
+      "uses": 2
+    },
+    "apps_api_src_security_security_repository_securityrepository": {
+      "code_fingerprint": "e5e69e92657e261c6de4acd60a02fff0f7bb698f62c98a4e63e3475d678498f3",
+      "label": "SecurityRepository",
+      "last": "2026-10-04T05:28:34.049347+00:00",
+      "provenance": [
+        {
+          "date": "2026-10-04T05:28:34.049347+00:00",
+          "outcome": "useful",
+          "q": "Cómo se conecta el nuevo módulo Security 11 entre UI, API, autorización, repositorio, contratos y migración, y existen referencias rotas"
+        }
+      ],
+      "score": 0.999254355,
+      "source_file": "apps/api/src/security/security.repository.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_api_src_security_security_service_securityservice": {
+      "code_fingerprint": "0c41cbf718eb8ce2717fdaffa83a3a2dd49533a53e15c469133486fa3995ca99",
+      "label": "SecurityService",
+      "last": "2026-10-04T05:28:34.049347+00:00",
+      "provenance": [
+        {
+          "date": "2026-10-04T05:28:34.049347+00:00",
+          "outcome": "useful",
+          "q": "Cómo se conecta el nuevo módulo Security 11 entre UI, API, autorización, repositorio, contratos y migración, y existen referencias rotas"
+        }
+      ],
+      "score": 0.999254355,
+      "source_file": "apps/api/src/security/security.service.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_web_next_config": {
+      "code_fingerprint": "c6d2333f86cfb95b582b91ae0cd132ad9eb828aa1f9c38c3d2dd58f04d1ffa6f",
+      "label": "next.config.ts",
+      "last": "2026-09-30T08:17:14.193944+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T08:17:14.193944+00:00",
+          "outcome": "useful",
+          "q": "¿Qué directorio raíz y comandos de build/start requiere Render para desplegar la aplicación web Next.js dentro de este monorepo pnpm?"
+        }
+      ],
+      "score": 0.913511569,
+      "source_file": "apps/web/next.config.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_web_package": {
+      "code_fingerprint": "15e6dbca1b911cee256781bbdb503c6de0c59ba723e1c09d49fc1b4b46aad8b9",
+      "label": "web/package.json",
+      "last": "2026-09-30T09:15:35.768642+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T09:15:35.768642+00:00",
+          "outcome": "useful",
+          "q": "¿Por qué Zyteron Control necesita dos servicios en Render?"
+        },
+        {
+          "date": "2026-09-30T09:13:16.859192+00:00",
+          "outcome": "useful",
+          "q": "¿Por qué Render muestra Failed to fetch y CORS al llamar localhost:4000 desde zyteroncontrol.onrender.com?"
+        },
+        {
+          "date": "2026-09-30T08:17:14.193944+00:00",
+          "outcome": "useful",
+          "q": "¿Qué directorio raíz y comandos de build/start requiere Render para desplegar la aplicación web Next.js dentro de este monorepo pnpm?"
+        }
+      ],
+      "score": 2.742212336,
+      "source_file": "apps/web/package.json",
+      "status": "preferred",
+      "uses": 3
+    },
+    "apps_web_src_app_clients_segments_page": {
+      "code_fingerprint": "0b8f37b31988e27fe355a9cdd66cb22476ba7c6dd58457fed008a250dfe54c78",
+      "label": "clients/[[...segments]]/page.tsx",
+      "last": "2026-09-30T10:10:21.841033+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T10:10:21.841033+00:00",
+          "outcome": "useful",
+          "q": "¿Por qué sólo funciona Todos los clientes y las demás secciones del menú devuelven Internal server error?"
+        }
+      ],
+      "score": 0.915171224,
+      "source_file": "apps/web/src/app/clients/[[...segments]]/page.tsx",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_web_src_components_clients_client_360_client360": {
+      "code_fingerprint": "ae5fd51c61dac24f21d507ea410b575a02803759e0d5cba4a33e0f853455458c",
+      "label": "Client360()",
+      "last": "2026-09-30T10:10:21.841033+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T10:10:21.841033+00:00",
+          "outcome": "useful",
+          "q": "¿Por qué sólo funciona Todos los clientes y las demás secciones del menú devuelven Internal server error?"
+        },
+        {
+          "date": "2026-09-30T07:58:15.448453+00:00",
+          "outcome": "useful",
+          "q": "¿Cómo conecta Client 360 con los dominios empresariales?"
+        }
+      ],
+      "score": 1.828404652,
+      "source_file": "apps/web/src/components/clients/client-360.tsx",
+      "status": "preferred",
+      "uses": 2
+    },
+    "apps_web_src_components_clients_client_hub_clienthub": {
+      "code_fingerprint": "e4e066bc84c7d81d25f040c5dca17590005e5e810823019ae50f1207068796e5",
+      "label": "ClientHub()",
+      "last": "2026-09-30T10:10:21.841033+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T10:10:21.841033+00:00",
+          "outcome": "useful",
+          "q": "¿Por qué sólo funciona Todos los clientes y las demás secciones del menú devuelven Internal server error?"
+        }
+      ],
+      "score": 0.915171224,
+      "source_file": "apps/web/src/components/clients/client-hub.tsx",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_web_src_components_clients_new_client_wizard_newclientwizard": {
+      "code_fingerprint": "0f7a58707fb8f70879ebd7147f9fc64fbe5a5ed677ed4cba22698d4fbcf01176",
+      "label": "NewClientWizard()",
+      "last": "2026-09-30T09:54:52.220380+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T09:54:52.220380+00:00",
+          "outcome": "useful",
+          "q": "¿Por qué aparecen alertas de UUID después de desplegar el wizard corregido?"
+        },
+        {
+          "date": "2026-09-30T09:39:36.107309+00:00",
+          "outcome": "useful",
+          "q": "¿Por qué POST /api/clients devuelve 500 en producción mientras GET /api/clients funciona y la lista sigue vacía?"
+        }
+      ],
+      "score": 1.829663367,
+      "source_file": "apps/web/src/components/clients/new-client-wizard.tsx",
+      "status": "preferred",
+      "uses": 2
+    },
+    "apps_web_src_components_enterprise_access_roleguard": {
+      "code_fingerprint": "c6879af1f9711148d15eb9bbaaa37d41a3bf2612d21d4fba088ba4d55dfd2eac",
+      "label": "RoleGuard()",
+      "last": "2026-09-30T06:46:34.303786+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T06:46:34.303786+00:00",
+          "outcome": "useful",
+          "q": "¿Cómo se conectan los dominios, permisos y rutas empresariales?"
+        }
+      ],
+      "score": 0.912183628,
+      "source_file": "apps/web/src/components/enterprise/access.tsx",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_web_src_components_enterprise_shell_enterpriseshell": {
+      "code_fingerprint": "04bcef4a7b8042e9b41c249e01d94b557e88f7fa37e8d958515e58d4cc92b88a",
+      "label": "EnterpriseShell()",
+      "last": "2026-09-30T06:46:34.303786+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T06:46:34.303786+00:00",
+          "outcome": "useful",
+          "q": "¿Cómo se conectan los dominios, permisos y rutas empresariales?"
+        }
+      ],
+      "score": 0.912183628,
+      "source_file": "apps/web/src/components/enterprise-shell.tsx",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_web_src_components_module_page_modulepage": {
+      "code_fingerprint": "1663f7f4150a2d9c26748cb2936688d932289ebcc16483ff29bace34ffcd973f",
+      "label": "ModulePage()",
+      "last": "2026-09-30T10:10:21.841033+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T10:10:21.841033+00:00",
+          "outcome": "useful",
+          "q": "¿Por qué sólo funciona Todos los clientes y las demás secciones del menú devuelven Internal server error?"
+        },
+        {
+          "date": "2026-09-30T06:46:34.303786+00:00",
+          "outcome": "useful",
+          "q": "¿Cómo se conectan los dominios, permisos y rutas empresariales?"
+        }
+      ],
+      "score": 1.827354852,
+      "source_file": "apps/web/src/components/module-page.tsx",
+      "status": "preferred",
+      "uses": 2
+    },
+    "apps_web_src_components_security_security_workspace": {
+      "code_fingerprint": "f1d333a882383bacfee0a6236ebd461f49a1d555d08b85789d7ffd46d528d523",
+      "label": "security-workspace.tsx",
+      "last": "2026-10-04T05:28:34.049347+00:00",
+      "provenance": [
+        {
+          "date": "2026-10-04T05:28:34.049347+00:00",
+          "outcome": "useful",
+          "q": "Cómo se conecta el nuevo módulo Security 11 entre UI, API, autorización, repositorio, contratos y migración, y existen referencias rotas"
+        }
+      ],
+      "score": 0.999254355,
+      "source_file": "apps/web/src/components/security/security-workspace.tsx",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_web_src_lib_access_control_canaccessgroup": {
+      "code_fingerprint": "b94c83b13c48c6d84e29243d8390c1fcba3ea67bc0d2b06e0376da927e3d83d4",
+      "label": "canAccessGroup()",
+      "last": "2026-09-30T06:46:34.303786+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T06:46:34.303786+00:00",
+          "outcome": "useful",
+          "q": "¿Cómo se conectan los dominios, permisos y rutas empresariales?"
+        }
+      ],
+      "score": 0.912183628,
+      "source_file": "apps/web/src/lib/access-control.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_web_src_lib_clients_api": {
+      "code_fingerprint": "e0bc75d8c5675dc2494ca6b9ffe6be534ef12f2b549acdbcc3f9af00129aeea3",
+      "label": "clients-api.ts",
+      "last": "2026-09-30T09:15:35.768642+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T09:15:35.768642+00:00",
+          "outcome": "useful",
+          "q": "¿Por qué Zyteron Control necesita dos servicios en Render?"
+        },
+        {
+          "date": "2026-09-30T09:13:16.859192+00:00",
+          "outcome": "useful",
+          "q": "¿Por qué Render muestra Failed to fetch y CORS al llamar localhost:4000 desde zyteroncontrol.onrender.com?"
+        },
+        {
+          "date": "2026-09-30T08:17:14.193944+00:00",
+          "outcome": "useful",
+          "q": "¿Qué directorio raíz y comandos de build/start requiere Render para desplegar la aplicación web Next.js dentro de este monorepo pnpm?"
+        }
+      ],
+      "score": 2.742212336,
+      "source_file": "apps/web/src/lib/clients-api.ts",
+      "status": "preferred",
+      "uses": 3
+    },
+    "apps_web_src_lib_clients_api_clientsapi": {
+      "code_fingerprint": "e0bc75d8c5675dc2494ca6b9ffe6be534ef12f2b549acdbcc3f9af00129aeea3",
+      "label": "clientsApi",
+      "last": "2026-09-30T09:54:52.220380+00:00",
+      "provenance": [
+        {
+          "date": "2026-09-30T09:54:52.220380+00:00",
+          "outcome": "useful",
+          "q": "¿Por qué aparecen alertas de UUID después de desplegar el wizard corregido?"
+        }
+      ],
+      "score": 0.914943743,
+      "source_file": "apps/web/src/lib/clients-api.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_web_src_lib_security_api": {
+      "code_fingerprint": "9af7c09f1bef468ef3dc26ff918f6c3a269f34c1cd1a1eeee1ef4ccbd4538610",
+      "label": "security-api.ts",
+      "last": "2026-10-04T05:28:34.049347+00:00",
+      "provenance": [
+        {
+          "date": "2026-10-04T05:28:34.049347+00:00",
+          "outcome": "useful",
+          "q": "Cómo se conecta el nuevo módulo Security 11 entre UI, API, autorización, repositorio, contratos y migración, y existen referencias rotas"
+        }
+      ],
+      "score": 0.999254355,
+      "source_file": "apps/web/src/lib/security-api.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "supabase_migrations_20260930160000_commercial_sales_operations": {
+      "code_fingerprint": "c061dd06c729d5802ce723a15745cedcd22cbfbedd946b9a13b8bafd5b8a2ef9",
+      "label": "20260930160000_commercial_sales_operations.sql",
+      "last": "2026-10-04T05:59:06.448567+00:00",
+      "provenance": [
+        {
+          "date": "2026-10-04T05:59:06.448567+00:00",
+          "outcome": "useful",
+          "q": "Failed to run sql query: ERROR 42703: column audience_role does not exist en commercial_notifications"
+        },
+        {
+          "date": "2026-10-04T05:52:35.213310+00:00",
+          "outcome": "useful",
+          "q": "Ayúdame con ERROR 42703: column user_id does not exist en commercial_notifications_own de Comercial Sales SQL"
+        }
+      ],
+      "score": 1.999383661,
+      "source_file": "supabase/migrations/20260930160000_commercial_sales_operations.sql",
+      "status": "preferred",
+      "uses": 2
+    },
+    "supabase_migrations_20261001010000_delivery_operations_center": {
+      "code_fingerprint": "78b0eebe93ed629b7a34cf8ac8d33abe6513d8e6bc8dd93b83c148b327e7111a",
+      "label": "20261001010000_delivery_operations_center.sql",
+      "last": "2026-10-04T06:04:27.272893+00:00",
+      "provenance": [
+        {
+          "date": "2026-10-04T06:04:27.272893+00:00",
+          "outcome": "useful",
+          "q": "Site Reliability falla porque public.project_endpoints no existe; Financial y Security fallan porque public.projects no existe"
+        }
+      ],
+      "score": 0.999829902,
+      "source_file": "supabase/migrations/20261001010000_delivery_operations_center.sql",
+      "status": "tentative",
+      "uses": 1
+    },
+    "supabase_migrations_20261001050000_site_reliability_monitoring": {
+      "code_fingerprint": "6af5ce37e172fc547e5820bc8952cd988633197275a8129e5d206b0de50a3c6e",
+      "label": "20261001050000_site_reliability_monitoring.sql",
+      "last": "2026-10-04T06:04:27.272893+00:00",
+      "provenance": [
+        {
+          "date": "2026-10-04T06:04:27.272893+00:00",
+          "outcome": "useful",
+          "q": "Site Reliability falla porque public.project_endpoints no existe; Financial y Security fallan porque public.projects no existe"
+        }
+      ],
+      "score": 0.999829902,
+      "source_file": "supabase/migrations/20261001050000_site_reliability_monitoring.sql",
+      "status": "tentative",
+      "uses": 1
+    },
+    "supabase_migrations_20261001080000_document_control_center": {
+      "code_fingerprint": "1ef4e8f8817fd1dc90be42ac21e2e1626fed78e7ad888b0157932737959a756e",
+      "label": "20261001080000_document_control_center.sql",
+      "last": "2026-10-04T06:15:03.331691+00:00",
+      "provenance": [
+        {
+          "date": "2026-10-04T06:15:03.331691+00:00",
+          "outcome": "useful",
+          "q": "Security SQL falla con ERROR 42P01 relation public.documents does not exist"
         }
       ],
       "score": 0.999999981,
-      "source_file": "Texto pegado.txt",
+      "source_file": "supabase/migrations/20261001080000_document_control_center.sql",
       "status": "tentative",
       "uses": 1
     },
-    "texto_pegado_deny_by_default": {
-      "code_fingerprint": "648316257989174f72073f0ea49166c2d852d2c5a21b90bf300f7cff2cb743e8",
-      "label": "Deny by Default",
-      "last": "2026-09-30T05:06:43.822519+00:00",
+    "supabase_migrations_20261001150000_financial_accounting_center": {
+      "code_fingerprint": "a1378727ed57d3b7b69a8325ca2d9275c4eade782c32a3a6b27be5e126f80e81",
+      "label": "20261001150000_financial_accounting_center.sql",
+      "last": "2026-10-04T06:13:24.064794+00:00",
       "provenance": [
         {
-          "date": "2026-09-30T05:06:43.822519+00:00",
+          "date": "2026-10-04T06:13:24.064794+00:00",
           "outcome": "useful",
-          "q": "¿Qué arquitectura y postura de seguridad exige el arranque?"
+          "q": "Financial SQL falla con ERROR 42703 column status does not exist al crear tax_documents_invoice_active"
+        },
+        {
+          "date": "2026-10-04T06:04:27.272893+00:00",
+          "outcome": "useful",
+          "q": "Site Reliability falla porque public.project_endpoints no existe; Financial y Security fallan porque public.projects no existe"
         }
       ],
-      "score": 0.999999991,
-      "source_file": "Texto pegado.txt",
+      "score": 1.999803338,
+      "source_file": "supabase/migrations/20261001150000_financial_accounting_center.sql",
+      "status": "preferred",
+      "uses": 2
+    },
+    "supabase_migrations_20261001150000_financial_accounting_center_public_tax_documents": {
+      "code_fingerprint": "a1378727ed57d3b7b69a8325ca2d9275c4eade782c32a3a6b27be5e126f80e81",
+      "label": "public.tax_documents",
+      "last": "2026-10-04T06:13:24.064794+00:00",
+      "provenance": [
+        {
+          "date": "2026-10-04T06:13:24.064794+00:00",
+          "outcome": "useful",
+          "q": "Financial SQL falla con ERROR 42703 column status does not exist al crear tax_documents_invoice_active"
+        }
+      ],
+      "score": 0.999973436,
+      "source_file": "supabase/migrations/20261001150000_financial_accounting_center.sql",
       "status": "tentative",
       "uses": 1
     },
-    "texto_pegado_frontend_nextjs": {
-      "code_fingerprint": "648316257989174f72073f0ea49166c2d852d2c5a21b90bf300f7cff2cb743e8",
-      "label": "Frontend Next.js TypeScript",
-      "last": "2026-09-30T05:06:43.822519+00:00",
+    "supabase_migrations_20261001150000_financial_accounting_center_tax_documents_invoice_active": {
+      "code_fingerprint": "a1378727ed57d3b7b69a8325ca2d9275c4eade782c32a3a6b27be5e126f80e81",
+      "label": "tax_documents_invoice_active",
+      "last": "2026-10-04T06:13:24.064794+00:00",
       "provenance": [
         {
-          "date": "2026-09-30T05:06:43.822519+00:00",
+          "date": "2026-10-04T06:13:24.064794+00:00",
           "outcome": "useful",
-          "q": "¿Qué arquitectura y postura de seguridad exige el arranque?"
+          "q": "Financial SQL falla con ERROR 42703 column status does not exist al crear tax_documents_invoice_active"
         }
       ],
-      "score": 0.999999991,
-      "source_file": "Texto pegado.txt",
+      "score": 0.999973436,
+      "source_file": "supabase/migrations/20261001150000_financial_accounting_center.sql",
       "status": "tentative",
       "uses": 1
     },
-    "texto_pegado_frontend_no_confiable": {
-      "code_fingerprint": "648316257989174f72073f0ea49166c2d852d2c5a21b90bf300f7cff2cb743e8",
-      "label": "El Frontend es un Entorno No Confiable",
-      "last": "2026-09-30T05:06:43.822519+00:00",
+    "supabase_migrations_20261001150000_financial_accounting_center_tax_documents_status_idx": {
+      "code_fingerprint": "a1378727ed57d3b7b69a8325ca2d9275c4eade782c32a3a6b27be5e126f80e81",
+      "label": "tax_documents_status_idx",
+      "last": "2026-10-04T06:13:24.064794+00:00",
       "provenance": [
         {
-          "date": "2026-09-30T05:06:43.822519+00:00",
+          "date": "2026-10-04T06:13:24.064794+00:00",
           "outcome": "useful",
-          "q": "¿Qué arquitectura y postura de seguridad exige el arranque?"
+          "q": "Financial SQL falla con ERROR 42703 column status does not exist al crear tax_documents_invoice_active"
         }
       ],
-      "score": 0.999999991,
-      "source_file": "Texto pegado.txt",
+      "score": 0.999973436,
+      "source_file": "supabase/migrations/20261001150000_financial_accounting_center.sql",
       "status": "tentative",
       "uses": 1
     },
-    "texto_pegado_lead": {
-      "code_fingerprint": "648316257989174f72073f0ea49166c2d852d2c5a21b90bf300f7cff2cb743e8",
-      "label": "Lead",
-      "last": "2026-09-30T05:06:43.786664+00:00",
+    "supabase_migrations_20261004010000_security_control_plane": {
+      "code_fingerprint": "c5afdc8a1d95e7098d444720f0a5e55421323d77249868bd20f0c1da60f4c832",
+      "label": "20261004010000_security_control_plane.sql",
+      "last": "2026-10-04T06:15:03.331691+00:00",
       "provenance": [
         {
-          "date": "2026-09-30T05:06:43.786664+00:00",
+          "date": "2026-10-04T06:15:03.331691+00:00",
           "outcome": "useful",
-          "q": "¿Cuál es el primer vertical funcional para iniciar Zyteron Control?"
+          "q": "Security SQL falla con ERROR 42P01 relation public.documents does not exist"
+        },
+        {
+          "date": "2026-10-04T06:04:27.272893+00:00",
+          "outcome": "useful",
+          "q": "Site Reliability falla porque public.project_endpoints no existe; Financial y Security fallan porque public.projects no existe"
+        },
+        {
+          "date": "2026-10-04T05:28:34.049347+00:00",
+          "outcome": "useful",
+          "q": "Cómo se conecta el nuevo módulo Security 11 entre UI, API, autorización, repositorio, contratos y migración, y existen referencias rotas"
         }
       ],
-      "score": 0.999999981,
-      "source_file": "Texto pegado.txt",
-      "status": "tentative",
-      "uses": 1
+      "score": 2.999084238,
+      "source_file": "supabase/migrations/20261004010000_security_control_plane.sql",
+      "status": "preferred",
+      "uses": 3
     },
-    "texto_pegado_oportunidad": {
-      "code_fingerprint": "648316257989174f72073f0ea49166c2d852d2c5a21b90bf300f7cff2cb743e8",
-      "label": "Oportunidad",
-      "last": "2026-09-30T05:06:43.786664+00:00",
+    "supabase_migrations_20261004020000_commercial_notifications_owner_fix": {
+      "code_fingerprint": "999cc0a72c029578f7a7dfc9b93365ca06f5d62c5dbf1394e623173f7e9c685f",
+      "label": "20261004020000_commercial_notifications_owner_fix.sql",
+      "last": "2026-10-04T05:59:06.448567+00:00",
       "provenance": [
         {
-          "date": "2026-09-30T05:06:43.786664+00:00",
+          "date": "2026-10-04T05:59:06.448567+00:00",
           "outcome": "useful",
-          "q": "¿Cuál es el primer vertical funcional para iniciar Zyteron Control?"
-        }
-      ],
-      "score": 0.999999981,
-      "source_file": "Texto pegado.txt",
-      "status": "tentative",
-      "uses": 1
-    },
-    "texto_pegado_orden_trabajo": {
-      "code_fingerprint": "648316257989174f72073f0ea49166c2d852d2c5a21b90bf300f7cff2cb743e8",
-      "label": "Orden de Trabajo",
-      "last": "2026-09-30T05:06:43.786664+00:00",
-      "provenance": [
+          "q": "Failed to run sql query: ERROR 42703: column audience_role does not exist en commercial_notifications"
+        },
         {
-          "date": "2026-09-30T05:06:43.786664+00:00",
+          "date": "2026-10-04T05:52:35.213310+00:00",
           "outcome": "useful",
-          "q": "¿Cuál es el primer vertical funcional para iniciar Zyteron Control?"
+          "q": "Ayúdame con ERROR 42703: column user_id does not exist en commercial_notifications_own de Comercial Sales SQL"
         }
       ],
-      "score": 0.999999981,
-      "source_file": "Texto pegado.txt",
-      "status": "tentative",
-      "uses": 1
-    },
-    "texto_pegado_portal_cliente": {
-      "code_fingerprint": "648316257989174f72073f0ea49166c2d852d2c5a21b90bf300f7cff2cb743e8",
-      "label": "Portal Cliente",
-      "last": "2026-09-30T05:06:43.786664+00:00",
-      "provenance": [
-        {
-          "date": "2026-09-30T05:06:43.786664+00:00",
-          "outcome": "useful",
-          "q": "¿Cuál es el primer vertical funcional para iniciar Zyteron Control?"
-        }
-      ],
-      "score": 0.999999981,
-      "source_file": "Texto pegado.txt",
-      "status": "tentative",
-      "uses": 1
-    },
-    "texto_pegado_postgresql_flexible_server": {
-      "code_fingerprint": "648316257989174f72073f0ea49166c2d852d2c5a21b90bf300f7cff2cb743e8",
-      "label": "Azure Database for PostgreSQL Flexible Server",
-      "last": "2026-09-30T05:06:43.822519+00:00",
-      "provenance": [
-        {
-          "date": "2026-09-30T05:06:43.822519+00:00",
-          "outcome": "useful",
-          "q": "¿Qué arquitectura y postura de seguridad exige el arranque?"
-        }
-      ],
-      "score": 0.999999991,
-      "source_file": "Texto pegado.txt",
-      "status": "tentative",
-      "uses": 1
-    },
-    "texto_pegado_proyecto": {
-      "code_fingerprint": "648316257989174f72073f0ea49166c2d852d2c5a21b90bf300f7cff2cb743e8",
-      "label": "Proyecto",
-      "last": "2026-09-30T05:06:43.786664+00:00",
-      "provenance": [
-        {
-          "date": "2026-09-30T05:06:43.786664+00:00",
-          "outcome": "useful",
-          "q": "¿Cuál es el primer vertical funcional para iniciar Zyteron Control?"
-        }
-      ],
-      "score": 0.999999981,
-      "source_file": "Texto pegado.txt",
-      "status": "tentative",
-      "uses": 1
-    },
-    "texto_pegado_rbac_abac": {
-      "code_fingerprint": "648316257989174f72073f0ea49166c2d852d2c5a21b90bf300f7cff2cb743e8",
-      "label": "Autorización RBAC y ABAC",
-      "last": "2026-09-30T05:06:43.822519+00:00",
-      "provenance": [
-        {
-          "date": "2026-09-30T05:06:43.822519+00:00",
-          "outcome": "useful",
-          "q": "¿Qué arquitectura y postura de seguridad exige el arranque?"
-        }
-      ],
-      "score": 0.999999991,
-      "source_file": "Texto pegado.txt",
-      "status": "tentative",
-      "uses": 1
+      "score": 1.999383661,
+      "source_file": "supabase/migrations/20261004020000_commercial_notifications_owner_fix.sql",
+      "status": "preferred",
+      "uses": 2
     }
   },
   "version": 1
