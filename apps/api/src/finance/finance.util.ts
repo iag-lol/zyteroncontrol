@@ -27,6 +27,8 @@ export function isoDate(value:unknown,label:string,required=true):string{
 }
 export function addDays(date:string,days:number){const value=new Date(`${date}T00:00:00Z`);value.setUTCDate(value.getUTCDate()+days);return value.toISOString().slice(0,10);}
 export function addMonths(date:string,months:number){const value=new Date(`${date}T00:00:00Z`);const day=value.getUTCDate();value.setUTCDate(1);value.setUTCMonth(value.getUTCMonth()+months);const last=new Date(Date.UTC(value.getUTCFullYear(),value.getUTCMonth()+1,0)).getUTCDate();value.setUTCDate(Math.min(day,last));return value.toISOString().slice(0,10);}
+/** Vencimiento de la cuota N de un plan mensual: día de pago del mes N (ajustado al último día del mes). Espejo de public.quote_payment_due_date. */
+export function quoteDueDate(start:string,paymentDay:number,sequence:number){const value=new Date(`${start.slice(0,7)}-01T00:00:00Z`);value.setUTCMonth(value.getUTCMonth()+sequence-1);const last=new Date(Date.UTC(value.getUTCFullYear(),value.getUTCMonth()+1,0)).getUTCDate();value.setUTCDate(Math.min(paymentDay,last));return value.toISOString().slice(0,10);}
 export function daysBetween(from:string,to:string){return Math.round((Date.parse(`${to.slice(0,10)}T00:00:00Z`)-Date.parse(`${from.slice(0,10)}T00:00:00Z`))/86400000);}
 export function monthRange(periodKey:string){if(!/^\d{4}-(0[1-9]|1[0-2])$/.test(periodKey))throw new BadRequestException("Período inválido (AAAA-MM).");const[year,month]=periodKey.split("-").map(Number) as [number,number];const end=new Date(Date.UTC(year,month,0)).toISOString().slice(0,10);return{from:`${periodKey}-01`,to:end};}
 export function previousPeriod(periodKey:string){return addMonths(`${periodKey}-01`,-1).slice(0,7);}
@@ -66,13 +68,14 @@ const codes:Record<string,(message:string)=>HttpException>={
   FINANCE_STATE:(m)=>new ConflictException(m),FINANCE_IMMUTABLE:(m)=>new ConflictException(m),FINANCE_PERIOD_CLOSED:(m)=>new ConflictException(m),FINANCE_CLOSE_BLOCKED:(m)=>new ConflictException(m),
   FINANCE_NO_FOLIOS:(m)=>new ConflictException(m),FINANCE_FOLIO:(m)=>new ConflictException(m),FINANCE_TAX_OVERLAP:(m)=>new ConflictException(m),FINANCE_NOT_FOUND:(m)=>new NotFoundException(m||"Registro financiero no encontrado."),
   FINANCE_FORBIDDEN:(m)=>new ForbiddenException(m),
+  QUOTE_PAYMENT_IMMUTABLE:(m)=>new ConflictException(m),QUOTE_PAYMENT_NOT_OPEN:(m)=>new ConflictException(m),QUOTE_PAYMENT_DATE:(m)=>new UnprocessableEntityException(m),QUOTE_PAYMENT_NOT_FOUND:(m)=>new NotFoundException(m||"Plan de pagos no encontrado."),
 };
 export class FinanceDomainError extends Error { constructor(readonly code:string,message:string){super(`${code}: ${message}`);} }
 export function domainError(code:keyof typeof codes|string,message:string):never{throw toHttp(new FinanceDomainError(code,message));}
 /** Traduce errores de la base (RAISE EXCEPTION 'FINANCE_*') o del modo memoria a respuestas HTTP. */
 export function toHttp(error:unknown):unknown{
   if(error instanceof HttpException)return error;
-  const message=String((error as {message?:string})?.message??error);const match=/(FINANCE_[A-Z_]+):?\s*(.*)$/s.exec(message);
+  const message=String((error as {message?:string})?.message??error);const match=/((?:FINANCE|QUOTE_PAYMENT)_[A-Z_]+):?\s*(.*)$/s.exec(message);
   if(match&&codes[match[1]!])return codes[match[1]!]!(match[2]?.trim()||message);
   if((error as {code?:string})?.code==="23505")return new ConflictException("Registro duplicado: ya existe un documento con la misma identidad.");
   if((error as {code?:string})?.code==="23514")return new UnprocessableEntityException(`La base rechazó datos inconsistentes: ${message}`);

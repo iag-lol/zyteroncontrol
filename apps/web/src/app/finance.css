@@ -171,3 +171,32 @@ input.invalid,input[aria-invalid=true]{border-color:var(--fx-red)!important;back
   .fx-form{grid-template-columns:1fr}.fx-field.span2{grid-column:1/-1}.fx-queue li{grid-template-columns:1fr auto}.fx-queue li>*:nth-child(n+3){grid-column:1/-1;justify-self:start}.fx-tree>div{grid-template-columns:80px 1fr auto}.fx-tree>div>small,.fx-tree>div>button,.fx-tree>div>i:last-child{display:none}
   .fx-close li{grid-template-columns:28px 1fr auto}.fx-close li>a,.fx-close li>button,.fx-close li>i{grid-column:2/-1;justify-self:start}.fx-timeline li{grid-template-columns:1fr}.fx-picker{grid-template-columns:auto 1fr}.fx-picker select{grid-column:1/-1}.fx-search input{width:120px!important}.fx-search-input{width:100%!important}
   .fx-section{padding:14px}.fx-ticker{grid-template-columns:repeat(2,minmax(0,1fr))}.fx-ticker>*{border-bottom:1px solid var(--fx-rule)}.fx-project-slot{padding:0 14px 40px}.fx-public-card h2{font-size:28px}}
+
+/* ---------------------------------------------------------------- calendario de pagos de cotizaciones */
+.fx-ticker>button{background:none;border:0;border-right:1px solid var(--fx-rule);font:inherit;text-align:left;cursor:pointer}
+.fx-ticker>button:hover{background:var(--fx-paper)}
+.fx-ticker>button span,.fx-ticker>button small{color:var(--fx-muted)}
+.fx-btn.ghost.danger{color:var(--fx-red);border-color:var(--fx-red-soft)}
+.fx-qp-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.fx-qp-summary>span{display:grid;gap:2px;padding:10px 12px;border:1px solid var(--fx-line);border-radius:12px;background:var(--fx-panel)}
+.fx-qp-summary small{font-size:11px;color:var(--fx-muted);text-transform:uppercase;letter-spacing:.04em}
+.fx-qp-summary strong{font-size:16px;color:var(--fx-ink);font-variant-numeric:tabular-nums}
+.fx-qp-summary .tone-warn{border-color:var(--fx-amber);background:var(--fx-amber-soft)}
+.fx-qp-summary .tone-bad{border-color:var(--fx-red);background:var(--fx-red-soft)}
+.fx-qp-calendar{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.fx-qp-cell{display:grid;gap:6px;align-content:start;padding:12px;border:1px solid var(--fx-line);border-top:4px solid var(--fx-rule);border-radius:12px;background:var(--fx-panel);min-width:0}
+.fx-qp-cell header{display:grid;gap:1px}
+.fx-qp-cell header small{font-size:11px;color:var(--fx-muted);text-transform:uppercase;letter-spacing:.05em}
+.fx-qp-cell header strong{font-size:14px;color:var(--fx-ink)}
+.fx-qp-cell.tone-good{border-top-color:var(--fx-green)}
+.fx-qp-cell.tone-warn{border-top-color:var(--fx-amber);background:linear-gradient(180deg,var(--fx-amber-soft),var(--fx-panel) 60%)}
+.fx-qp-cell.tone-bad{border-top-color:var(--fx-red);background:linear-gradient(180deg,var(--fx-red-soft),var(--fx-panel) 60%)}
+.fx-qp-cell.tone-neutral{opacity:.75}
+.fx-qp-due,.fx-qp-lock{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--fx-muted)}
+.fx-qp-paid{display:grid;gap:5px}
+.fx-qp-paid small{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--fx-muted);overflow-wrap:anywhere}
+.fx-qp-reason{font-size:12px;color:var(--fx-muted);font-style:italic}
+.fx-qp-cancel{justify-self:start;padding:0;border:0;background:none;font:inherit;font-size:12px;color:var(--fx-muted);text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.fx-qp-cancel:hover{color:var(--fx-red)}.fx-qp-cancel:disabled{opacity:.5;cursor:default}
+.fx-qp-visible{grid-column:1/-1}
+@media (max-width:640px){.fx-qp-calendar{grid-template-columns:1fr 1fr}.fx-qp-summary{grid-template-columns:1fr 1fr}}

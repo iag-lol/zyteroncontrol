@@ -32,6 +32,7 @@ Archivos de la API: `finance.repository.ts` (repositorio dual memoria/Supabase c
 - **Cobros**: un pago manual nace `PENDING_VERIFICATION` con comprobante o movimiento de cartola; sólo verificado se aplica y contabiliza. Aplicaciones muchos-a-muchos, parciales, sobrepago como saldo a favor, reversas con motivo, devoluciones sobre saldo no aplicado (las manuales se completan con comprobante).
 - **Mercado Pago**: Payment Brick embebido en `/payments/:token`; `ACCESS_TOKEN` sólo en backend; el monto lo fija el servidor; el estado se lee desde la API oficial y el webhook `/api/webhooks/payments/mercadopago` valida `x-signature` (HMAC de `id;request-id;ts`) y es idempotente. Comisión y neto separados; liquidaciones conciliadas por fecha de liberación.
 - **Links de pago**: token aleatorio de 256 bits, sólo se guarda su SHA-256, expira (1–30 días), alcance de una factura, revocable; la vista pública no expone IDs internos.
+- **Pagos de cotizaciones** (`/finance/quote-payments` y botón «Pagos» en cada cotización aceptada de Comercial): una cotización `ACCEPTED`/`CONVERTED` con cliente puede tener un calendario de **pago único** o **mensual** (N cuotas o indefinido; el indefinido se genera hasta 2 meses adelante y el scheduler extiende el horizonte). Cada cuota vence el día de pago del mes (ajustado al último día si el mes es más corto) y la opción **«Registrar pago» se habilita `activation_days_before` días antes** (por defecto 5) y sigue activa —como «Vencida»— hasta marcarse pagada. Marcar pagada **exige adjuntar la factura del SII** (PDF o XML; el XML se valida contra tipo, folio, receptor = cliente y emisor = empresa), que se guarda en el bucket privado `quote-invoices` bajo `clients/{cliente}/quotes/{cotización}/…`; un folio SII respalda una sola cuota. La cuota pagada es inmutable; con pagos registrados el plan sólo cambia monto pendiente, plazo y anticipación. Nada se elimina: cuotas y planes se anulan con motivo. Notificaciones `QUOTE_PAYMENT_OPEN` y `QUOTE_PAYMENT_OVERDUE` (Finanzas y la ejecutiva dueña). El portal cliente (futuro) lee `GET /api/portal/quote-payments` o la vista `portal_quote_payments` y sólo descarga facturas de cuotas pagadas y marcadas visibles. Registrar el pago no emite DTE, no consulta al SII y no genera asientos automáticos.
 - **Cuentas por pagar**: gasto con respaldo → aprobación por políticas configurables por monto/categoría/centro/nivel → cuenta por pagar → solicitud de pago → aprobación (segregación) → registro de la transferencia con comprobante o cargo de cartola. Zyteron no transfiere dinero.
 - **Bancos**: cartolas CSV/XLSX con vista previa, mapeo, validación y hash determinístico anti-duplicados; conciliación con sugerencias explicadas (monto, fecha, referencia, nombre), MATCH/SPLIT/MERGE/IGNORE/CREATE y deshacer con motivo. La auto-conciliación está apagada por defecto y nunca toma casos ambiguos.
 - **Cierre**: checklist configurable con controles automáticos (DTE pendientes, compras sin clasificar, bancos, IVA revisado, gastos, borradores, hechos sin asiento) y manuales con evidencia; snapshot inmutable con SHA-256; reapertura sólo con permiso y motivo (bloqueado: sólo Gerencia).
@@ -49,8 +50,9 @@ Archivos de la API: `finance.repository.ts` (repositorio dual memoria/Supabase c
 | Contador | Contabilidad, impuestos, bancos, DTE, informes y exportación; lectura de facturación, cobros, CxP y gastos |
 | Jefatura de Ventas, Comercial | Facturación (ver/crear borrador), cuentas por cobrar, cobranza, ver pagos. Nunca el libro |
 | Ejecutiva de Ventas | Facturación y cobranza **sólo de sus clientes** (en Client 360) |
+| Pagos de cotizaciones | Gerencia, Finanzas, Jefatura de Ventas y Comercial: ver, configurar y marcar pagadas · Ejecutiva: ver y configurar **sólo sus cotizaciones** (no marca pagos) · Contador: lectura |
 | Desarrollo y resto | Sin acceso |
-| Portal Cliente (futuro) | Vistas `finance_portal_invoices` / `finance_portal_payments` con sus propios documentos |
+| Portal Cliente (futuro) | Vistas `finance_portal_invoices` / `finance_portal_payments` / `portal_quote_payments` con sus propios documentos |
 
 La matriz vive en `@zyteron/contracts` (`financeRoleMatrix`) y es espejo exacto de `role_permissions` de la migración (verificado por test).
 
@@ -77,4 +79,9 @@ pnpm lint && pnpm typecheck && pnpm build
 cd supabase/tests/finance && npm install && npm run scenario   # 45 controles SQL sobre PostgreSQL (PGlite)
 # E2E de API (55 controles): levantar apps/api con AUTH_MODE=development y PORT=4517, luego
 API=http://localhost:4517/api npm run e2e
+npm run scenario:quotes               # 29 controles SQL del calendario de pagos de cotizaciones
+# E2E de pagos de cotizaciones (26 controles): la API debe poder «enviar» la cotización para aceptarla; en local se usa un stub de correo SÓLO de pruebas:
+#   RESEND_API_KEY=test-stub SALES_MAIL_FROM=ventas@zyteron.test node --import ./supabase/tests/finance/test-mail-stub.mjs apps/api/dist/main.js
+API=http://localhost:4517/api npm run e2e:quotes
+# En Supabase, tras aplicar la migración: supabase/tests/security/verify_quote_payments.sql (lectura + prueba revertida)
 ```

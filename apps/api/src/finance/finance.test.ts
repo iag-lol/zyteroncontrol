@@ -21,6 +21,9 @@ import { FinanceSources, type SourceClient } from "./finance.sources.js";
 import { addDays, type FinanceActor, formatRut, sha256, todayCl, validRut } from "./finance.util.js";
 
 const sql=readFileSync(resolve(process.cwd(),"../../supabase/migrations/20261001150000_financial_accounting_center.sql"),"utf8");
+const quotePaymentsSql=readFileSync(resolve(process.cwd(),"../../supabase/migrations/20261004120000_quote_payment_calendar.sql"),"utf8");
+/** Permisos concedidos a un rol en todas las migraciones financieras (unión de los INSERT en role_permissions). */
+const grantedTo=(role:string)=>[...new Set([sql,quotePaymentsSql].flatMap((text)=>[...text.matchAll(new RegExp(`select '${role}',code from public.app_permissions where code in\\(([^)]+)\\)`,"g"))].flatMap((m)=>m[1]!.match(/'([^']+)'/g)!.map((x)=>x.slice(1,-1)))))].sort();
 const ids={gg:"11111111-1111-4111-8111-111111111111",fin:"22222222-2222-4222-8222-222222222222",cont:"33333333-3333-4333-8333-333333333333",ej:"44444444-4444-4444-8444-444444444444"};
 const gg:FinanceActor={userId:ids.gg,role:"GERENTE_GENERAL"},fin:FinanceActor={userId:ids.fin,role:"FINANZAS"},cont:FinanceActor={userId:ids.cont,role:"CONTADOR"},ej:FinanceActor={userId:ids.ej,role:"EJECUTIVA_VENTAS"},dev:FinanceActor={userId:"55555555-5555-4555-8555-555555555555",role:"PROGRAMADOR"};
 const rut=(n:number)=>{let s=0,f=2;for(const d of String(n).split("").reverse()){s+=Number(d)*f;f=f===7?2:f+1;}const r=11-(s%11);return`${n}-${r===11?"0":r===10?"K":r}`;};
@@ -47,7 +50,7 @@ describe("Financial & Accounting Control Center",()=>{
 
   // ------------------------------------------------------------------ consistencia con la migración
   it("los datos base del modo memoria son espejo exacto de la migración",()=>{for(const[code]of seedAccounts)expect(sql).toContain(`('${code}',`);for(const[code]of seedRules)expect(sql).toContain(`('${code}',`);expect(seedAccounts.length).toBe((sql.match(/\('\d+(\.\d+)*','[^']+','(ASSET|LIABILITY|EQUITY|REVENUE|EXPENSE)'/g)??[]).length);});
-  it("la matriz RBAC replica role_permissions y Desarrollo no tiene acceso",()=>{const accountant=/select 'CONTADOR',code from public.app_permissions where code in\(([^)]+)\)/.exec(sql)![1]!.match(/'([^']+)'/g)!.map((s)=>s.slice(1,-1));expect([...financeRoleMatrix.CONTADOR!].sort()).toEqual(accountant.sort());const exec=/select 'EJECUTIVA_VENTAS',code from public.app_permissions where code in\(([^)]+)\)/.exec(sql)![1]!.match(/'([^']+)'/g)!.map((s)=>s.slice(1,-1));expect([...financeRoleMatrix.EJECUTIVA_VENTAS!].sort()).toEqual(exec.sort());expect(financeRoleMatrix.PROGRAMADOR).toBeUndefined();expect(financeRoleMatrix.DESARROLLO).toBeUndefined();});
+  it("la matriz RBAC replica role_permissions y Desarrollo no tiene acceso",()=>{expect([...financeRoleMatrix.CONTADOR!].sort()).toEqual(grantedTo("CONTADOR"));expect([...financeRoleMatrix.EJECUTIVA_VENTAS!].sort()).toEqual(grantedTo("EJECUTIVA_VENTAS"));expect(financeRoleMatrix.PROGRAMADOR).toBeUndefined();expect(financeRoleMatrix.DESARROLLO).toBeUndefined();});
   it("migración con partida doble, inmutabilidad, RLS, realtime, buckets privados y sin Azure",()=>{for(const token of ["FINANCE_UNBALANCED","FINANCE_IMMUTABLE","FINANCE_PERIOD_CLOSED","for update skip locked","enable row level security","supabase_realtime","'finance-secrets','finance-secrets',false","finance_append_only","business_event_outbox","finance_portal_invoices"])expect(sql).toContain(token);expect(sql.toLowerCase()).not.toContain("azure");});
 
   // ------------------------------------------------------------------ contabilidad

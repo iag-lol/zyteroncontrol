@@ -3,15 +3,15 @@ import { navigation } from "./finance-nav-fixture";
 import { canSeeFinancePath, day, financeSections, financeSectionsFor, label, money, parseDay, tone } from "./finance-format";
 
 describe("Finanzas · formato y acceso", () => {
-  it("publica las 22 secciones del módulo sin placeholders y alineadas al menú", () => {
-    expect(financeSections).toHaveLength(22);
-    expect(new Set(financeSections.map((s) => s.href)).size).toBe(22);
+  it("publica las 23 secciones del módulo sin placeholders y alineadas al menú", () => {
+    expect(financeSections).toHaveLength(23);
+    expect(new Set(financeSections.map((s) => s.href)).size).toBe(23);
     expect(navigation.map((i) => i.href).sort()).toEqual(financeSections.map((s) => s.href).sort());
   });
   it("filtra secciones por permiso: contabilidad ve el libro, ventas sólo facturación y Desarrollo nada", () => {
     expect(financeSectionsFor("CONTADOR").some((s) => s.key === "journal")).toBe(true);
     expect(financeSectionsFor("CONTADOR").some((s) => s.key === "commissions")).toBe(false);
-    expect(financeSectionsFor("JEFE_VENTAS").map((s) => s.key)).toEqual(["invoices", "receivables", "collections", "payments"]);
+    expect(financeSectionsFor("JEFE_VENTAS").map((s) => s.key)).toEqual(["invoices", "receivables", "collections", "payments", "quote-payments"]);
     expect(financeSectionsFor("PROGRAMADOR")).toHaveLength(0);
     expect(canSeeFinancePath("JEFE_VENTAS", "/finance/journal")).toBe(false);
   });

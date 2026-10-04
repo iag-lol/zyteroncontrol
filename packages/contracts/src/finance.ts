@@ -3,13 +3,13 @@
 import type { Role } from "./index.js";
 
 // Matriz RBAC financiera: espejo exacto de role_permissions de la migración (verificado por test). Fuente única para API y web.
-export const financePermissions = ["finance.dashboard.view","invoice.view","invoice.create","invoice.edit","invoice.approve","invoice.issue","dte.view","dte.issue","dte.credit_note","dte.debit_note","dte.manage","receivable.view","collection.manage","payment.view","payment.record","payment.refund","payment.allocate","payable.view","payable.approve","payable.pay","expense.view","expense.create","expense.approve","bank.view","bank.import","bank.reconcile","accounting.view","journal.create","journal.review","journal.post","journal.reverse","period.view","period.close","period.reopen","tax.view","tax.review","tax.manage","report.finance.view","report.finance.export","commission.finance.manage","finance.settings.manage"] as const;
+export const financePermissions = ["finance.dashboard.view","invoice.view","invoice.create","invoice.edit","invoice.approve","invoice.issue","dte.view","dte.issue","dte.credit_note","dte.debit_note","dte.manage","receivable.view","collection.manage","payment.view","payment.record","payment.refund","payment.allocate","payable.view","payable.approve","payable.pay","expense.view","expense.create","expense.approve","bank.view","bank.import","bank.reconcile","accounting.view","journal.create","journal.review","journal.post","journal.reverse","period.view","period.close","period.reopen","tax.view","tax.review","tax.manage","report.finance.view","report.finance.export","commission.finance.manage","finance.settings.manage","quote_payment.view","quote_payment.manage","quote_payment.mark_paid"] as const;
 export type FinancePermission = (typeof financePermissions)[number];
-const accountantPermissions: FinancePermission[] = ["finance.dashboard.view","invoice.view","dte.view","dte.manage","receivable.view","payment.view","payable.view","expense.view","expense.approve","bank.view","bank.import","bank.reconcile","accounting.view","journal.create","journal.review","journal.post","journal.reverse","period.view","period.close","period.reopen","tax.view","tax.review","tax.manage","report.finance.view","report.finance.export"];
-const salesLeadPermissions: FinancePermission[] = ["invoice.view","invoice.create","receivable.view","collection.manage","payment.view"];
+const accountantPermissions: FinancePermission[] = ["finance.dashboard.view","invoice.view","dte.view","dte.manage","receivable.view","payment.view","payable.view","expense.view","expense.approve","bank.view","bank.import","bank.reconcile","accounting.view","journal.create","journal.review","journal.post","journal.reverse","period.view","period.close","period.reopen","tax.view","tax.review","tax.manage","report.finance.view","report.finance.export","quote_payment.view"];
+const salesLeadPermissions: FinancePermission[] = ["invoice.view","invoice.create","receivable.view","collection.manage","payment.view","quote_payment.view","quote_payment.manage","quote_payment.mark_paid"];
 export const financeRoleMatrix: Partial<Record<Role, readonly FinancePermission[]>> = {
   GERENTE_GENERAL: financePermissions, FINANZAS: financePermissions, CONTADOR: accountantPermissions, JEFE_VENTAS: salesLeadPermissions, COMERCIAL: salesLeadPermissions,
-  EJECUTIVA_VENTAS: ["invoice.view","receivable.view","collection.manage"],
+  EJECUTIVA_VENTAS: ["invoice.view","receivable.view","collection.manage","quote_payment.view","quote_payment.manage"],
 };
 export const hasFinancePermission = (role: string, permission: FinancePermission) => Boolean(financeRoleMatrix[role as Role]?.includes(permission));
 
@@ -131,3 +131,26 @@ export interface FinanceScope { role: string; permissions: string[]; clientScope
 export interface FinancePaged<T> { items: T[]; page: number; pageSize: number; total: number; totalPages: number; }
 export interface ClientFinanceSummary { clientId: string; invoiced: number; paid: number; balance: number; overdue: number; creditBalance: number; nextBilling: { date: string; amount: number; description: string } | null; recurring: BillingSchedule[]; invoices: Invoice[]; payments: Payment[]; promises: PaymentPromise[]; currency: string; }
 export interface ProjectFinanceSummary { projectId: string; soldValue: number | null; invoiced: number; collected: number; directCosts: number; laborHours: number; laborCost: number | null; expenses: number; margin: number | null; marginPercent: number | null; notes: string[]; currency: string; }
+
+// Calendario de pagos de cotizaciones: pago único o mensual. La opción de pago se habilita N días antes del vencimiento
+// y queda activa hasta marcarse pagada; marcar pagada exige la factura SII (PDF/XML) en el bucket privado quote-invoices.
+export type QuotePaymentFrequency = "ONE_TIME" | "MONTHLY";
+export type QuotePaymentPlanStatus = "ACTIVE" | "PAUSED" | "COMPLETED" | "CANCELLED";
+export type QuoteInstallmentStatus = "SCHEDULED" | "PAID" | "CANCELLED";
+export type QuoteInstallmentEffectiveStatus = "UPCOMING" | "PAYMENT_OPEN" | "OVERDUE" | "PAID" | "CANCELLED";
+export type QuotePaymentMethod = "TRANSFER" | "CARD" | "CASH" | "CHECK" | "OTHER";
+export const quoteInvoiceDocumentTypes = [33, 34, 39, 41, 56] as const;
+export interface QuotePaymentPlan { id: string; quoteId: string; clientId: string | null; frequency: QuotePaymentFrequency; amount: number; currency: "CLP" | "UF" | "USD"; startDate: string; paymentDay: number; activationDaysBefore: number; totalInstallments: number | null; status: QuotePaymentPlanStatus; notes: string | null; cancelReason: string | null; createdBy: string | null; updatedBy: string | null; createdAt: string; updatedAt: string; }
+export interface QuotePaymentInstallment {
+  id: string; planId: string; quoteId: string; clientId: string | null; sequence: number; periodKey: string; dueDate: string; amount: number; currency: string; status: QuoteInstallmentStatus;
+  effectiveStatus: QuoteInstallmentEffectiveStatus; paymentOpensOn: string; canMarkPaid: boolean; paidAt: string | null; paidAmount: number | null; paymentMethod: QuotePaymentMethod | null; paymentReference: string | null;
+  siiDocumentType: number | null; siiFolio: number | null; siiIssueDate: string | null; hasInvoice: boolean; invoiceFileName: string | null; invoiceMime: string | null; clientVisible: boolean;
+  markedPaidBy: string | null; markedPaidAt: string | null; notes: string | null; cancelReason: string | null;
+  quoteNumber?: string | null; companyName?: string | null; clientName?: string | null; ownerId?: string | null;
+}
+export interface QuotePaymentQuote { id: string; quoteNumber: string; companyName: string; clientId: string | null; clientName: string | null; ownerId: string | null; status: string; currency: string; totalAmount: number; acceptedAt: string | null; }
+export interface QuotePaymentSummary { total: number; paid: number; open: number; overdue: number; upcoming: number; cancelled: number; paidAmount: number; pendingAmount: number; nextDue: { id: string; dueDate: string; amount: number; effectiveStatus: QuoteInstallmentEffectiveStatus } | null; }
+export interface QuotePaymentDetail { quote: QuotePaymentQuote; plan: QuotePaymentPlan | null; installments: QuotePaymentInstallment[]; summary: QuotePaymentSummary; eligible: boolean; eligibilityReason: string | null; permissions: { manage: boolean; markPaid: boolean }; }
+export interface QuotePaymentBoard { items: QuotePaymentInstallment[]; kpis: { open: number; overdue: number; upcoming30: number; paidThisMonth: number; byCurrency: Record<string, { open: number; overdue: number; paidThisMonth: number }> }; asOf: string; }
+/** Vista del portal cliente: sin datos internos; la factura sólo existe cuando la cuota está pagada y marcada visible. */
+export interface PortalQuotePayment { id: string; quoteId: string; quoteNumber: string; sequence: number; periodKey: string; dueDate: string; amount: number; currency: string; status: Exclude<QuoteInstallmentEffectiveStatus, "CANCELLED">; paidAt: string | null; siiDocumentType: number | null; siiFolio: number | null; invoiceAvailable: boolean; }

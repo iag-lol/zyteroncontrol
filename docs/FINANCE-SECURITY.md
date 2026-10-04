@@ -31,3 +31,12 @@
 ## Auditoría
 
 `finance_audit_events` (append-only) registra creación, edición, aprobación, emisión, contabilización, reversas, conciliaciones, clasificaciones tributarias, cambios de configuración (con valores anteriores y nuevos), exportaciones de informes y lecturas de datos bancarios completos. Es visible para Gerencia y Finanzas.
+
+## Calendario de pagos de cotizaciones
+
+- Tablas `quote_payment_plans` y `quote_payment_installments` con RLS deny-by-default: sólo políticas `SELECT` (Gerencia, Finanzas, Contador, Jefatura de Ventas, Comercial; Ejecutiva sólo cotizaciones propias vía `private.can_view_quote_payments`, `security definer` con `search_path` fijo). Escrituras exclusivamente por la API (service role).
+- Triggers: sin `DELETE`; cuota pagada inmutable; cuota/plan anulados no se reactivan; `PAID` sólo con la opción de pago habilitada (`QUOTE_PAYMENT_NOT_OPEN`), fecha de pago no futura y factura SII adjunta (CHECK: folio, tipo, ruta y SHA-256 del archivo, responsable).
+- `quote_payment_materialize` y `quote_payment_reschedule` revocadas para `public/anon/authenticated`; sólo `service_role`.
+- Bucket `quote-invoices` privado (10 MB, PDF/XML). El tipo real se verifica por contenido (`%PDF-` o XML parseado sin DTD/entidades); el XML debe corresponder al tipo, folio, receptor y emisor declarados. Descarga interna sólo vía API autenticada con auditoría; el portal lee únicamente objetos de su cliente, de cuotas pagadas y visibles (`quote_invoices_portal_read`).
+- Portal: `PORTAL_CLIENT` resuelve su cliente desde `client_portal_users` activo + `client_portal_settings.invoices_visible` (no se confía en cabeceras); la vista `portal_quote_payments` es `security_barrier` y oculta folio y ruta salvo en cuotas pagadas y visibles.
+- Auditoría: `QUOTE_PAYMENT_PLAN_CREATED/UPDATED/PAUSE/RESUME/CANCEL`, `QUOTE_INSTALLMENT_PAID/CANCELLED`, `QUOTE_INVOICE_PUBLISHED/HIDDEN` en `finance_audit_events`; `finance_events` alimenta Client 360 y el outbox.

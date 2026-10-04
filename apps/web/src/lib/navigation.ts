@@ -231,6 +231,7 @@ export const enterpriseNavigation: NavigationGroup[] = [
       { label: "Cuentas por cobrar", href: "/finance/receivables" },
       { label: "Cobranza", href: "/finance/collections" },
       { label: "Pagos recibidos", href: "/finance/payments" },
+      { label: "Pagos de cotizaciones", href: "/finance/quote-payments" },
       { label: "Cuentas por pagar", href: "/finance/payables" },
       { label: "Proveedores", href: "/finance/vendors" },
       { label: "Gastos", href: "/finance/expenses" },

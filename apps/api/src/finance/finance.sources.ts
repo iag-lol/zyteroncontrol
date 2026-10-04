@@ -18,6 +18,7 @@ export interface SourceQuoteItem { description:string; quantity:number; unitPric
 export interface SourceCommission { id:string; saleId:string; userId:string; amount:number; currency:string; status:string; }
 export interface SourceProject { id:string; name:string; projectNumber:string|null; clientId:string|null; contractId:string|null; quoteId:string|null; status:string; }
 export interface SourceWorklog { projectId:string; userId:string; workDate:string; durationMinutes:number; billable:boolean; }
+export interface SourceQuote { id:string; quoteNumber:string; companyName:string; clientId:string|null; ownerId:string|null; status:string; currency:string; totalAmount:number; acceptedAt:string|null; }
 export interface SourceChangeRequest { id:string; projectId:string; description:string; costImpact:number|null; currency:string; status:string; approvedAt:string|null; }
 
 const system={userId:null,role:"GERENTE_GENERAL"} as const;
@@ -26,13 +27,15 @@ const mapClient=(c:Row):SourceClient=>({id:c.id,legalName:c.legal_name??c.legalN
 const mapService=(s:Row):SourceClientService=>({id:s.id,clientId:s.client_id??s.clientId,serviceName:s.service_name??s.serviceName,contractId:s.contract_id??s.contractId??null,projectId:s.project_id??s.projectId??null,catalogServiceId:s.catalog_service_id??s.catalogServiceId??null,billingFrequency:s.billing_frequency??s.billingFrequency??s.billing_type??null,agreedPrice:s.agreed_price??s.agreedPrice??s.price??null,currency:s.currency??"CLP",status:s.status,startDate:s.start_date??s.startDate??null,endDate:s.end_date??s.endDate??null});
 const mapContract=(c:Row):SourceContract=>({id:c.id,clientId:c.client_id??c.clientId,contractNumber:c.contract_number??c.contractNumber,name:c.name,status:c.status,billingFrequency:c.billing_frequency??c.billingFrequency??null,currency:c.currency??"CLP",subtotal:num(c.subtotal),tax:num(c.tax),total:num(c.total),startDate:c.start_date??c.startDate??null,endDate:c.end_date??c.endDate??null});
 const mapSale=(s:Row):SourceSale=>({id:s.id,quoteId:s.quote_id??s.quoteId,clientId:s.client_id??s.clientId??null,amount:num(s.amount),currency:s.currency,closedAt:s.closed_at??s.closedAt,contractId:s.contract_id??s.contractId??null,status:s.status,ownerId:s.owner_id??s.ownerId??null});
+const mapQuote=(q:Row):SourceQuote=>({id:q.id,quoteNumber:q.quote_number??q.quoteNumber,companyName:q.company_name??q.companyName,clientId:q.client_id??q.clientId??null,ownerId:q.owner_id??q.ownerId??null,status:q.status,currency:q.currency??"CLP",totalAmount:num(q.total_amount??q.totalAmount),acceptedAt:q.accepted_at??q.acceptedAt??null});
+const quoteColumns="id,quote_number,company_name,client_id,owner_id,status,currency,total_amount,accepted_at";
 const mapProject=(p:Row):SourceProject=>({id:p.id,name:p.name,projectNumber:p.project_number??p.projectNumber??null,clientId:p.client_id??p.clientId??null,contractId:p.contract_id??p.contractId??null,quoteId:p.quote_id??p.quoteId??null,status:p.status});
 
 @Injectable()
 export class FinanceSources {
   private readonly supabase=createServerSupabase();
   /** Fixtures del modo memoria (tests y demo local sin Supabase). Tienen prioridad sobre los servicios. */
-  readonly fixtures={clients:new Map<string,SourceClient>(),services:new Map<string,SourceClientService>(),contracts:new Map<string,SourceContract>(),sales:new Map<string,SourceSale>(),quoteItems:new Map<string,SourceQuoteItem[]>(),commissions:new Map<string,SourceCommission>(),projects:new Map<string,SourceProject>(),worklogs:[] as SourceWorklog[],changeRequests:new Map<string,SourceChangeRequest>(),assignments:new Map<string,Set<string>>()};
+  readonly fixtures={clients:new Map<string,SourceClient>(),services:new Map<string,SourceClientService>(),contracts:new Map<string,SourceContract>(),sales:new Map<string,SourceSale>(),quoteItems:new Map<string,SourceQuoteItem[]>(),commissions:new Map<string,SourceCommission>(),projects:new Map<string,SourceProject>(),worklogs:[] as SourceWorklog[],changeRequests:new Map<string,SourceChangeRequest>(),assignments:new Map<string,Set<string>>(),quotes:new Map<string,SourceQuote>(),portalUsers:new Map<string,string>()};
   constructor(@Optional() private readonly clientsService?:ClientsService,@Optional() private readonly servicesService?:ClientServicesService,@Optional() private readonly contractsService?:ContractsService,@Optional() private readonly salesService?:SalesService,@Optional() private readonly quotesService?:QuotesService,@Optional() private readonly operations?:OperationsService){}
 
   private async rows(table:string,select:string,apply:(q:any)=>any=(q)=>q):Promise<Row[]>{const out:Row[]=[];for(let from=0;;from+=1000){const{data,error}=await apply((this.supabase!.from(table) as any).select(select)).range(from,from+999);if(error)throw error;out.push(...(data??[]));if((data??[]).length<1000)break;}return out;}
@@ -85,6 +88,26 @@ export class FinanceSources {
     const map=(i:Row):SourceQuoteItem=>({description:i.description,quantity:num(i.quantity),unitPrice:num(i.unit_price??i.unitPrice),discountPercent:num(i.discount_percent??i.discountPercent),taxable:Boolean(i.taxable),catalogServiceId:i.catalog_service_id??i.catalogServiceId??null});
     if(this.supabase){const{data}=await this.supabase.from("quote_items").select("*").eq("quote_id",quoteId).order("position");return(data??[]).map(map);}
     return this.fixtures.quoteItems.get(quoteId)??await this.safe(async()=>(((await this.quotesService?.get(quoteId)) as unknown as Row)?.items??[]).map(map),[]);
+  }
+  async quote(id:string):Promise<SourceQuote|null>{
+    if(this.supabase){const{data}=await this.supabase.from("quotes").select(quoteColumns).eq("id",id).maybeSingle();return data?mapQuote(data):null;}
+    return this.fixtures.quotes.get(id)??await this.safe(async()=>this.quotesService?mapQuote(await this.quotesService.get(id) as unknown as Row):null,null);
+  }
+  async quotes(ids:Array<string|null|undefined>):Promise<Map<string,SourceQuote>>{
+    const unique=[...new Set(ids.filter((id):id is string=>Boolean(id)))];const out=new Map<string,SourceQuote>();if(!unique.length)return out;
+    if(this.supabase){for(let i=0;i<unique.length;i+=200){const{data}=await this.supabase.from("quotes").select(quoteColumns).in("id",unique.slice(i,i+200));for(const row of data??[])out.set(row.id,mapQuote(row));}return out;}
+    for(const id of unique){const quote=await this.quote(id);if(quote)out.set(id,quote);}return out;
+  }
+  /** Cotizaciones aceptadas o convertidas en venta: las únicas que pueden tener calendario de pagos. */
+  async acceptedQuotes():Promise<SourceQuote[]>{
+    if(this.supabase)return(await this.rows("quotes",quoteColumns,(q)=>q.in("status",["ACCEPTED","CONVERTED"]).order("accepted_at",{ascending:false}))).map(mapQuote);
+    return[...this.fixtures.quotes.values()].filter((q)=>["ACCEPTED","CONVERTED"].includes(q.status));
+  }
+  /** Cliente del usuario del portal: acceso ACTIVO, portal habilitado y facturas visibles (espejo de private.portal_quote_client). */
+  async portalClientId(userId:string|null):Promise<string|null>{
+    if(!userId)return null;
+    if(this.supabase){const{data}=await this.supabase.from("client_portal_users").select("client_id").eq("auth_user_id",userId).eq("status","ACTIVE").limit(1).maybeSingle();if(!data)return null;const{data:settings}=await this.supabase.from("client_portal_settings").select("enabled,invoices_visible").eq("client_id",data.client_id).maybeSingle();return settings?.enabled&&settings?.invoices_visible?data.client_id:null;}
+    return this.fixtures.portalUsers.get(userId)??null;
   }
   async commissions():Promise<SourceCommission[]>{
     const map=(c:Row):SourceCommission=>({id:c.id,saleId:c.sale_id??c.saleId,userId:c.user_id??c.userId,amount:num(c.amount),currency:c.currency,status:c.status});

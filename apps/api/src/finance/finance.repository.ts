@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { randomUUID } from "node:crypto";
 import { createServerSupabase } from "../domain/server-supabase.js";
 import { defaultSettings, seedAccounts, seedChecklist, seedCostCenters, seedDocumentTypes, seedExpenseCategories, seedForecastScenarios, seedReminderRules, seedRules, seedTaxRules } from "./finance.seed.js";
-import { FinanceDomainError, type FinanceActor, nowIso, r2, type Row, toHttp } from "./finance.util.js";
+import { addDays, FinanceDomainError, type FinanceActor, nowIso, quoteDueDate, r2, type Row, todayCl, toHttp } from "./finance.util.js";
 
 export type FilterValue = string|number|boolean|null|undefined|Array<string|number>|{gte?:string|number;lte?:string|number;gt?:string|number;lt?:string|number;neq?:string|number|null;notIn?:Array<string|number>;ilike?:string};
 export type Filters = Record<string,FilterValue>;
@@ -14,7 +14,7 @@ const snake=(key:string)=>key.replace(/[A-Z]/g,(letter)=>`_${letter.toLowerCase(
 const camel=(key:string)=>key.replace(/_([a-z0-9])/g,(_,letter:string)=>letter.toUpperCase());
 /** Columnas generadas por la base: nunca se escriben desde la API. */
 const generated:Record<string,string[]>={invoices:["balanceDue"],payments:["netAmount","unappliedAmount"],payables:["balance"]};
-const numericColumns=new Set(["amount","debit","credit","totalDebit","totalCredit","netAmount","exemptAmount","taxAmount","totalAmount","amountPaid","amountCredited","balanceDue","grossAmount","feeAmount","allocatedAmount","refundedAmount","unappliedAmount","balance","reconciledAmount","openingBalance","rate","taxRate","exchangeRate","eligibleTaxAmount","taxCreditEligibleAmount","minAmount","maxAmount","hourlyCost","unitPrice","quantity","discountAmount","originalAmount","invoiceApprovalThreshold","reconciliationAmountTolerance","clientConcentrationThreshold","collectedPercent","recurringFactor","expenseFactor","taxNonRecoverable","ppmRate","rangeFrom","rangeTo","folio","confidence"]);
+const numericColumns=new Set(["amount","debit","credit","totalDebit","totalCredit","netAmount","exemptAmount","taxAmount","totalAmount","amountPaid","amountCredited","balanceDue","grossAmount","feeAmount","allocatedAmount","refundedAmount","unappliedAmount","balance","reconciledAmount","openingBalance","rate","taxRate","exchangeRate","eligibleTaxAmount","taxCreditEligibleAmount","minAmount","maxAmount","hourlyCost","unitPrice","quantity","discountAmount","originalAmount","invoiceApprovalThreshold","reconciliationAmountTolerance","clientConcentrationThreshold","collectedPercent","recurringFactor","expenseFactor","taxNonRecoverable","ppmRate","rangeFrom","rangeTo","folio","confidence","paidAmount","siiFolio"]);
 const toRow=(table:string,value:Row)=>Object.fromEntries(Object.entries(value).filter(([key,item])=>item!==undefined&&!(generated[table]??[]).includes(key)).map(([key,item])=>[snake(key),item]));
 const fromRow=<T>(value:Row):T=>{const result:Row={};for(const[key,item]of Object.entries(value))result[camel(key)]=numericColumns.has(camel(key))&&item!==null&&item!==undefined&&typeof item==="string"&&/^-?\d+(\.\d+)?$/.test(item)?Number(item):item;return result as T;};
 const keyed:Record<string,string>={tax_document_types:"code",finance_settings:"id"};
@@ -31,9 +31,10 @@ const uniques:Record<string,Array<{keys:string[];when?:(row:Row)=>boolean}>>={
   payment_provider_events:[{keys:["provider","eventKey"]}],payment_links:[{keys:["tokenHash"]}],collection_reminder_rules:[{keys:["offsetDays"]}],collection_reminders:[{keys:["invoiceId","offsetDays","channel"]}],
   bank_statement_imports:[{keys:["bankAccountId","fileSha256"]}],bank_transactions:[{keys:["bankAccountId","externalHash"]}],budget_lines:[{keys:["budgetId","accountId","periodKey","costCenterId","projectId"]}],commission_payments:[{keys:["commissionId"]}],
   forecast_scenarios:[{keys:["code"]}],close_checklist_items:[{keys:["code"]}],period_close_runs:[{keys:["periodId"]}],period_close_tasks:[{keys:["closeRunId","checklistItemId"]}],period_snapshots:[{keys:["periodId","version"]}],
+  quote_payment_plans:[{keys:["quoteId"]}],quote_payment_installments:[{keys:["planId","sequence"]},{keys:["siiDocumentType","siiFolio"],when:(r)=>r.status==="PAID"}],
   tax_obligations:[{keys:["code","periodKey"]}],f29_preparations:[{keys:["periodKey"]}],finance_notifications:[{keys:["eventKey"]}],finance_idempotency_keys:[{keys:["idempotencyKey","operation"]}],
 };
-const noDelete=new Set(["invoices","payments","tax_documents","vendor_payment_allocations","payment_refunds","cash_movements","expenses","payables","vendor_payments","received_tax_documents","commission_payments","finance_events","tax_document_events","accounting_events","rcv_entries","rcv_imports","bank_statement_imports","bank_transactions","reconciliation_matches","period_snapshots","finance_audit_events","payment_allocations","tax_folios"]);
+const noDelete=new Set(["invoices","payments","tax_documents","vendor_payment_allocations","payment_refunds","cash_movements","expenses","payables","vendor_payments","received_tax_documents","commission_payments","finance_events","tax_document_events","accounting_events","rcv_entries","rcv_imports","bank_statement_imports","bank_transactions","reconciliation_matches","period_snapshots","finance_audit_events","payment_allocations","tax_folios","quote_payment_plans","quote_payment_installments"]);
 const fail=(code:string,message:string):never=>{throw new FinanceDomainError(code,message);};
 const duplicate=(table:string,keys:string[]):never=>{throw Object.assign(new Error(`duplicate key value violates unique constraint (${table}: ${keys.join(",")})`),{code:"23505"});};
 const violates=(message:string):never=>{throw Object.assign(new Error(message),{code:"23514"});};
@@ -114,6 +115,8 @@ export class FinanceRepository {
     if(table==="journal_entry_lines"&&!((row.debit>0&&!row.credit)||(row.credit>0&&!row.debit)))violates("journal_entry_lines_check: debe XOR haber");
     if(table==="bank_transactions"&&r2(row.reconciledAmount)>r2(row.amount))violates("bank_transactions_check: reconciled<=amount");
     if(table==="expenses"&&r2(row.netAmount+row.exemptAmount+row.taxAmount)!==r2(row.totalAmount))violates("expenses_check: total");
+    if(table==="quote_payment_plans"){if(row.frequency==="ONE_TIME"&&row.totalInstallments!==1)violates("quote_payment_plans_check: pago único = 1 cuota");if(row.status==="CANCELLED"&&!String(row.cancelReason??"").trim())violates("quote_payment_plans_check: anulación con motivo");}
+    if(table==="quote_payment_installments"){if(row.status==="PAID"&&!(row.paidAt&&row.paidAmount&&row.siiDocumentType&&row.siiFolio&&row.invoiceStoragePath&&row.invoiceSha256&&row.markedPaidBy))violates("quote_payment_installments_check: pagada exige factura SII adjunta, folio, monto, fecha y responsable");if(row.status==="CANCELLED"&&!String(row.cancelReason??"").trim())violates("quote_payment_installments_check: anulación con motivo");}
   }
   private unique(table:string,row:Row,selfId?:string){for(const rule of uniques[table]??[]){if(rule.when&&!rule.when(row))continue;for(const[id,other]of this.store(table)){if(id===selfId||(rule.when&&!rule.when(other)))continue;if(rule.keys.every((key)=>(other[key]??null)===(row[key]??null)))duplicate(table,rule.keys);}}}
   private assertEntryEditable(entryId:string){const entry=this.store("journal_entries").get(entryId);if(!entry||!["DRAFT","PENDING_REVIEW"].includes(entry.status))fail("FINANCE_IMMUTABLE","el asiento está contabilizado; corrige con una reversa");}
@@ -142,6 +145,16 @@ export class FinanceRepository {
     if(table==="tax_obligations"&&["FILED_EXTERNALLY","PAID"].includes(next.status)&&!(next.filedReference&&next.filedEvidencePath))violates("tax_obligations_check: evidencia obligatoria");
     if(table==="f29_preparations"){if(["FILED_EXTERNALLY","SUBMITTED","ACCEPTED"].includes(next.status)&&!(next.filedReference&&next.filedEvidencePath))violates("f29_check: evidencia de presentación obligatoria");if(next.status==="ACCEPTED"&&!next.acceptedEvidencePath)violates("f29_check: evidencia de aceptación obligatoria");}
     if(table==="period_close_tasks"&&next.status==="WAIVED"&&!String(next.notes??"").trim())violates("period_close_tasks_check: dispensa requiere nota");
+    if(table==="quote_payment_installments"){
+      if(old.status==="PAID"){if(!same(["status","paidAt","paidAmount","siiDocumentType","siiFolio","invoiceStoragePath","invoiceSha256","amount","dueDate"]))fail("QUOTE_PAYMENT_IMMUTABLE","una cuota pagada no se modifica");return;}
+      if(old.status==="CANCELLED"&&next.status!=="CANCELLED")fail("QUOTE_PAYMENT_IMMUTABLE","una cuota anulada no se reactiva");
+      if(next.status==="PAID"){const days=Number(this.store("quote_payment_plans").get(next.planId)?.activationDaysBefore??0);const opens=addDays(next.dueDate,-days);if(todayCl()<opens)fail("QUOTE_PAYMENT_NOT_OPEN",`la opción de pago se habilita el ${opens.split("-").reverse().join("-")}`);if(next.paidAt>todayCl())fail("QUOTE_PAYMENT_DATE","la fecha de pago no puede ser futura");}
+    }
+    if(table==="quote_payment_plans"){
+      if(old.status==="CANCELLED"&&next.status!=="CANCELLED")fail("QUOTE_PAYMENT_IMMUTABLE","un plan anulado no se reactiva");
+      const paid=[...this.store("quote_payment_installments").values()].some((i)=>i.planId===old.id&&i.status==="PAID");
+      if(paid&&!same(["frequency","startDate","paymentDay","currency","quoteId"]))fail("QUOTE_PAYMENT_IMMUTABLE","con cuotas pagadas no cambia la frecuencia, el inicio, el día de pago ni la moneda");
+    }
   }
 
   // ------------------------------------------------------------------------------------------ procedimientos (RPC en Supabase, equivalentes en memoria)
@@ -235,6 +248,33 @@ export class FinanceRepository {
   async settings():Promise<typeof defaultSettings&Row>{if(!this.supabase)return structuredClone(this.store("finance_settings").get("true")!) as typeof defaultSettings&Row;const row=await this.get<Row>("finance_settings",true as unknown as string);return{...defaultSettings,...row};}
   async updateSettings(patch:Row){if(!this.supabase){const current=this.store("finance_settings").get("true")!;const next={...current,...patch,updatedAt:nowIso()};this.store("finance_settings").set("true",next);return structuredClone(next);}const{data,error}=await(this.supabase.from("finance_settings") as any).update(toRow("finance_settings",{...patch,updatedAt:nowIso()})).eq("id",true).select("*").single();if(error)throw toHttp(error);return{...defaultSettings,...fromRow<Row>(data)};}
 
+  /** Genera (idempotente) las cuotas de un plan hasta `until`; las de plazo fijo completas. Espejo de public.quote_payment_materialize. */
+  async materializeQuotePlan(planId:string,until:string):Promise<number>{
+    if(this.supabase)return Number(await this.rpc<number>("quote_payment_materialize",{p_plan:planId,p_until:until}));
+    const plan=this.store("quote_payment_plans").get(planId);if(!plan)fail("QUOTE_PAYMENT_NOT_FOUND","Plan de pagos no encontrado.");if(plan!.status!=="ACTIVE")return 0;
+    const existing=new Set([...this.store("quote_payment_installments").values()].filter((i)=>i.planId===planId).map((i)=>i.sequence as number));const last=Math.max(0,...existing);let created=0;
+    for(let sequence=1;sequence<=240;sequence++){
+      if(plan!.totalInstallments!==null&&plan!.totalInstallments!==undefined&&sequence>plan!.totalInstallments)break;
+      const due=plan!.frequency==="ONE_TIME"?plan!.startDate:quoteDueDate(plan!.startDate,plan!.paymentDay,sequence);
+      if((plan!.totalInstallments===null||plan!.totalInstallments===undefined)&&sequence>last&&due>until&&sequence>1)break;
+      if(!existing.has(sequence)){await this.create("quote_payment_installments",{planId,quoteId:plan!.quoteId,clientId:plan!.clientId??null,sequence,periodKey:due.slice(0,7),dueDate:due,amount:plan!.amount,currency:plan!.currency,status:"SCHEDULED",paidAt:null,paidAmount:null,paymentMethod:null,paymentReference:null,siiDocumentType:null,siiFolio:null,siiIssueDate:null,invoiceStoragePath:null,invoiceSha256:null,invoiceFileName:null,invoiceMime:null,clientVisible:false,markedPaidBy:null,markedPaidAt:null,notes:null,cancelReason:null});created++;}
+      if(plan!.frequency==="ONE_TIME")break;
+    }
+    return created;
+  }
+  /** Reprograma (atómico en Supabase) las cuotas pendientes tras editar o anular el plan. Espejo de public.quote_payment_reschedule. */
+  async rescheduleQuotePlan(planId:string):Promise<number>{
+    if(this.supabase)return Number(await this.rpc<number>("quote_payment_reschedule",{p_plan:planId}));
+    const plan=this.store("quote_payment_plans").get(planId);if(!plan)fail("QUOTE_PAYMENT_NOT_FOUND","Plan de pagos no encontrado.");let changed=0;
+    const pending=[...this.store("quote_payment_installments").values()].filter((i)=>i.planId===planId&&i.status==="SCHEDULED").sort((a,b)=>a.sequence-b.sequence);
+    for(const item of pending){
+      if(plan!.status==="CANCELLED"||(plan!.totalInstallments!==null&&plan!.totalInstallments!==undefined&&item.sequence>plan!.totalInstallments)){await this.update("quote_payment_installments",item.id,{status:"CANCELLED",cancelReason:plan!.status==="CANCELLED"?`Plan anulado: ${plan!.cancelReason}`:"Plan modificado: cuota fuera del nuevo plazo"});changed++;continue;}
+      const due=plan!.frequency==="ONE_TIME"?plan!.startDate:quoteDueDate(plan!.startDate,plan!.paymentDay,item.sequence);
+      if(due!==item.dueDate||r2(plan!.amount)!==r2(item.amount)||plan!.currency!==item.currency){await this.update("quote_payment_installments",item.id,{dueDate:due,periodKey:due.slice(0,7),amount:plan!.amount,currency:plan!.currency});changed++;}
+    }
+    return changed;
+  }
+
   // ------------------------------------------------------------------------------------------ eventos, auditoría, notificaciones, idempotencia, archivos
   async audit(actor:FinanceActor,action:string,entityType:string,entityId:string|null,summary:string,metadata:Row={}){return this.create("finance_audit_events",{actorId:actor.userId,actorRole:actor.role||null,action,entityType,entityId,summary,metadata,occurredAt:nowIso()});}
   async event(input:{aggregateType:string;aggregateId:string;eventType:string;actorId:string|null;clientId?:string|null;projectId?:string|null;title:string;payload?:Row}){return this.create("finance_events",{aggregateType:input.aggregateType,aggregateId:input.aggregateId,eventType:input.eventType,actorId:input.actorId,clientId:input.clientId??null,projectId:input.projectId??null,title:input.title,payload:input.payload??{},occurredAt:nowIso()});}
@@ -248,6 +288,8 @@ export class FinanceRepository {
   }
   async saveFile(bucket:string,path:string,bytes:Buffer,mime:string){if(!this.supabase){this.files.set(`${bucket}/${path}`,{bytes,mime});return path;}const{error}=await this.supabase.storage.from(bucket).upload(path,bytes,{contentType:mime,upsert:false});if(error)throw error;return path;}
   async readFile(bucket:string,path:string):Promise<Buffer|null>{if(!this.supabase)return this.files.get(`${bucket}/${path}`)?.bytes??null;const{data,error}=await this.supabase.storage.from(bucket).download(path);if(error||!data)return null;return Buffer.from(await data.arrayBuffer());}
+  /** Sólo para revertir una subida cuyo registro no llegó a persistirse (archivo huérfano); nunca borra respaldos referenciados. */
+  async discardFile(bucket:string,path:string){if(!this.supabase){this.files.delete(`${bucket}/${path}`);return;}await this.supabase.storage.from(bucket).remove([path]).catch(()=>undefined);}
   async signedUrl(bucket:string,path:string,seconds=300){if(!this.supabase)return null;const{data,error}=await this.supabase.storage.from(bucket).createSignedUrl(path,seconds);if(error)throw error;return data.signedUrl;}
 
   // ------------------------------------------------------------------------------------------ datos base del modo memoria (espejo de la migración)

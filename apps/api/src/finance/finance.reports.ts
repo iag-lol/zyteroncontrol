@@ -10,6 +10,7 @@ import { LedgerService, StatementsService } from "./finance.ledger.js";
 import { withPayableStatus, PayableService } from "./finance.payables.js";
 import { CollectionsService, systemActor } from "./finance.payments.js";
 import { ReconciliationService } from "./finance.banking.js";
+import { QuotePaymentService } from "./finance.quote-payments.js";
 import { addDays, addMonths, daysBetween, displayDate, displayDateTime, type FinanceActor, isoDate, money, monthRange, nowIso, previousPeriod, r2, type Row, sum, todayCl } from "./finance.util.js";
 
 const severityWeight:Record<Anomaly["severity"],number>={INFO:0,ATTENTION:5,RISK:12,CRITICAL:25};
@@ -205,14 +206,14 @@ const optionalId=(value:unknown)=>typeof value==="string"&&/^[0-9a-f-]{36}$/i.te
 @Injectable()
 export class FinanceScheduler implements OnModuleInit,OnModuleDestroy {
   private timer:NodeJS.Timeout|null=null;private running=false;
-  constructor(private readonly ctx:FinanceContext,private readonly billing:BillingScheduleService,private readonly dte:DteService,private readonly collections:CollectionsService,private readonly payables:PayableService,private readonly reconciliation:ReconciliationService,private readonly close:CloseService){}
+  constructor(private readonly ctx:FinanceContext,private readonly billing:BillingScheduleService,private readonly dte:DteService,private readonly collections:CollectionsService,private readonly payables:PayableService,private readonly reconciliation:ReconciliationService,private readonly close:CloseService,private readonly quotePayments:QuotePaymentService){}
   onModuleInit(){const minutes=Number(process.env.FINANCE_SCHEDULER_INTERVAL_MINUTES);if(minutes>=5)this.timer=setInterval(()=>{void this.runDue(systemActor).catch(()=>undefined);},minutes*60000);}
   onModuleDestroy(){if(this.timer)clearInterval(this.timer);}
   /** Tareas idempotentes: borradores de facturación, estados DTE, alertas, recordatorios y promesas. Nunca emite ni contabiliza. */
   async runDue(actor:FinanceActor){
     if(this.running)return{skipped:"Ejecución en curso"};this.running=true;const today=todayCl();const result:Row={startedAt:nowIso()};
     try{const step=async(name:string,work:()=>Promise<unknown>)=>{try{result[name]=await work();}catch(error){result[name]={error:String((error as Error).message).slice(0,300)};}};
-      await step("billing",()=>this.billing.runDue(today,actor));await step("dteStatus",()=>this.dte.pollPending(actor));await step("certificates",()=>this.dte.certificateAlerts());await step("reminders",()=>this.collections.runReminders(today));await step("promises",()=>this.collections.evaluatePromises(today));await step("payables",()=>this.payables.dueNotifications(today));await step("autoMatch",()=>this.reconciliation.autoMatch(actor));
+      await step("billing",()=>this.billing.runDue(today,actor));await step("dteStatus",()=>this.dte.pollPending(actor));await step("certificates",()=>this.dte.certificateAlerts());await step("reminders",()=>this.collections.runReminders(today));await step("promises",()=>this.collections.evaluatePromises(today));await step("payables",()=>this.payables.dueNotifications(today));await step("autoMatch",()=>this.reconciliation.autoMatch(actor));await step("quotePayments",()=>this.quotePayments.runDue(today));
       await step("close",async()=>{const run=await this.close.center(previousPeriod(today.slice(0,7)),{...actor,role:"GERENTE_GENERAL"});return{period:run.period.periodKey,status:run.status,blockers:run.blockers.length};});
       await this.ctx.repo.audit(actor,"FINANCE_SCHEDULER_RUN","SCHEDULER",null,"Tareas programadas de Finanzas ejecutadas",result);return{...result,finishedAt:nowIso()};}
     finally{this.running=false;}

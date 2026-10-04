@@ -10,6 +10,7 @@ import { ApprovalService, ExpenseService, PayableService, VendorService } from "
 import { CollectionsService, OnlinePaymentService, PaymentService } from "./finance.payments.js";
 import type { PageQuery } from "./finance.repository.js";
 import { AnalyticsService, CopilotService, FinanceScheduler, ReportsService, reportTypes, type ReportType } from "./finance.reports.js";
+import { QuotePaymentService } from "./finance.quote-payments.js";
 import { FinanceSettingsService } from "./finance.settings.js";
 import { type FinanceActor, isoDate, monthRange, todayCl } from "./finance.util.js";
 
@@ -25,7 +26,7 @@ function file(res:{setHeader:(k:string,v:string)=>void},out:{bytes:Buffer;mime:s
 @Controller("finance")
 @RequireRoles(...ALL)
 export class FinanceController {
-  constructor(private readonly settings:FinanceSettingsService,private readonly ledger:LedgerService,private readonly rules:AccountingRuleEngine,private readonly statements:StatementsService,private readonly invoices:InvoiceService,private readonly schedules:BillingScheduleService,private readonly dte:DteService,private readonly received:ReceivedDocumentsService,private readonly rcv:RcvService,private readonly payments:PaymentService,private readonly online:OnlinePaymentService,private readonly collections:CollectionsService,private readonly vendors:VendorService,private readonly approvals:ApprovalService,private readonly expenses:ExpenseService,private readonly payables:PayableService,private readonly banks:BankService,private readonly statementsImport:StatementImportService,private readonly reconciliation:ReconciliationService,private readonly close:CloseService,private readonly budgets:BudgetService,private readonly tax:TaxService,private readonly commissions:CommissionFinanceService,private readonly analytics:AnalyticsService,private readonly reports:ReportsService,private readonly copilot:CopilotService,private readonly scheduler:FinanceScheduler){}
+  constructor(private readonly settings:FinanceSettingsService,private readonly ledger:LedgerService,private readonly rules:AccountingRuleEngine,private readonly statements:StatementsService,private readonly invoices:InvoiceService,private readonly schedules:BillingScheduleService,private readonly dte:DteService,private readonly received:ReceivedDocumentsService,private readonly rcv:RcvService,private readonly payments:PaymentService,private readonly online:OnlinePaymentService,private readonly collections:CollectionsService,private readonly vendors:VendorService,private readonly approvals:ApprovalService,private readonly expenses:ExpenseService,private readonly payables:PayableService,private readonly banks:BankService,private readonly statementsImport:StatementImportService,private readonly reconciliation:ReconciliationService,private readonly close:CloseService,private readonly budgets:BudgetService,private readonly tax:TaxService,private readonly commissions:CommissionFinanceService,private readonly analytics:AnalyticsService,private readonly reports:ReportsService,private readonly copilot:CopilotService,private readonly scheduler:FinanceScheduler,private readonly quotePayments:QuotePaymentService){}
 
   // ---------------------------------------------------------------- command center y configuración
   @Get() root(@Headers() h:H,@Query("period") period?:string){return this.analytics.dashboard(actor(h),period||undefined);}
@@ -105,6 +106,17 @@ export class FinanceController {
   @Post("invoices/:id/payment-links") createLink(@Param("id") id:string,@Body() b:any,@Headers() h:H){return this.online.createLink(id,b,actor(h));}
   @Post("payment-links/:id/revoke") revokeLink(@Param("id") id:string,@Headers() h:H){return this.online.revokeLink(id,actor(h));}
   @Get("online-payments/config") onlineConfig(){return this.online.config();}
+  // ---------------------------------------------------------------- calendario de pagos de cotizaciones (factura SII obligatoria al pagar)
+  @Get("quote-payments") quotePaymentBoard(@Query() q:Q,@Headers() h:H){return this.quotePayments.board(q,actor(h));}
+  @Get("quote-payments/quotes") quotePaymentQuotes(@Headers() h:H){return this.quotePayments.quotes(actor(h));}
+  @Get("quote-payments/quotes/:quoteId") quotePaymentDetail(@Param("quoteId") id:string,@Headers() h:H){return this.quotePayments.detail(id,actor(h));}
+  @Put("quote-payments/quotes/:quoteId/plan") saveQuotePlan(@Param("quoteId") id:string,@Body() b:any,@Headers() h:H){return this.quotePayments.savePlan(id,b,actor(h));}
+  @Post("quote-payments/quotes/:quoteId/plan/:action") @HttpCode(200) quotePlanAction(@Param("quoteId") id:string,@Param("action") action:string,@Body() b:any,@Headers() h:H){return this.quotePayments.planAction(id,action,b??{},actor(h));}
+  @Post("quote-payments/installments/:id/mark-paid") @HttpCode(200) markInstallmentPaid(@Param("id") id:string,@Body() b:any,@Headers() h:H){return this.quotePayments.markPaid(id,b,actor(h));}
+  @Post("quote-payments/installments/:id/visibility") @HttpCode(200) installmentVisibility(@Param("id") id:string,@Body() b:any,@Headers() h:H){return this.quotePayments.setVisibility(id,b,actor(h));}
+  @Post("quote-payments/installments/:id/cancel") @HttpCode(200) cancelInstallment(@Param("id") id:string,@Body() b:any,@Headers() h:H){return this.quotePayments.cancelInstallment(id,b,actor(h));}
+  @Get("quote-payments/installments/:id/invoice") async installmentInvoice(@Param("id") id:string,@Headers() h:H,@Res({passthrough:true}) res:any){return file(res,await this.quotePayments.invoice(id,actor(h)));}
+
   @Get("billing-schedules") schedulesList(@Headers() h:H,@Query("clientId") clientId?:string){return this.schedules.list(actor(h),clientId);}
   @Get("billing-schedules/suggestions") scheduleSuggestions(@Headers() h:H){return this.schedules.suggestions(actor(h));}
   @Post("billing-schedules") createSchedule(@Body() b:any,@Headers() h:H){return this.schedules.create(b,actor(h));}
@@ -274,4 +286,13 @@ export class PublicPaymentController {
   constructor(private readonly online:OnlinePaymentService){}
   @Public() @Get(":token") view(@Param("token") token:string){return this.online.publicView(token);}
   @Public() @Post(":token/pay") @HttpCode(200) pay(@Param("token") token:string,@Body() b:any,@Headers("idempotency-key") key:string|undefined){return this.online.pay(token,b?.formData??b,key);}
+}
+
+/** Portal cliente (futuro): calendario propio y facturas SII de cuotas pagadas marcadas visibles. */
+@Controller("portal/quote-payments")
+@RequireRoles("PORTAL_CLIENT")
+export class PortalQuotePaymentsController {
+  constructor(private readonly quotePayments:QuotePaymentService){}
+  @Get() list(@Headers() h:H){return this.quotePayments.portalList(actor(h));}
+  @Get(":id/invoice") async invoice(@Param("id") id:string,@Headers() h:H,@Res({passthrough:true}) res:any){return file(res,await this.quotePayments.portalInvoice(id,actor(h)));}
 }
