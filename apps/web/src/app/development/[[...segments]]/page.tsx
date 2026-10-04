@@ -1,2 +1,3 @@
-import { ModulePage } from "@/components/module-page";
-export default async function Page({ params }: { params: Promise<{ segments?: string[] }> }) { const { segments = [] } = await params; return <ModulePage pathname={`/development${segments.length ? `/${segments.join("/")}` : ""}`} />; }
+import { DevelopmentWorkspace, type DevelopmentSection } from "@/components/development/development-workspace";
+const sections:Record<string,DevelopmentSection>={assignments:"assignments",team:"team",workload:"workload","my-projects":"my-projects",repositories:"repositories","pull-requests":"pull-requests",qa:"qa",bugs:"bugs",releases:"releases",environments:"environments",deployments:"deployments",docs:"docs","technical-debt":"technical-debt"};
+export default async function Page({params}:{params:Promise<{segments?:string[]}>}){const{segments=[]}=await params;return <DevelopmentWorkspace section={sections[segments[0]??""]??"command"}/>;}

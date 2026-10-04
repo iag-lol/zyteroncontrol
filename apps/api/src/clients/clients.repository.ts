@@ -58,18 +58,21 @@ export class ClientsRepository {
   async domainHealthSignals(clientId: string) {
     if (!this.supabase) {
       const services = this.services.get(clientId) ?? [];
-      return { totalContracts:0, expiredContracts:0, totalServices:services.length, suspendedServices:services.filter((item)=>item.status==="SUSPENDED").length, totalRenewals:0, overdueRenewals:0 };
+      return { totalContracts:0, expiredContracts:0, totalServices:services.length, suspendedServices:services.filter((item)=>item.status==="SUSPENDED").length, totalRenewals:0, overdueRenewals:0, openSupportTickets:0, criticalSupportTickets:0, supportSlaBreaches:0 };
     }
     const today = new Date().toISOString().slice(0, 10);
-    const [contracts, expiredContracts, services, suspendedServices, renewals, overdueRenewals] = await Promise.all([
+    const [contracts, expiredContracts, services, suspendedServices, renewals, overdueRenewals, openSupport, criticalSupport, breachedSupport] = await Promise.all([
       this.supabase.from("client_contracts").select("id", { count:"exact", head:true }).eq("client_id", clientId).is("archived_at", null),
       this.supabase.from("client_contracts").select("id", { count:"exact", head:true }).eq("client_id", clientId).is("archived_at", null).or(`status.eq.EXPIRED,end_date.lt.${today}`),
       this.supabase.from("client_services").select("id", { count:"exact", head:true }).eq("client_id", clientId),
       this.supabase.from("client_services").select("id", { count:"exact", head:true }).eq("client_id", clientId).eq("status", "SUSPENDED"),
       this.supabase.from("client_renewals").select("id", { count:"exact", head:true }).eq("client_id", clientId),
       this.supabase.from("client_renewals").select("id", { count:"exact", head:true }).eq("client_id", clientId).lt("renewal_date", today).not("status", "in", "(RENEWED,NOT_RENEWED,CANCELLED)"),
+      this.supabase.from("support_tickets").select("id", { count:"exact", head:true }).eq("client_id",clientId).is("archived_at",null).not("status","in","(RESOLVED,CLOSED,CANCELLED)"),
+      this.supabase.from("support_tickets").select("id", { count:"exact", head:true }).eq("client_id",clientId).eq("severity","CRITICAL").is("archived_at",null).not("status","in","(RESOLVED,CLOSED,CANCELLED)"),
+      this.supabase.from("support_tickets").select("id", { count:"exact", head:true }).eq("client_id",clientId).is("resolved_at",null).lt("resolution_due_at",new Date().toISOString()),
     ]);
-    const error = [contracts, expiredContracts, services, suspendedServices, renewals, overdueRenewals].find((result) => result.error)?.error;
+    const error = [contracts, expiredContracts, services, suspendedServices, renewals, overdueRenewals, openSupport, criticalSupport, breachedSupport].find((result) => result.error)?.error;
     if (error) throw error;
     return {
       totalContracts: contracts.count ?? 0,
@@ -78,6 +81,9 @@ export class ClientsRepository {
       suspendedServices: suspendedServices.count ?? 0,
       totalRenewals: renewals.count ?? 0,
       overdueRenewals: overdueRenewals.count ?? 0,
+      openSupportTickets: openSupport.count ?? 0,
+      criticalSupportTickets: criticalSupport.count ?? 0,
+      supportSlaBreaches: breachedSupport.count ?? 0,
     };
   }
 

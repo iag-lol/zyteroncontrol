@@ -7,7 +7,7 @@ import { AppModule } from "./app.module.js";
 config({ path: [resolve(process.cwd(), ".env"), resolve(process.cwd(), "../../.env")] });
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { rawBody: true });
   app.setGlobalPrefix("api");
   app.enableCors({
     origin: process.env.WEB_ORIGIN ?? "http://localhost:3000",
