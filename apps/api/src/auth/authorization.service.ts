@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable,ServiceUnavailableException } from "@nestjs/common";
 import { createServerSupabase } from "../domain/server-supabase.js";
 
 export interface AuthorizationContext {
@@ -28,7 +28,7 @@ export class AuthorizationService {
     if(!permissions.length)return true;
     if(!this.supabase)return process.env.AUTH_MODE==="development"&&process.env.NODE_ENV!=="production";
     const{data,error}=await this.supabase.from("role_permissions").select("permission_code").eq("role",role).in("permission_code",permissions);
-    if(error)return false;
+    if(error)throw new ServiceUnavailableException("No fue posible validar los permisos de forma segura.");
     const granted=new Set((data??[]).map(item=>String(item.permission_code)));
     return permissions.every(permission=>granted.has(permission));
   }
