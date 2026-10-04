@@ -9,6 +9,10 @@
     ".": {
       "types": "./src/index.ts",
       "default": "./dist/index.js"
+    },
+    "./monitoring": {
+      "types": "./src/monitoring.ts",
+      "default": "./dist/monitoring.js"
     }
   },
   "scripts": {

@@ -4,7 +4,7 @@ import { RequireRoles } from "../auth/roles.decorator.js";
 import { createServerSupabase } from "../domain/server-supabase.js";
 
 @Injectable()
-class UsersDirectoryService {
+export class UsersDirectoryService {
   private readonly supabase = createServerSupabase();
 
   async list(): Promise<UserDirectoryItem[]> {
@@ -33,5 +33,5 @@ class UsersController {
   listDirectory() { return this.directory.list(); }
 }
 
-@Module({ controllers:[UsersController], providers:[UsersDirectoryService] })
+@Module({ controllers:[UsersController], providers:[UsersDirectoryService], exports:[UsersDirectoryService] })
 export class UsersModule {}
