@@ -842,7 +842,7 @@ do $$ declare fn text; begin
     'public.monitoring_claim_due_monitors(text,integer,integer)','public.monitoring_claim_monitor(uuid,text,integer,integer)','public.monitoring_release_lease(uuid,text,integer)','public.monitoring_set_enabled(uuid,boolean)',
     'public.monitoring_patch_incident(uuid,jsonb,text[],jsonb)','public.monitoring_insert_side_effects(public.incidents,uuid,jsonb,jsonb,jsonb)','public.monitoring_apply_check(jsonb)',
     'public.monitoring_mutate_incident(uuid,text,jsonb,jsonb,jsonb,jsonb,jsonb)','public.monitoring_run_maintenance_transitions()','public.monitoring_refresh_rollups(timestamptz,timestamptz)',
-    'public.monitoring_purge(integer)','public.monitoring_monitor_stats(uuid)','public.monitoring_fleet_stats(uuid[])','public.monitoring_latency_ranking(uuid[],integer)'] loop
+    'public.monitoring_purge(integer)','public.monitoring_uptime_pct(numeric,numeric,numeric,numeric,text)','public.monitoring_monitor_stats(uuid)','public.monitoring_fleet_stats(uuid[])','public.monitoring_latency_ranking(uuid[],integer)'] loop
     execute format('revoke all on function %s from public,anon,authenticated',fn);
     execute format('grant execute on function %s to service_role',fn);
   end loop;
