@@ -125,6 +125,7 @@ export class FinanceController {
 
   // ---------------------------------------------------------------- documentos tributarios
   @Get("dte/readiness") dteReadiness(@Headers() h:H){return this.dte.readiness(undefined,actor(h));}
+  @Post("dte/test-connection") testDteConnection(@Headers() h:H){return this.dte.connectionTest(actor(h));}
   @Get("dte/certificates") certificates(@Headers() h:H){return this.dte.certificatesList(actor(h));}
   @Post("dte/certificates") registerCertificate(@Body() b:any,@Headers() h:H){return this.dte.registerCertificate(b,actor(h));}
   @Post("dte/certificates/:id/retire") retireCertificate(@Param("id") id:string,@Headers() h:H){return this.dte.retireCertificate(id,actor(h));}

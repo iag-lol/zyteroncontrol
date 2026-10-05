@@ -62,7 +62,8 @@ La matriz vive en `@zyteron/contracts` (`financeRoleMatrix`) y es espejo exacto 
 |---|---|
 | `FINANCE_ENCRYPTION_KEY` | 32 bytes (base64 o hex) para cifrar cuentas bancarias de proveedores y CAF |
 | `DTE_CERTIFICATE_SECRET_REF` / `DTE_CERTIFICATE_PEM` | Certificado digital (sólo servidor) |
-| `DTE_XSD_DIR`, `DTE_SENDER_RUT` | Esquemas oficiales y RUT de quien envía |
+| `DTE_SENDER_RUT` | RUT autorizado que envía al SII |
+| `DTE_XSD_DIR` | Opcional: reemplazo controlado de los cuatro XSD oficiales incluidos en el repositorio |
 | `DTE_PROVIDER_URL`, `DTE_PROVIDER_API_KEY` | Proveedor certificado externo |
 | `MERCADOPAGO_ACCESS_TOKEN`, `MERCADOPAGO_PUBLIC_KEY`, `MERCADOPAGO_WEBHOOK_SECRET`, `PUBLIC_API_URL` | Pagos en línea |
 | `CLIENT_PORTAL_URL` | Base de los links de pago (por defecto `https://clientes.zyteron.cl`) |

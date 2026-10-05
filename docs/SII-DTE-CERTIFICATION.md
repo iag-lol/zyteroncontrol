@@ -22,8 +22,8 @@ Interfaz común: `createDraft`, `validate`, `sign`, `send`, `issue`, `issueCredi
 1. Construye el `Documento` DTE v1.0 (Encabezado, Detalle ≤ 60 líneas, Referencia, Totales) con montos enteros en CLP.
 2. Genera el **TED** (`DD` + `FRMT`) firmando con SHA1withRSA usando la llave `RSASK` del CAF del folio reservado.
 3. Firma el `Documento` con **XMLDSig RSA-SHA1** (C14N inclusivo) usando el certificado digital del servidor. La firma se calcula con los namespaces que tendrá dentro de `EnvioDTE` (`xmlns` SII y `xmlns:xsi`) para que no se invalide al ensobrar.
-4. Ensobra en `EnvioDTE` (Carátula con `RutReceptor` 60803000-K), firma el `SetDTE` y valida contra el **XSD oficial** con `xmllint` (`DTE_XSD_DIR`). Si el XSD no está disponible, la emisión directa queda bloqueada.
-5. Autentica con el flujo oficial semilla → semilla firmada → token (`CrSeed.jws`, `GetTokenFromSeed.jws`).
+4. Ensobra en `EnvioDTE` (Carátula con `RutReceptor` 60803000-K), firma el `SetDTE` y valida offline contra los **cuatro XSD oficiales** incluidos en `apps/api/resources/sii/xsd`, usando `libxml2` sobre WebAssembly. No depende de que Render tenga instalado `xmllint`; `DTE_XSD_DIR` queda disponible sólo para un reemplazo controlado.
+5. Autentica con el flujo oficial semilla → semilla firmada → token (`CrSeed.jws`, `GetTokenFromSeed.jws`) usando SOAP 1.1 y el namespace RPC del WSDL correspondiente a `maullin` o `palena`.
 6. Sube el envío a `cgi_dte/UPL/DTEUpload` y registra el **Track ID**.
 7. Consulta el estado con `QueryEstUp.jws` (manual desde la ficha o automático vía scheduler).
 
@@ -82,6 +82,8 @@ Checklist para Zyteron SpA (ambiente de certificación, `dte_environment = CERTI
 5. **Muestras de impresión**: generar las representaciones impresas con timbre PDF417. Zyteron sólo entrega PDF cuando existe folio y timbre real (desde el proveedor o un renderizador con PDF417 validado); nunca un PDF sin timbre.
 6. **Declaración de cumplimiento** firmada en sii.cl.
 7. **Autorización**: con la resolución, Gerencia registra la evidencia («Declarar autorización de producción»), se cargan los CAF de producción y se cambia el ambiente a `PRODUCTION`.
+
+Antes del primer set de pruebas, usa **Probar conexión** en Configuración contable. El diagnóstico comprueba semilla, certificado y autenticación sin emitir ni consumir un folio.
 
 Cada tipo de documento se marca «Certificado» con la evidencia (resolución/fecha). Tipos 39, 41, 46 y 52 están catalogados pero deshabilitados hasta certificarlos.
 

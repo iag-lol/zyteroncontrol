@@ -1,15 +1,16 @@
 import { BadRequestException, ForbiddenException, Injectable } from "@nestjs/common";
 import { scopeOf } from "./finance.access.js";
 import { FinanceContext } from "./finance.core.js";
+import { DteSchemaValidator } from "./finance.dte-providers.js";
 import { type FinanceActor, isoDate, nonNegative, nowIso, oneOf, optionalText, optionalUuid, positiveAmount, requiredText, requiredUuid, requireRut, type Row } from "./finance.util.js";
 
 /** Configuración contable y catálogos auxiliares (empresa, DTE, tolerancias, tarifas de costo, costos programados, escenarios). */
 @Injectable()
 export class FinanceSettingsService {
-  constructor(private readonly ctx:FinanceContext){}
+  constructor(private readonly ctx:FinanceContext,private readonly dteSchema:DteSchemaValidator){}
   private get repo(){return this.ctx.repo;}
   scope(actor:FinanceActor){return scopeOf(actor);}
-  async get(actor:FinanceActor){this.ctx.requireAny(actor,"finance.dashboard.view","invoice.view");const settings=await this.repo.settings();return{...settings,integrations:{supabase:this.repo.configured(),encryption:Boolean(process.env.FINANCE_ENCRYPTION_KEY),mercadoPago:Boolean(process.env.MERCADOPAGO_ACCESS_TOKEN&&process.env.MERCADOPAGO_PUBLIC_KEY&&process.env.MERCADOPAGO_WEBHOOK_SECRET),resend:Boolean(process.env.RESEND_API_KEY&&(process.env.FINANCE_MAIL_FROM||process.env.SALES_MAIL_FROM)),externalDte:Boolean(process.env.DTE_PROVIDER_URL&&process.env.DTE_PROVIDER_API_KEY),xsd:Boolean(process.env.DTE_XSD_DIR)}};}
+  async get(actor:FinanceActor){this.ctx.requireAny(actor,"finance.dashboard.view","invoice.view");const settings=await this.repo.settings();return{...settings,integrations:{supabase:this.repo.configured(),encryption:Boolean(process.env.FINANCE_ENCRYPTION_KEY),mercadoPago:Boolean(process.env.MERCADOPAGO_ACCESS_TOKEN&&process.env.MERCADOPAGO_PUBLIC_KEY&&process.env.MERCADOPAGO_WEBHOOK_SECRET),resend:Boolean(process.env.RESEND_API_KEY&&(process.env.FINANCE_MAIL_FROM||process.env.SALES_MAIL_FROM)),externalDte:Boolean(process.env.DTE_PROVIDER_URL&&process.env.DTE_PROVIDER_API_KEY),xsd:this.dteSchema.available()}};}
   async update(body:Row,actor:FinanceActor){
     this.ctx.require(actor,"finance.settings.manage");const patch:Row={};const text=(key:string,max=200)=>{if(body[key]!==undefined)patch[key]=optionalText(body[key],max);};
     for(const key of ["companyLegalName","companyBusinessActivity","companyAddress","companyCommune","companyCity","companyEmail"])text(key);

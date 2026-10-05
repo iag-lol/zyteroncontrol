@@ -1,18 +1,17 @@
 import { Injectable, ServiceUnavailableException, UnprocessableEntityException } from "@nestjs/common";
-import { execFile } from "node:child_process";
 import { createHash, createPrivateKey, createPublicKey, createSign, X509Certificate, type KeyObject } from "node:crypto";
 import { existsSync } from "node:fs";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
-import { promisify } from "node:util";
+import { readFile } from "node:fs/promises";
+import { join,resolve } from "node:path";
 import type { DteRequirement } from "@zyteron/contracts";
+import { validateXML } from "xmllint-wasm";
 import { child, descendants, local, parseXml, path, textOf, type XmlNode } from "./finance.formats.js";
 import { formatRut, normalizeRut, type Row, validRut } from "./finance.util.js";
 
-const run=promisify(execFile);
 export const SII_NS="http://www.sii.cl/SiiDte",DSIG_NS="http://www.w3.org/2000/09/xmldsig#",XSI_NS="http://www.w3.org/2001/XMLSchema-instance";
 export const siiHost=(environment:string)=>environment==="PRODUCTION"?"palena.sii.cl":"maullin.sii.cl";
+/** SOAP 1.1 RPC/encoded compatible con los WSDL oficiales de CrSeed, GetTokenFromSeed y QueryEstUp. */
+export function siiSoapEnvelope(environment:string,service:string,method:string,params:Record<string,string>){const namespace=`https://${siiHost(environment)}/DTEWS/${service}.jws`;return`<?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soapenv:Body><m:${method} xmlns:m="${namespace}">${Object.entries(params).map(([key,value])=>`<${key} xsi:type="xsd:string">${c14nText(value)}</${key}>`).join("")}</m:${method}></soapenv:Body></soapenv:Envelope>`;}
 
 // =========================================================================================== Contrato del proveedor
 export interface DteCompany { rut:string; legalName:string; businessActivity:string; activityCode:number; address:string; commune:string; city:string|null; resolutionNumber:number; resolutionDate:string; }
@@ -102,15 +101,16 @@ export function structuralErrors(input:DteDocumentInput):string[]{
   if([56,61].includes(input.documentTypeCode))need(input.reference,"Las notas requieren referencia al documento original.");
   return errors;
 }
-/** Validación contra los XSD oficiales del SII con xmllint, si el servidor tiene los esquemas (DTE_XSD_DIR). */
+/** Validación offline contra los cuatro XSD oficiales publicados por el SII, mediante libxml2/WASM. */
 @Injectable()
 export class DteSchemaValidator {
-  directory(){return process.env.DTE_XSD_DIR?.trim()||null;}
-  available(){const dir=this.directory();return Boolean(dir&&existsSync(join(dir,"EnvioDTE_v10.xsd")));}
+  directory(){const configured=process.env.DTE_XSD_DIR?.trim();if(configured)return configured;for(const candidate of [resolve(process.cwd(),"apps/api/resources/sii/xsd"),resolve(process.cwd(),"resources/sii/xsd")])if(existsSync(join(candidate,"EnvioDTE_v10.xsd")))return candidate;return null;}
+  available(){const dir=this.directory();return Boolean(dir&&["EnvioDTE_v10.xsd","DTE_v10.xsd","SiiTypes_v10.xsd","xmldsignature_v10.xsd"].every((file)=>existsSync(join(dir,file))));}
   async validate(xml:string,schema="EnvioDTE_v10.xsd"):Promise<string[]>{
-    const dir=this.directory();if(!dir||!this.available())return["Esquemas XSD oficiales del SII no disponibles en el servidor (DTE_XSD_DIR)."];
-    const work=await mkdtemp(join(tmpdir(),"dte-"));try{const file=join(work,"doc.xml");await writeFile(file,xml,"latin1");await run("xmllint",["--noout","--nonet","--schema",join(dir,schema),file],{timeout:20000});return[];}
-    catch(error){const stderr=String((error as {stderr?:string}).stderr??(error as Error).message);return stderr.split("\n").filter((line)=>line.trim()&&!line.includes("validates")).slice(0,20);}finally{await rm(work,{recursive:true,force:true});}
+    const dir=this.directory();if(!dir||!this.available())return["Los cuatro esquemas XSD oficiales del SII no están disponibles en el servidor."];
+    const allowed=new Set(["EnvioDTE_v10.xsd","DTE_v10.xsd"]);if(!allowed.has(schema))return["Esquema DTE no permitido."];
+    try{const main=await readFile(join(dir,schema)),dependencies=await Promise.all(["DTE_v10.xsd","SiiTypes_v10.xsd","xmldsignature_v10.xsd"].filter((file)=>file!==schema).map(async(file)=>({fileName:file,contents:await readFile(join(dir,file))})));const result=await validateXML({xml:{fileName:"envio.xml",contents:Buffer.from(xml,"latin1")},schema:[{fileName:schema,contents:main}],preload:dependencies,maxMemoryPages:1024});return result.valid?[]:result.errors.map((error)=>error.message).filter(Boolean).slice(0,20);}
+    catch(error){return[String((error as Error).message||error).slice(0,1000)];}
   }
 }
 
@@ -124,7 +124,7 @@ export class SiiDirectDteProvider extends TaxDocumentProvider {
   async requirements():Promise<DteRequirement[]>{
     const ref=this.secretRef();let certificate:DteRequirement;try{const meta=this.certificates.metadata(ref);const days=Math.floor((Date.parse(meta.expiresAt)-Date.now())/86400000);certificate={key:"certificate_secret",label:"Certificado digital en secreto del servidor",satisfied:days>0,detail:days>0?`Vigente, vence en ${days} días.`:"Certificado vencido."};}
     catch(error){certificate={key:"certificate_secret",label:"Certificado digital en secreto del servidor",satisfied:false,detail:(error as Error).message};}
-    return[certificate,{key:"xsd",label:"Validación XSD oficial (xmllint + esquemas SII)",satisfied:this.schema.available(),detail:this.schema.available()?"Esquemas disponibles.":"Configura DTE_XSD_DIR con los XSD oficiales publicados por el SII."}];
+    return[certificate,{key:"xsd",label:"Validación XSD oficial (libxml2/WASM + esquemas SII)",satisfied:this.schema.available(),detail:this.schema.available()?"Los cuatro esquemas oficiales están disponibles y la validación no depende del sistema operativo.":"Incluye los XSD oficiales o configura DTE_XSD_DIR."}];
   }
   async createDraft(input:DteDocumentInput){
     if(!input.caf)throw new UnprocessableEntityException("Falta el CAF para timbrar el documento.");const id=`F${input.folio}T${input.documentTypeCode}`;const first=input.lines[0]!;
@@ -153,7 +153,7 @@ export class SiiDirectDteProvider extends TaxDocumentProvider {
     return`<?xml version="1.0" encoding="ISO-8859-1"?>\n<EnvioDTE xmlns="${SII_NS}" xmlns:xsi="${XSI_NS}" version="1.0" xsi:schemaLocation="${SII_NS} EnvioDTE_v10.xsd"><SetDTE ID="SetDoc">${setBody}</SetDTE>${signature}</EnvioDTE>`;
   }
   private async soap(environment:string,service:string,method:string,params:Record<string,string>){
-    const body=`<?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"><soapenv:Body><${method}>${Object.entries(params).map(([key,value])=>`<${key}>${c14nText(value)}</${key}>`).join("")}</${method}></soapenv:Body></soapenv:Envelope>`;
+    const body=siiSoapEnvelope(environment,service,method,params);
     const response=await fetch(`https://${siiHost(environment)}/DTEWS/${service}.jws`,{method:"POST",headers:{"content-type":"text/xml; charset=utf-8",SOAPAction:""},body,signal:AbortSignal.timeout(30000)});const text=await response.text();if(!response.ok)throw new ServiceUnavailableException(`SII ${service} respondió HTTP ${response.status}.`);
     const envelope=parseXml(text);const ret=descendants(envelope,`${method}Return`)[0]??descendants(envelope,"return")[0];if(!ret)throw new ServiceUnavailableException(`Respuesta SII ${service} sin contenido.`);return parseXml(ret.text.trim());
   }
@@ -166,6 +166,7 @@ export class SiiDirectDteProvider extends TaxDocumentProvider {
     const tokenResponse=await this.soap(environment,"GetTokenFromSeed","getToken",{pszXml:signed});const tokenState=textOf(tokenResponse,"RESP_HDR","ESTADO");const token=textOf(tokenResponse,"RESP_BODY","TOKEN");if(tokenState!=="00"||!token)throw new ServiceUnavailableException(`SII rechazó la autenticación (estado ${tokenState||"?"}: ${textOf(tokenResponse,"RESP_HDR","GLOSA")}).`);
     this.token={value:token,environment,expires:Date.now()+50*60*1000};return token;
   }
+  async connectionTest(environment:string){const started=Date.now(),seedResponse=await this.soap(environment,"CrSeed","getSeed",{}),state=textOf(seedResponse,"RESP_HDR","ESTADO"),seed=textOf(seedResponse,"RESP_BODY","SEMILLA");if(state!=="00"||!seed)throw new ServiceUnavailableException(`SII no entregó semilla (estado ${state||"?"}).`);let authenticated=false,certificate:string;try{const metadata=this.certificates.metadata(this.secretRef());certificate=Date.parse(metadata.expiresAt)>Date.now()?"VALID":"EXPIRED";}catch{certificate="NOT_CONFIGURED";}if(certificate==="VALID"){await this.authenticate(environment);authenticated=true;}return{provider:this.name,environment,host:siiHost(environment),seedService:"CONNECTED",certificate,authenticated,latencyMs:Date.now()-started,checkedAt:new Date().toISOString()};}
   async send(signed:string,input:DteDocumentInput){
     const envelopeXml=this.envelope([signed],input);const xsdErrors=await this.schema.validate(envelopeXml);if(xsdErrors.length)throw new UnprocessableEntityException(`El EnvioDTE no valida contra el XSD oficial: ${xsdErrors.join(" | ")}`);
     const token=await this.authenticate(input.environment);const sender=normalizeRut(process.env.DTE_SENDER_RUT??input.company.rut).split("-");const company=normalizeRut(input.company.rut).split("-");
@@ -197,6 +198,7 @@ export class ExternalCertifiedDteProvider extends TaxDocumentProvider {
   private config(){const url=process.env.DTE_PROVIDER_URL?.trim().replace(/\/$/,"");const key=process.env.DTE_PROVIDER_API_KEY?.trim();if(!url||!key)throw new ServiceUnavailableException("Proveedor DTE externo no configurado (DTE_PROVIDER_URL, DTE_PROVIDER_API_KEY).");if(!url.startsWith("https://"))throw new ServiceUnavailableException("El proveedor DTE debe usar HTTPS.");return{url,key};}
   private async call(method:string,route:string,body?:unknown){const{url,key}=this.config();const response=await fetch(`${url}${route}`,{method,headers:{authorization:`Bearer ${key}`,"content-type":"application/json"},body:body?JSON.stringify(body):undefined,signal:AbortSignal.timeout(45000)});const data=await response.json().catch(()=>({})) as Row;if(!response.ok)throw new UnprocessableEntityException(`Proveedor DTE: ${data.message??`HTTP ${response.status}`}`);return data;}
   async requirements():Promise<DteRequirement[]>{const configured=Boolean(process.env.DTE_PROVIDER_URL&&process.env.DTE_PROVIDER_API_KEY);return[{key:"external_provider",label:"Proveedor certificado configurado",satisfied:configured,detail:configured?"Credenciales del proveedor presentes en el servidor.":"Define DTE_PROVIDER_URL y DTE_PROVIDER_API_KEY."}];}
+  async connectionTest(environment:string){const started=Date.now(),data=await this.call("GET","/health");return{provider:this.name,environment,status:String(data.status??"CONNECTED"),latencyMs:Date.now()-started,checkedAt:new Date().toISOString()};}
   async createDraft(input:DteDocumentInput){return JSON.stringify(this.payload(input));}
   private payload(input:DteDocumentInput){return{externalId:input.taxDocumentId,environment:input.environment,documentType:input.documentTypeCode,issueDate:input.issueDate,dueDate:input.dueDate,issuer:{rut:input.company.rut},receiver:input.receiver,lines:input.lines,totals:input.totals,reference:input.reference};}
   async validate(_:string,input:DteDocumentInput){return structuralErrors({...input,folio:input.folio||1,caf:null});}
