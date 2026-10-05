@@ -210,9 +210,9 @@
     "semantic_hash": ""
   },
   "apps/api/src/contracts/contracts.repository.ts": {
-    "mtime": 1791108407.1491413,
-    "seen": 1791108499.4471529,
-    "ast_hash": "404a6e06d0d5626f35644f67b807a3c2",
+    "mtime": 1791185035.3146887,
+    "seen": 1791185386.0318751,
+    "ast_hash": "2cf954632f0c887c97928abb1afc6fcd",
     "semantic_hash": ""
   },
   "apps/api/src/contracts/contracts.service.ts": {
@@ -1092,9 +1092,9 @@
     "semantic_hash": ""
   },
   "apps/api/src/operations/operations.repository.ts": {
-    "mtime": 1791109094.8813715,
-    "seen": 1791110444.1035368,
-    "ast_hash": "0fc9fd307728f28ec6c7cbe55ab05709",
+    "mtime": 1791185284.4874218,
+    "seen": 1791185386.0319319,
+    "ast_hash": "143298c0f4656262c80d70e7634585a6",
     "semantic_hash": ""
   },
   "apps/api/src/operations/operations.service.ts": {
@@ -1104,9 +1104,9 @@
     "semantic_hash": ""
   },
   "apps/api/src/operations/operations.test.ts": {
-    "mtime": 1791180741.6007543,
-    "seen": 1791180876.610868,
-    "ast_hash": "928a97983df630158de2109c9eaaa550",
+    "mtime": 1791185171.8443642,
+    "seen": 1791185386.0319328,
+    "ast_hash": "f1305dfc0348561d7c3bacac8743fed0",
     "semantic_hash": ""
   },
   "apps/web/src/app/deliverables/[[...segments]]/page.tsx": {
@@ -2280,9 +2280,9 @@
     "semantic_hash": ""
   },
   "apps/api/src/contracts/contractual-system.test.ts": {
-    "mtime": 1791108407.1499984,
-    "seen": 1791108499.4471538,
-    "ast_hash": "6f3b7f828cf45aa793012bafa6b4ce67",
+    "mtime": 1791185171.84385,
+    "seen": 1791185386.031876,
+    "ast_hash": "8f63fffbf0b8e38e799326b656fddce4",
     "semantic_hash": ""
   },
   "apps/api/src/finance/finance.test 2.ts": {
@@ -2364,9 +2364,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/clients/contract-builder.tsx": {
-    "mtime": 1791108407.1591103,
-    "seen": 1791108499.4472299,
-    "ast_hash": "f4ddf5aa8530a6dcb842765d29d6b335",
+    "mtime": 1791185035.3149478,
+    "seen": 1791185386.0319822,
+    "ast_hash": "400df718023dc91faf2e944ec72f5256",
     "semantic_hash": ""
   },
   "apps/web/src/components/entity-reference-select.tsx": {
@@ -3159,6 +3159,18 @@
     "mtime": 1791180892.239264,
     "seen": 1791181557.483595,
     "ast_hash": "b33bb90fa929accfaadb6b49aa8a226c",
+    "semantic_hash": ""
+  },
+  "supabase/migrations/20261005080000_ot_auto_project_contract_context.sql": {
+    "mtime": 1791185284.4877138,
+    "seen": 1791185386.032068,
+    "ast_hash": "4cc4c0c6afbbf7316db96c768c887560",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20261005_070716_1b2bd0b8_por_qu\u00e9_clientes_mostraba_0_proyectos_para_fenice.md": {
+    "mtime": 1791184036.3990233,
+    "seen": 1791185386.03217,
+    "ast_hash": "d627dcdf03475808072d7b774183d3ee",
     "semantic_hash": ""
   }
 }

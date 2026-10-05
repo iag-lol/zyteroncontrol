@@ -33,6 +33,8 @@ describe("Delivery Operations Center", () => {
   it("crea la OT manual en DRAFT aunque el cliente envíe un estado de otra entidad", async () => {
     const order = await service.createWorkOrder({ title: "Integración GPS", scope: "Implementación", status: "BACKLOG" }, manager);
     expect(order.status).toBe("DRAFT");
+    expect(order.projectId).toBeTruthy();
+    expect((await service.listProjects({ page: 1, pageSize: 25 }, manager)).total).toBe(1);
   });
 
   it("convierte una OT a un único proyecto aunque se repita la solicitud", async () => {
@@ -78,7 +80,9 @@ describe("Delivery Operations Center", () => {
 
 describe("migración de Operaciones", () => {
   const sql = readFileSync(resolve(process.cwd(), "../../supabase/migrations/20261001010000_delivery_operations_center.sql"), "utf8");
+  const automationSql = readFileSync(resolve(process.cwd(), "../../supabase/migrations/20261005080000_ot_auto_project_contract_context.sql"), "utf8");
   it("reutiliza work_orders y crea numeración segura", () => { expect(sql).toContain("alter table public.work_orders"); expect(sql).toContain("operations_work_order_number_seq"); expect(sql).toContain("operations_project_number_seq"); });
   it("incluye estado, avance explicable, ciclos e idempotencia", () => { expect(sql).toContain("operations_change_project_status"); expect(sql).toContain("operations_recalculate_project"); expect(sql).toContain("operations_task_dependency_guard"); expect(sql).toContain("operations_idempotency_keys"); });
   it("activa RLS, Realtime, outbox y RBAC", () => { expect(sql).toContain("enable row level security"); expect(sql).toContain("supabase_realtime"); expect(sql).toContain("business_event_outbox"); expect(sql).toContain("operations.dashboard.view"); });
+  it("crea y recupera el proyecto automáticamente al existir una OT", () => { expect(automationSql).toContain("work_orders_auto_project"); expect(automationSql).toContain("operations_ensure_project_for_work_order"); expect(automationSql).toContain("'projectId',project_id"); expect(automationSql).toContain("where w.status not in ('CANCELLED','CLOSED')"); });
 });

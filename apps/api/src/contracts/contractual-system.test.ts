@@ -6,7 +6,7 @@ import { ClientEventsService } from "../clients/client-events.service.js";
 import { ClientsRepository } from "../clients/clients.repository.js";
 import { ContractDocumentService, renderContractText } from "./contract-document.service.js";
 import { chileanContractTemplates } from "./contract-template-catalog.js";
-import { ContractsRepository } from "./contracts.repository.js";
+import { CONTRACT_BUILDER_CONTACT_COLUMNS, ContractsRepository } from "./contracts.repository.js";
 import { ContractsService } from "./contracts.service.js";
 
 const clientId="11111111-1111-4111-8111-111111111111",projectId="22222222-2222-4222-8222-222222222222";
@@ -20,6 +20,10 @@ describe("sistema contractual chileno",()=>{
     expect(chileanContractTemplates.map(item=>item.code)).toEqual(["ZT-PROYECTO-CL","ZT-CONDICIONES-CL","ZT-NDA-CL","ZT-RECURRENTES-CL","ZT-DATOS-CL","ZT-CAMBIO-CL"]);
     expect(chileanContractTemplates.every(item=>item.status==="LEGAL_REVIEW_REQUIRED"&&item.body.length>500)).toBe(true);
     expect(chileanContractTemplates.find(item=>item.code==="ZT-PROYECTO-CL")?.body).toContain("No se exigirá automáticamente todo el saldo");
+  });
+
+  it("consulta el directorio de contactos con las columnas canónicas de Client 360",()=>{
+    expect(CONTRACT_BUILDER_CONTACT_COLUMNS).toBe("id,name,email,position,contact_types,is_primary");
   });
 
   it("selecciona una sola modalidad de propiedad intelectual en el documento",async()=>{

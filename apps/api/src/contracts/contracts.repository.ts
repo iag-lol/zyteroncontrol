@@ -4,6 +4,8 @@ import type { ClientContract, ContractStatus, ContractVersion } from "@zyteron/c
 import { cleanSearch, createServerSupabase, pageBounds } from "../domain/server-supabase.js";
 import type { ContractInput } from "./contracts.dto.js";
 
+export const CONTRACT_BUILDER_CONTACT_COLUMNS="id,name,email,position,contact_types,is_primary";
+
 @Injectable()
 export class ContractsRepository {
   private readonly supabase=createServerSupabase();
@@ -22,7 +24,7 @@ export class ContractsRepository {
     const client=clientId?await this.supabase.from("clients").select("*").eq("id",clientId).maybeSingle():null;
     const projects=clientId?await this.supabase.from("projects").select("id,project_number,name,client_id,quote_id,scope,status,planned_start_date,target_date").eq("client_id",clientId).is("archived_at",null).order("updated_at",{ascending:false}):null;
     const quotes=clientId?await this.supabase.from("quotes").select("id,quote_number,version,status,client_id,currency,net_amount,tax_amount,total_amount,accepted_at,document_id,document_hash").eq("client_id",clientId).in("status",["ACCEPTED","CONVERTED"]).order("updated_at",{ascending:false}):null;
-    const contacts=clientId?await this.supabase.from("client_contacts").select("id,full_name,email,position,contact_type,is_primary").eq("client_id",clientId).is("archived_at",null):null;
+    const contacts=clientId?await this.supabase.from("client_contacts").select(CONTRACT_BUILDER_CONTACT_COLUMNS).eq("client_id",clientId).is("archived_at",null):null;
     for(const result of [client,projects,quotes,contacts])if(result?.error)throw result.error;
     return{client:client?.data??null,projects:projects?.data??[],quotes:quotes?.data??[],contacts:contacts?.data??[]};
   }
