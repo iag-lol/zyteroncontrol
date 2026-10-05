@@ -1146,9 +1146,9 @@
     "semantic_hash": "5de531e1edab9fd9d0ccc17d6ec4405b"
   },
   "apps/web/src/components/operations/operations-workspace.tsx": {
-    "mtime": 1791181480.5937173,
-    "seen": 1791181557.483445,
-    "ast_hash": "fae8ff52bd151f656ed7f371539c8381",
+    "mtime": 1791181768.1054373,
+    "seen": 1791181802.72002,
+    "ast_hash": "e86a407cd4ca0ac5b143dd276546a0a8",
     "semantic_hash": ""
   },
   "apps/web/src/lib/operations-api.ts": {
