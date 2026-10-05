@@ -1,17 +1,17 @@
 # Graph Report - CONTROL ZYTERON  (2026-10-05)
 
 ## Corpus Check
-- 525 files · ~267,839 words
+- 527 files · ~268,151 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 16 file(s) not represented in the graph (top: .css 13, (none) 2, .example 1)
 
 ## Summary
-- 7684 nodes · 22917 edges · 363 communities (217 shown, 146 thin omitted)
+- 7690 nodes · 22921 edges · 364 communities (210 shown, 154 thin omitted)
 - Extraction: 92% EXTRACTED · 8% INFERRED · 0% AMBIGUOUS · INFERRED: 1938 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `b6688630`
+- Built from commit: `1df83d06`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -22,67 +22,66 @@
 - finance.ts
 - actorFromHeaders
 - OperationsRepository
-- hr-workspace.tsx
+- HrActor
 - Headers
 - operations-workspace.tsx
-- audits.service.ts
+- monitoring.types.ts
 - FinanceActor
 - RenewalsRepository
 - GitHubSourceControlProvider
 - RequirePermissions
-- ContractsRepository
+- ContractsService
 - support.service.ts
 - SettingsController
 - SupportController
 - SettingsService
 - 20261001150000_financial_accounting_center 2.sql
 - .getProject
-- ClientServicesRepository
-- SupportRepository
-- monitoring.module.ts
-- HrActor
-- hr.module.ts
+- client-domain.test.ts
+- .list
+- ContactsRepository
+- WorkforceOperationsService
+- hr.test.ts
 - CommercialRepository
 - Param
-- formatDateTime
-- pageBounds
-- audits.module.ts
-- employees.service.ts
+- react
+- SalesService
+- audits.service.ts
+- EmployeesService
 - formatDate
 - SecurityService
 - compilerOptions
 - commercial-workspace.tsx
 - SecurityController
-- documents.service.ts
+- actor
 - SecurityService
 - SupportTicketService
 - 20260930120000_complete_client_domain.sql
-- useAccess
-- client-360.tsx
+- formatDateTime
+- ClientsController
 - actor
 - OperationsService
 - CommercialService
-- support-workspace.tsx
-- settings-workspace.tsx
+- security-workspace.tsx
+- monitoring.alerts.ts
 - OpportunitiesService
 - finance.quote-payments.ts
-- support.controller.ts
 - 20260930070000_client_360.sql
-- react
-- security-workspace.tsx
+- module-page.tsx
+- settings-workspace.tsx
 - FinanceController
-- ContractsController
+- QuotesService
 - FollowUpsService
 - 20261001150000_financial_accounting_center.sql
 - package.json
-- views-revenue.tsx
+- useAccess
 - 20261004060000_enterprise_control_plane.sql
 - finance.module.ts
-- .projectScope
-- contract-document.service.ts
+- Get
+- packages_contracts_dist_index
 - api/package.json
 - security.service.ts
-- finance.payables.ts
+- DteService
 - 20261001050000_site_reliability_monitoring 2.sql
 - Zyteron Control
 - contracts/package.json
@@ -95,12 +94,12 @@
 - security.test 2.ts
 - ElectronicSignatureProvider
 - ASVS-MATRIX.md
-- packages_contracts_dist_index
+- client-360.tsx
 - Q: Cómo se conecta el nuevo módulo Security 11 entre UI, API, autorización, repositorio, contratos y migración, y existen referencias rotas
 - Document Control Center
 - compilerOptions
 - dependencies
-- monitoring.service.ts
+- monitoring.memory-store.ts
 - Q: Failed to run sql query: ERROR 42703: column audience_role does not exist en commercial_notifications
 - public.invoices
 - public.expenses
@@ -127,8 +126,8 @@
 - ClientContact
 - 20261004010000_security_control_plane.sql
 - compilerOptions
-- FinanceRepository
-- actor
+- nowIso
+- documents.service.ts
 - actor
 - compilerOptions
 - public.bank_transactions
@@ -137,7 +136,7 @@
 - SupabaseMonitoringStore
 - finance.reports.ts
 - Get
-- Headers
+- .budgetLines
 - settings.service.ts
 - DOCUMENT-PORTAL-CLIENT.md
 - DOCUMENT-RETENTION.md
@@ -202,7 +201,7 @@
 - 20261004020000_commercial_notifications_owner_fix.sql
 - public.projects
 - finance.sources.ts
-- ExternalCertifiedDteProvider
+- monitoring.stats.ts
 - Q: Ayúdame con ERROR 42703: column user_id does not exist en commercial_notifications_own de Comercial Sales SQL
 - quote-payments-scenario.mjs
 - public.finance_no_delete
@@ -222,23 +221,22 @@
 - tax_rule_versions_guard
 - MemoryMonitoringStore
 - MonitoringStore
-- finance.dte.ts
-- apiHeaders
-- authorization.service 2.ts
-- contracts/contracts.service.ts
+- finance.dte-providers.ts
+- packages_contracts_dist_index_role
+- client-provider-ports.ts
+- scripts
 - ClientsRepository
 - ssrf-guard.ts
 - security-audit.mjs
 - api-e2e.mjs
 - 20261004120000_quote_payment_calendar.sql
-- Public
+- .exportReport
 - public.invoices
 - quote-payments-e2e.mjs
-- ContractsService
+- .list
 - SecurityRepository
 - security.repository 2.ts
-- HrReadService
-- clients.dto.ts
+- hr.controller.ts
 - LeadsService
 - monitoring.ts
 - OnlinePaymentService
@@ -253,20 +251,19 @@
 - Q: Financial SQL falla con ERROR 42703 column status does not exist al crear tax_documents_invoice_active
 - Q: Security SQL falla con ERROR 42P01 relation public.documents does not exist
 - crm.controller.ts
-- authorization.service.ts
+- ref_node_crypto
 - finance/package.json
 - finance-scenario.mjs
 - monitoring.test-kit.ts
-- contract-template-catalog.ts
 - rate-limit.middleware 2.ts
 - public.bank_transactions
-- SupportCatalogService
+- Get
 - domain-insights.service.ts
 - 20261004020000_commercial_notifications_owner_fix 2.sql
 - public.convert_quote_to_work_order
 - security.providers 2.ts
 - ref_vitest
-- ContractDetail
+- Q: ¿Cómo reparar el contrato 500 y garantizar cotización aceptada → OT → proyecto?
 - security.controller.ts
 - public.projects
 - public.tax_documents
@@ -282,7 +279,7 @@
 - public.finance_no_delete
 - public.tax_folio_authorizations
 - public.tax_folio_authorizations
-- quote-document.service.ts
+- commercial.repository.ts
 - Q: Por qué Clientes mostraba 0 proyectos para Fenice cuando existía una OT y cómo integrar ambas secciones
 - private.portal_finance_client
 - 20261004050000_quote_folio_and_pdf_v2.sql
@@ -329,7 +326,7 @@
 - ref_next_types_root_params_d_ts
 - ref_next_types_routes_d_ts
 - public.monitoring_execution_payload
-- operations.service.ts
+- IncidentsController
 - Q: intente crear una OT y no funciono
 - Q: da este error Internal server error
 - Q: ¿Por qué Órdenes de trabajo muestra Internal server error y cómo hacer que Monitoreo no exija un proyecto?
@@ -342,7 +339,7 @@
 - engine-scenario.mjs
 - monitoring-e2e.mjs
 - Gestión de incidentes de monitoreo
-- Seguridad documental
+- .discardEntry
 - 20261004195000_support_ticket_idempotency.sql
 - rls-scenario.mjs
 - monitoring/package.json
@@ -350,7 +347,7 @@
 - public.incidents
 - public.monitor_checks
 - public.ssl_observations
-- .index
+- monitoring.service.ts
 - finance/harness.mjs
 - Q: dale una lectura a la web ve que no esta bien conectado, que no esta bien integrado, que funcinoes faltan, que esta fallando y resuelvelo todo!, quiero que lo potencies todas las secciones entre si, tiene que haber comunicacion clara y fluida, tambien estar todo preparado para la conexion con la seccion de clientes!, para que lo revises bien y al nivel mas profesional y avanzado
 - Reparación e integración de Monitoreo
@@ -381,33 +378,33 @@
 10. `formatDateTime()` - 91 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `Upload` --references--> `FileSecurityScanner`  [INFERRED]
-  docs/DOCUMENT-SECURITY.md → apps/api/src/documents/documents.providers.ts
-- `2.1 `SiiDirectDteProvider` (integración directa con servicios oficiales)` --references--> `SiiDirectDteProvider`  [INFERRED]
-  docs/SII-DTE-CERTIFICATION.md → apps/api/src/finance/finance.dte-providers.ts
 - `Reutilización de Operaciones` --references--> `OperationsRepository`  [INFERRED]
   docs/MONITORING.md → apps/api/src/operations/operations.repository.ts
 - `MFA and Step-up` --references--> `RequireAal2()`  [INFERRED]
   docs/security/MFA 2.md → apps/api/src/auth/roles.decorator.ts
 - `MFA and Step-up` --references--> `RequireAal2()`  [INFERRED]
   docs/security/MFA.md → apps/api/src/auth/roles.decorator.ts
+- `Security Architecture` --references--> `RequireAal2()`  [INFERRED]
+  docs/security/SECURITY-ARCHITECTURE 2.md → apps/api/src/auth/roles.decorator.ts
+- `Security Architecture` --references--> `RequireAal2()`  [INFERRED]
+  docs/security/SECURITY-ARCHITECTURE.md → apps/api/src/auth/roles.decorator.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (363 total, 146 thin omitted)
+## Communities (364 total, 154 thin omitted)
 
 ### Community 0 - "index.ts"
 Cohesion: 0.01
 Nodes (267): AlertRule, AssignmentRecommendation, AuditAttentionItem, AuditCheckResult, AuditCheckStatus, auditCheckStatuses, AuditEvent, AuditEvidence (+259 more)
 
 ### Community 1 - "RequireRoles"
-Cohesion: 0.09
-Nodes (21): RequireRoles(), actor(), EmployeesController, EmploymentAnnexesController, EmploymentContractsController, LeaveController, LreController, MedicalLeaveController (+13 more)
+Cohesion: 0.10
+Nodes (19): RequireRoles(), actor(), EmployeesController, EmploymentAnnexesController, EmploymentContractsController, LeaveController, LreController, OffboardingController (+11 more)
 
 ### Community 2 - "@nestjs/common"
-Cohesion: 0.02
-Nodes (107): AuditsModule, Module, AuthModule, Module, PUBLIC_ROUTE, REQUIRED_AAL, REQUIRED_PERMISSIONS, REQUIRED_ROLES (+99 more)
+Cohesion: 0.04
+Nodes (81): AuditsModule, Module, AuthController, AuthModule, Controller, Get, Module, Public() (+73 more)
 
 ### Community 3 - "finance.ts"
 Cohesion: 0.02
@@ -418,52 +415,56 @@ Cohesion: 0.10
 Nodes (23): DeliverablesController, deliveryRoles, DeploymentsController, HeadersMap, managerRoles, MilestonesController, OperationsController, ProjectsController (+15 more)
 
 ### Community 5 - "OperationsRepository"
-Cohesion: 0.06
+Cohesion: 0.07
 Nodes (4): now(), OperationsRepository, relationName(), Injectable
 
-### Community 6 - "hr-workspace.tsx"
-Cohesion: 0.10
-Nodes (23): apps_web_src_app_hr, CommandCenter(), DocumentsArea(), EmployeeRecord(), HrWorkspace(), act(), label(), LeaveArea() (+15 more)
+### Community 6 - "HrActor"
+Cohesion: 0.09
+Nodes (17): addDays(), date(), EmploymentAnnexesService, EmploymentContractsService, hr(), now(), required(), Injectable (+9 more)
 
 ### Community 7 - "Headers"
-Cohesion: 0.06
-Nodes (29): BugsController, DevelopmentController, DevelopmentWebhooksController, EnvironmentsController, HeaderMap, IntegrationsController, leadRoles, ProjectDevelopmentController (+21 more)
+Cohesion: 0.07
+Nodes (24): BugsController, DevelopmentController, EnvironmentsController, HeaderMap, IntegrationsController, leadRoles, ProjectDevelopmentController, QaController (+16 more)
 
 ### Community 8 - "operations-workspace.tsx"
 Cohesion: 0.06
-Nodes (34): ProjectMonitoringSlot(), Command(), CreateModal(), Deliverables(), Deployments(), emptySummary, hours(), label() (+26 more)
+Nodes (39): ProjectMonitoringSlot(), Command(), CreateModal(), Deliverables(), Deployments(), emptySummary, hours(), label() (+31 more)
 
-### Community 9 - "audits.service.ts"
-Cohesion: 0.13
-Nodes (19): activeFindingStatuses, finalCheckStatuses, managers, AuditDetail, base(), Page, request(), packages_contracts_dist_index_auditcheckresult (+11 more)
+### Community 9 - "monitoring.types.ts"
+Cohesion: 0.08
+Nodes (28): HostConcurrencyLimiter, activeStatuses, deriveStatus(), describeFailure(), evaluateCheck(), EvaluateInput, formatDuration(), incidentTransitions (+20 more)
 
 ### Community 10 - "FinanceActor"
-Cohesion: 0.07
-Nodes (18): InvoiceService, decodeUpload(), ExpenseService, FinanceSettingsService, Injectable, FinanceActor, guarded(), isoDate() (+10 more)
+Cohesion: 0.05
+Nodes (27): ReconciliationService, documentLabel(), InvoiceService, range(), ReceivedDocumentsService, ApprovalService, ExpenseService, toVendor() (+19 more)
 
 ### Community 11 - "RenewalsRepository"
 Cohesion: 0.08
-Nodes (21): ClientRenewalsController, managers, readers, RenewalsController, Body, Controller, Get, Param (+13 more)
+Nodes (22): ClientRenewalsController, managers, readers, RenewalsController, Body, Controller, Get, Param (+14 more)
 
 ### Community 12 - "GitHubSourceControlProvider"
-Cohesion: 0.10
-Nodes (8): CIProvider, DeploymentProvider, GitHubActionsProvider, GitHubSourceControlProvider, RenderDeploymentProvider, SourceControlProvider, Injectable, unavailable()
+Cohesion: 0.08
+Nodes (12): DevelopmentWebhooksController, CIProvider, DeploymentProvider, GitHubActionsProvider, GitHubSourceControlProvider, RenderDeploymentProvider, SourceControlProvider, Injectable (+4 more)
 
 ### Community 13 - "RequirePermissions"
 Cohesion: 0.12
 Nodes (10): RequirePermissions(), actor(), SecurityController, Body, Controller, Get, Headers, Param (+2 more)
 
+### Community 14 - "ContractsService"
+Cohesion: 0.06
+Nodes (20): contractTemplateByCode(), actor(), ClientContractsController, ContractsController, header(), Body, Controller, Get (+12 more)
+
 ### Community 15 - "support.service.ts"
-Cohesion: 0.08
-Nodes (30): DeferredMailSupportProvider, SupportChannelProvider, SupportCopilotProvider, Injectable, supportClientContextSelects, openStatuses, requestHash(), stableJson() (+22 more)
+Cohesion: 0.04
+Nodes (64): agents, HeaderMap, managers, readers, DeferredMailSupportProvider, SupportChannelProvider, SupportCopilotProvider, SupportInboundMessage (+56 more)
 
 ### Community 16 - "SettingsController"
 Cohesion: 0.13
 Nodes (10): actor(), SettingsController, Body, Controller, Get, Headers, Param, Patch (+2 more)
 
 ### Community 17 - "SupportController"
-Cohesion: 0.12
-Nodes (13): actor(), ClientSupportController, SupportController, SupportKnowledgeController, Body, Controller, Get, Headers (+5 more)
+Cohesion: 0.15
+Nodes (10): actor(), ClientSupportController, header(), idempotencyKey(), SupportController, Body, Headers, Param (+2 more)
 
 ### Community 18 - "SettingsService"
 Cohesion: 0.11
@@ -474,56 +475,52 @@ Cohesion: 0.04
 Nodes (27): accounting_events_status_idx, finance_audit_entity_idx, journal_entries_date_idx, journal_entries_period_idx, journal_entries_source_idx, journal_lines_account_idx, journal_lines_client_idx, journal_lines_project_idx (+19 more)
 
 ### Community 20 - ".getProject"
-Cohesion: 0.09
-Nodes (8): optionalUuid(), required(), now(), toRow(), DevelopmentManagementService, ReleaseService, uuid(), asNumber()
-
-### Community 21 - "ClientServicesRepository"
-Cohesion: 0.07
-Nodes (23): ClientServicesController, managers, readers, Body, Controller, Get, Param, Patch (+15 more)
-
-### Community 22 - "SupportRepository"
 Cohesion: 0.08
-Nodes (18): SupportInboundMessage, camel(), Filters, fromRow(), now(), relation(), Row, selectFor() (+10 more)
+Nodes (10): optionalUuid(), required(), now(), snake(), toRow(), DevelopmentManagementService, QualityService, ReleaseService (+2 more)
 
-### Community 23 - "monitoring.module.ts"
+### Community 21 - "client-domain.test.ts"
 Cohesion: 0.05
-Nodes (36): eventService(), ClientEventsService, Injectable, clientPermissions, ContactsController, managers, readers, Body (+28 more)
+Nodes (31): eventService(), ClientServicesController, managers, readers, Body, Controller, Get, Param (+23 more)
 
-### Community 24 - "HrActor"
-Cohesion: 0.06
-Nodes (40): addDays(), date(), EmploymentAnnexesService, EmploymentContractsService, hr(), now(), required(), Injectable (+32 more)
+### Community 23 - "ContactsRepository"
+Cohesion: 0.09
+Nodes (19): ContactsController, managers, readers, Body, Controller, Get, Param, Patch (+11 more)
 
-### Community 25 - "hr.module.ts"
+### Community 24 - "WorkforceOperationsService"
 Cohesion: 0.07
-Nodes (24): AttendanceProvider, DeferredAttendanceProvider, DeferredPayrollSubmissionProvider, ExternalLaborAuthorityProvider, HrDocumentRenderer, LaborAuthorityProvider, LeavePolicyEngine, PayrollRuleEngine (+16 more)
+Nodes (16): camel(), fromRow(), now(), snake(), toRow(), date(), hr(), LeaveService (+8 more)
+
+### Community 25 - "hr.test.ts"
+Cohesion: 0.06
+Nodes (43): EmployeeAccessService, executiveRoles, hrRoles, managerRoles, AttendanceProvider, DeferredAttendanceProvider, DeferredPayrollSubmissionProvider, ExternalLaborAuthorityProvider (+35 more)
 
 ### Community 26 - "CommercialRepository"
-Cohesion: 0.07
-Nodes (6): CommercialRepository, now(), Injectable, QuotesService, Injectable, Optional
+Cohesion: 0.08
+Nodes (3): CommercialRepository, now(), Injectable
 
 ### Community 27 - "Param"
-Cohesion: 0.15
+Cohesion: 0.16
 Nodes (7): AuditsController, FindingsController, Body, Headers, Param, Patch, Post
 
-### Community 28 - "formatDateTime"
-Cohesion: 0.06
-Nodes (38): apps_web_src_app_audits, AuditDetailView(), AuditsView(), AuditWorkspace(), CommandCenter(), EvidenceView(), FindingsView(), label() (+30 more)
+### Community 28 - "react"
+Cohesion: 0.04
+Nodes (48): apps_web_src_app_audits, apps_web_src_app_globals, metadata, apps_web_src_app_settings, AccessContext, AccessContextValue, AuditDetailView(), AuditsView() (+40 more)
 
-### Community 29 - "pageBounds"
-Cohesion: 0.06
-Nodes (18): page(), CommissionsController, HandoffsController, SalesController, SalesGoalsController, Body, Controller, Get (+10 more)
+### Community 29 - "SalesService"
+Cohesion: 0.08
+Nodes (14): CommissionsController, HandoffsController, SalesController, SalesGoalsController, Body, Controller, Get, Headers (+6 more)
 
-### Community 30 - "audits.module.ts"
+### Community 30 - "audits.service.ts"
 Cohesion: 0.07
-Nodes (28): AuditEvidenceController, AuditReportsController, AuditTemplateVersionsController, executeRoles, HeaderMap, managerRoles, ProjectAuditsController, readRoles (+20 more)
+Nodes (34): AuditEvidenceController, AuditReportsController, AuditTemplateVersionsController, executeRoles, HeaderMap, managerRoles, ProjectAuditsController, readRoles (+26 more)
 
-### Community 31 - "employees.service.ts"
-Cohesion: 0.05
-Nodes (27): date(), EmployeeAccessService, EmployeesService, executiveRoles, hrRoles, managerRoles, now(), OrganizationService (+19 more)
+### Community 31 - "EmployeesService"
+Cohesion: 0.10
+Nodes (10): date(), EmployeesService, now(), OrganizationService, required(), safeAnnexPayload(), safeEmployee(), Injectable (+2 more)
 
 ### Community 32 - "formatDate"
-Cohesion: 0.05
-Nodes (58): managers, page, percent(), technicalRoles, sections, Services(), save(), DevelopmentProjectView() (+50 more)
+Cohesion: 0.04
+Nodes (81): managers, page, percent(), technicalRoles, sections, apps_web_src_app_hr, Services(), save() (+73 more)
 
 ### Community 33 - "SecurityService"
 Cohesion: 0.16
@@ -535,55 +532,55 @@ Nodes (13): compilerOptions, emitDecoratorMetadata, experimentalDecorators, modu
 
 ### Community 35 - "commercial-workspace.tsx"
 Cohesion: 0.05
-Nodes (46): sections, sections, AccessContext, blankQuoteItem(), CatalogItem, Command(), CommercialWorkspace(), CommissionCenter() (+38 more)
+Nodes (31): sections, sections, blankQuoteItem(), CatalogItem, Command(), CommercialWorkspace(), CommissionCenter(), emptySummary (+23 more)
 
 ### Community 36 - "SecurityController"
 Cohesion: 0.09
 Nodes (14): RequireAal2(), actor(), SecurityController, Body, Controller, Get, Headers, Param (+6 more)
 
-### Community 37 - "documents.service.ts"
-Cohesion: 0.04
-Nodes (47): Optional, DeferredFileSecurityScanner, DeferredOcrProvider, DeferredSignatureProvider, DeferredTextExtractor, DocumentOcrProvider, DocumentRenderingService, DocumentTextExtractor (+39 more)
+### Community 37 - "actor"
+Cohesion: 0.05
+Nodes (25): actor(), DocumentReviewsController, DocumentsController, DocumentTemplatesController, header(), Body, Delete, Get (+17 more)
 
 ### Community 38 - "SecurityService"
 Cohesion: 0.15
 Nodes (6): now(), rejectSecretPayload(), required(), safeMetadata(), SecurityService, Injectable
 
 ### Community 39 - "SupportTicketService"
-Cohesion: 0.16
-Nodes (3): required(), SupportSlaService, SupportTicketService
+Cohesion: 0.10
+Nodes (8): delay(), now(), requestHash(), required(), stableJson(), SupportTicketService, uuid(), validIdempotencyKey()
 
 ### Community 40 - "20260930120000_complete_client_domain.sql"
 Cohesion: 0.09
 Nodes (26): public.sync_client_domain_renewal, public.sync_renewal_notification_schedule, client_contracts_sync_renewal, client_domain_audit_client_idx, client_domain_notifications_user_idx, client_renewals_assigned_idx, client_renewals_client_idx, client_renewals_date_idx (+18 more)
 
-### Community 41 - "useAccess"
-Cohesion: 0.05
-Nodes (126): apps_web_src_app_monitoring, Page(), route(), useAccess(), PermissionGate(), MonitoringAlertsDigest(), eventTypes, HistoryBody() (+118 more)
+### Community 41 - "formatDateTime"
+Cohesion: 0.04
+Nodes (136): apps_web_src_app_monitoring, Page(), route(), MonitoringAlertsDigest(), eventTypes, HistoryBody(), HistoryPage(), lanes (+128 more)
 
-### Community 42 - "client-360.tsx"
-Cohesion: 0.06
-Nodes (36): ClientPatch, InitialContact, InitialService, ActivityTimeline(), Client360(), ClientAudits(), ClientContracts(), ClientDocuments() (+28 more)
+### Community 42 - "ClientsController"
+Cohesion: 0.14
+Nodes (9): ClientsController, Body, Controller, Get, Headers, Param, Patch, Post (+1 more)
 
 ### Community 43 - "actor"
-Cohesion: 0.18
-Nodes (11): actor(), CommercialQuotesController, roles, Body, Controller, Get, Headers, Param (+3 more)
+Cohesion: 0.29
+Nodes (8): actor(), CommercialQuotesController, Body, Controller, Headers, Param, Patch, Post
 
 ### Community 44 - "OperationsService"
 Cohesion: 0.06
-Nodes (9): camel(), DevelopmentRepository, fromRow(), snake(), Injectable, DevelopmentReadService, OperationsPageInput, OperationsService (+1 more)
+Nodes (8): camel(), DevelopmentRepository, fromRow(), Injectable, DevelopmentReadService, OperationsPageInput, OperationsService, Injectable
 
 ### Community 45 - "CommercialService"
-Cohesion: 0.16
-Nodes (6): CommercialController, Controller, Get, Query, CommercialService, Injectable
+Cohesion: 0.15
+Nodes (7): CommercialController, roles, Controller, Get, Query, CommercialService, Injectable
 
-### Community 46 - "support-workspace.tsx"
-Cohesion: 0.04
-Nodes (57): apps_web_src_app_documents, apps_web_src_app_support, Command(), DocumentRecord(), download(), DocumentsWorkspace(), act(), domainLink (+49 more)
+### Community 46 - "security-workspace.tsx"
+Cohesion: 0.03
+Nodes (71): apps_web_src_app_documents, apps_web_src_app_security, apps_web_src_app_support, Command(), DocumentRecord(), download(), DocumentsWorkspace(), act() (+63 more)
 
-### Community 47 - "settings-workspace.tsx"
-Cohesion: 0.10
-Nodes (28): ActionRunner, Alerts(), Approvals(), Automations(), Command(), ConfigurationPanel(), CreateDialog(), Dependencies() (+20 more)
+### Community 47 - "monitoring.alerts.ts"
+Cohesion: 0.15
+Nodes (13): AlertScope, DispatchInput, MonitoringAlerts, MonitoringMailer, Recipient, resolveTargets(), scopeFromMonitor(), scopeRank (+5 more)
 
 ### Community 48 - "OpportunitiesService"
 Cohesion: 0.15
@@ -593,29 +590,21 @@ Nodes (11): OpportunitiesController, Body, Controller, Get, Headers, Param, Patc
 Cohesion: 0.07
 Nodes (32): docLabel, effectiveStatus(), eligibleStatuses, integer(), methods, QUOTE_INVOICE_BUCKET, QUOTE_PAYMENT_HORIZON_DAYS, QuotePaymentService (+24 more)
 
-### Community 50 - "support.controller.ts"
-Cohesion: 0.10
-Nodes (12): agents, header(), HeaderMap, idempotencyKey(), managers, readers, SupportAttachmentService, SupportChannelService (+4 more)
-
 ### Community 51 - "20260930070000_client_360.sql"
 Cohesion: 0.14
 Nodes (25): auth.users, business_event_outbox_pending_idx, client_assignments_user_idx, client_contacts_client_idx, client_contacts_one_primary, client_events_timeline_idx, client_services_client_idx, client_services_renewal_idx (+17 more)
 
-### Community 52 - "react"
-Cohesion: 0.05
-Nodes (22): apps_web_src_app_globals, metadata, apps_web_src_app_settings, CommercialPipeline(), money, stages, fallbackRecords, money (+14 more)
+### Community 52 - "module-page.tsx"
+Cohesion: 0.07
+Nodes (18): CommercialPipeline(), money, stages, fallbackRecords, money, stageLabels, stages, FilterBar() (+10 more)
 
-### Community 53 - "security-workspace.tsx"
-Cohesion: 0.05
-Nodes (51): code(), apps_web_src_app_security, AuthScreen(), login(), reset(), AuthScreen(), login(), reset() (+43 more)
+### Community 53 - "settings-workspace.tsx"
+Cohesion: 0.04
+Nodes (67): code(), AuthScreen(), login(), reset(), AuthScreen(), login(), reset(), PasswordRecoveryScreen() (+59 more)
 
 ### Community 54 - "FinanceController"
-Cohesion: 0.05
-Nodes (4): FinanceController, page(), Get, Query
-
-### Community 55 - "ContractsController"
-Cohesion: 0.16
-Nodes (9): actor(), ContractsController, Body, Get, Headers, Param, Patch, Post (+1 more)
+Cohesion: 0.06
+Nodes (5): FinanceController, page(), Get, Headers, Query
 
 ### Community 56 - "FollowUpsService"
 Cohesion: 0.14
@@ -629,9 +618,9 @@ Nodes (27): accounting_events_status_idx, finance_audit_entity_idx, journal_entr
 Cohesion: 0.09
 Nodes (23): devDependencies, eslint, @eslint/js, globals, typescript-eslint, engines, node, name (+15 more)
 
-### Community 59 - "views-revenue.tsx"
-Cohesion: 0.05
-Nodes (139): apps_web_src_app_finance, metadata, ClientFinancePanel(), ProjectFinancePanel(), descriptions, FinanceWorkspace(), ViewProps, AgingBar() (+131 more)
+### Community 59 - "useAccess"
+Cohesion: 0.06
+Nodes (136): apps_web_src_app_finance, metadata, useAccess(), ClientFinancePanel(), ProjectFinancePanel(), descriptions, FinanceWorkspace(), ViewProps (+128 more)
 
 ### Community 60 - "20261004060000_enterprise_control_plane.sql"
 Cohesion: 0.33
@@ -639,23 +628,23 @@ Nodes (3): private.prevent_configuration_evidence_mutation, configuration_audit_
 
 ### Community 62 - "finance.module.ts"
 Cohesion: 0.03
-Nodes (34): apps_api_src_finance_finance_access_financepermissions, BillingScheduleService, Injectable, BudgetService, CloseService, CommissionFinanceService, stable(), TaxService (+26 more)
+Nodes (33): apps_api_src_finance_finance_access_financepermissions, BankService, Injectable, BillingScheduleService, Injectable, BudgetService, CloseService, CommissionFinanceService (+25 more)
 
-### Community 64 - "contract-document.service.ts"
-Cohesion: 0.17
-Nodes (14): blue, ContractDocumentService, escape(), flat(), line, navy, normalize(), renderContractText() (+6 more)
+### Community 63 - "Get"
+Cohesion: 0.11
+Nodes (5): Get, Query, santiagoDateTime(), hasFleetScope(), Header
+
+### Community 64 - "packages_contracts_dist_index"
+Cohesion: 0.08
+Nodes (36): blue, ContractDocumentService, escape(), flat(), line, navy, normalize(), renderContractText() (+28 more)
 
 ### Community 65 - "api/package.json"
-Cohesion: 0.07
-Nodes (31): devDependencies, @nestjs/cli, @types/node, typescript, vitest, @supabase/supabase-js, @types/node, typescript (+23 more)
+Cohesion: 0.08
+Nodes (24): devDependencies, @nestjs/cli, @types/node, typescript, vitest, @supabase/supabase-js, @types/node, typescript (+16 more)
 
 ### Community 66 - "security.service.ts"
-Cohesion: 0.13
-Nodes (25): Row, SecurityActor, securityRoles, Row, securityRoles, packages_contracts_dist_index_dataasset, packages_contracts_dist_index_datasubjectrequest, packages_contracts_dist_index_privacyimpactassessment (+17 more)
-
-### Community 67 - "finance.payables.ts"
-Cohesion: 0.10
-Nodes (16): ApprovalService, creditClasses, toVendor(), Injectable, VendorService, withPayableStatus(), decryptSecret(), encryptionConfigured() (+8 more)
+Cohesion: 0.11
+Nodes (29): Row, SecurityActor, securityRoles, Row, securityRoles, packages_contracts_dist_index_dataasset, packages_contracts_dist_index_datasubjectrequest, packages_contracts_dist_index_privacyimpactassessment (+21 more)
 
 ### Community 68 - "20261001050000_site_reliability_monitoring 2.sql"
 Cohesion: 0.05
@@ -683,7 +672,7 @@ Nodes (35): connectSources, csp, nextConfig, dependencies, lucide-react, next, @
 
 ### Community 74 - "finance.test.ts"
 Cohesion: 0.06
-Nodes (32): apps_api_src_finance_finance_access_financerolematrix, BankService, detectMapping(), genericWords, headerNames, normalize(), ReconciliationService, StatementImportService (+24 more)
+Nodes (34): apps_api_src_finance_finance_access_financerolematrix, detectMapping(), genericWords, headerNames, normalize(), StatementImportService, transactionHash(), decodeUpload() (+26 more)
 
 ### Community 75 - "20261001060000_service_desk_support_center.sql"
 Cohesion: 0.15
@@ -697,9 +686,9 @@ Nodes (3): commercial_notifications_event_key_uidx, public.accept_sales_quote(),
 Cohesion: 0.18
 Nodes (10): SecurityModule, Module, DeferredVaultSecretProvider, SecurityProviderStatus, Injectable, VaultSecretProvider, Inject, Inject (+2 more)
 
-### Community 80 - "packages_contracts_dist_index"
-Cohesion: 0.03
-Nodes (78): AccessContextValue, ClientHub(), ClientResults(), emptyResponse, healthLabel(), initials(), metricConfig, statusLabel() (+70 more)
+### Community 80 - "client-360.tsx"
+Cohesion: 0.02
+Nodes (117): ActivityTimeline(), Client360(), ClientAudits(), ClientContracts(), ClientDocuments(), ClientOperations(), ClientRenewals(), ClientSupport() (+109 more)
 
 ### Community 81 - "Q: Cómo se conecta el nuevo módulo Security 11 entre UI, API, autorización, repositorio, contratos y migración, y existen referencias rotas"
 Cohesion: 0.40
@@ -717,9 +706,9 @@ Nodes (8): compilerOptions, esModuleInterop, forceConsistentCasingInFileNames, m
 Cohesion: 0.20
 Nodes (10): dependencies, dotenv, @nestjs/common, @nestjs/core, @nestjs/platform-express, pdf-lib, reflect-metadata, rxjs (+2 more)
 
-### Community 87 - "monitoring.service.ts"
-Cohesion: 0.04
-Nodes (114): daysUntil(), AlertScope, DispatchInput, Recipient, scopeRank, selectRule(), activeStatuses, deriveStatus() (+106 more)
+### Community 87 - "monitoring.memory-store.ts"
+Cohesion: 0.07
+Nodes (53): MonitorRow, AlertDeliveryDraft, applyIncidentPatch(), CheckFilter, defaultEscalationPolicy, defaultNotifyEvents, defaultSettings, EndpointView (+45 more)
 
 ### Community 88 - "Q: Failed to run sql query: ERROR 42703: column audience_role does not exist en commercial_notifications"
 Cohesion: 0.40
@@ -813,17 +802,17 @@ Nodes (9): public.role_permissions, incident_events_immutable, private.security_
 Cohesion: 0.14
 Nodes (13): compilerOptions, allowJs, incremental, jsx, lib, module, noEmit, paths (+5 more)
 
-### Community 117 - "FinanceRepository"
+### Community 117 - "nowIso"
 Cohesion: 0.07
-Nodes (32): camel(), duplicate(), fail(), FilterValue, FinanceRepository, fromRow(), generated, keyed (+24 more)
+Nodes (34): camel(), duplicate(), fail(), Filters, FilterValue, FinanceRepository, fromRow(), generated (+26 more)
 
-### Community 118 - "actor"
-Cohesion: 0.11
-Nodes (21): actor(), ClientDocumentsController, DocumentReviewsController, DocumentsController, DocumentShareLinksController, DocumentTemplatesController, header(), HeaderMap (+13 more)
+### Community 118 - "documents.service.ts"
+Cohesion: 0.05
+Nodes (45): Optional, ClientDocumentsController, DocumentShareLinksController, HeaderMap, readers, SharedDocumentsController, SignatureRequestsController, SignatureWebhookController (+37 more)
 
 ### Community 119 - "actor"
-Cohesion: 0.07
-Nodes (4): actor(), Body, Post, HttpCode
+Cohesion: 0.05
+Nodes (5): actor(), Body, Param, Patch, Post
 
 ### Community 120 - "compilerOptions"
 Cohesion: 0.20
@@ -843,27 +832,23 @@ Nodes (4): Flujo operativo, Integraciones, Seguridad, Zyteron Support
 
 ### Community 124 - "SupabaseMonitoringStore"
 Cohesion: 0.04
-Nodes (5): clientName(), configToRow(), num(), rel(), SupabaseMonitoringStore
+Nodes (6): clientName(), configToRow(), num(), rel(), rpcError(), SupabaseMonitoringStore
 
 ### Community 125 - "finance.reports.ts"
-Cohesion: 0.04
-Nodes (86): assertCan(), can(), canSeeMargins(), clientScope(), apps_api_src_finance_finance_access_financepermission, rolesFor(), scopeOf(), frequencies (+78 more)
+Cohesion: 0.03
+Nodes (109): assertCan(), can(), canSeeMargins(), clientScope(), apps_api_src_finance_finance_access_financepermission, rolesFor(), scopeOf(), frequencies (+101 more)
 
 ### Community 126 - "Get"
-Cohesion: 0.10
-Nodes (5): AuditTemplatesController, Get, Query, AuditCatalogService, AuditReadService
-
-### Community 127 - "Headers"
-Cohesion: 0.09
-Nodes (5): Delete, Headers, Param, Patch, Put
+Cohesion: 0.08
+Nodes (5): AuditTemplatesController, Get, Query, AuditPage, AuditCatalogService
 
 ### Community 128 - "settings.service.ts"
-Cohesion: 0.09
-Nodes (27): admins, header(), HeaderMap, readers, automationActions, businessEvents, conditionOperators, dependencies (+19 more)
+Cohesion: 0.10
+Nodes (25): admins, header(), HeaderMap, readers, automationActions, businessEvents, conditionOperators, dependencies (+17 more)
 
 ### Community 189 - "MonitoringController"
-Cohesion: 0.12
-Nodes (10): MonitoringController, Body, Controller, Get, Headers, Param, Patch, Post (+2 more)
+Cohesion: 0.19
+Nodes (7): MonitoringController, Body, Controller, Headers, Param, Patch, Post
 
 ### Community 190 - "20261004020000_commercial_notifications_owner_fix.sql"
 Cohesion: 0.25
@@ -874,12 +859,12 @@ Cohesion: 0.40
 Nodes (6): budget_lines_unique, finance_events_client_idx, public.budget_lines, public.budgets, public.finance_events, public.projects
 
 ### Community 192 - "finance.sources.ts"
-Cohesion: 0.09
+Cohesion: 0.10
 Nodes (19): FinanceSources, mapClient(), mapContract(), mapProject(), mapQuote(), mapSale(), mapService(), num() (+11 more)
 
-### Community 193 - "ExternalCertifiedDteProvider"
-Cohesion: 0.09
-Nodes (15): ExternalCertifiedDteProvider, mapExternal(), TaxDocumentProvider, 1. Modelo, 2.1 `SiiDirectDteProvider` (integración directa con servicios oficiales), 2.2 `ExternalCertifiedDteProvider` (proveedor certificado), 2.3 Emisión externa registrada, 2. Proveedores (`TaxDocumentProvider`) (+7 more)
+### Community 193 - "monitoring.stats.ts"
+Cohesion: 0.17
+Nodes (11): bucketize(), incidentMetrics(), latencyOf(), MIN_SAMPLES_P50, MIN_SAMPLES_P95, percentile(), santiagoDayStart(), santiagoParts (+3 more)
 
 ### Community 194 - "Q: Ayúdame con ERROR 42703: column user_id does not exist en commercial_notifications_own de Comercial Sales SQL"
 Cohesion: 0.40
@@ -898,32 +883,36 @@ Cohesion: 0.67
 Nodes (3): private.portal_finance_client(), public.client_portal_settings, public.client_portal_users
 
 ### Community 213 - "MemoryMonitoringStore"
-Cohesion: 0.04
-Nodes (13): iso(), MemoryMonitoringStore, bucketize(), incidentMetrics(), latencyOf(), MIN_SAMPLES_P50, MIN_SAMPLES_P95, percentile() (+5 more)
+Cohesion: 0.06
+Nodes (5): isReopenEligible(), iso(), MemoryMonitoringStore, santiagoYear(), MonitoringError
 
-### Community 215 - "finance.dte.ts"
-Cohesion: 0.04
-Nodes (75): alertDays, creditClasses, DteService, normalizeHeader(), c14nAttr(), c14nText(), CafData, clip() (+67 more)
+### Community 214 - "MonitoringStore"
+Cohesion: 0.03
+Nodes (7): Inject, Inject, Inject, Optional, MonitoringStore, Injectable, UsersDirectoryService
 
-### Community 216 - "apiHeaders"
-Cohesion: 0.11
-Nodes (18): ControlDashboard(), money, apiHeaders(), request(), request(), base(), executiveDashboard(), base() (+10 more)
+### Community 215 - "finance.dte-providers.ts"
+Cohesion: 0.03
+Nodes (71): c14nAttr(), c14nText(), clip(), DSIG_NS, DteCertificateProvider, DteCompany, DteDocumentInput, DteIssueResult (+63 more)
 
-### Community 217 - "authorization.service 2.ts"
-Cohesion: 0.31
-Nodes (6): AuthorizationContext, AuthorizationService, browser(), os(), safeIp(), Injectable
+### Community 216 - "packages_contracts_dist_index_role"
+Cohesion: 0.08
+Nodes (25): ControlDashboard(), money, apiHeaders(), base(), executiveDashboard(), base(), FinanceApiError, json() (+17 more)
 
-### Community 218 - "contracts/contracts.service.ts"
-Cohesion: 0.15
-Nodes (12): header(), HeaderMap, managers, readers, ContractInput, validateContract(), CONTRACT_BUILDER_CONTACT_COLUMNS, ContractActor (+4 more)
+### Community 217 - "client-provider-ports.ts"
+Cohesion: 0.25
+Nodes (3): clientProviderPorts, PaymentProvider, TaxDocumentProvider
+
+### Community 218 - "scripts"
+Cohesion: 0.29
+Nodes (7): scripts, build, dev, start, start:monitoring-worker, test, typecheck
 
 ### Community 219 - "ClientsRepository"
 Cohesion: 0.05
-Nodes (17): ClientIntegrationsService, Injectable, ClientsController, Body, Controller, Get, Headers, Param (+9 more)
+Nodes (24): ClientDomainHealthSignals, ClientHealthService, Injectable, ClientIntegrationsService, Injectable, clientManagers, clientReaders, optionalUuid() (+16 more)
 
 ### Community 220 - "ssrf-guard.ts"
-Cohesion: 0.07
-Nodes (41): CertificateFacts, CertificateProbe, classifyCertificate(), name(), CheckFailure, classifyNetworkError(), HostConcurrencyLimiter, HttpChecker (+33 more)
+Cohesion: 0.08
+Nodes (40): CertificateFacts, CertificateProbe, classifyCertificate(), daysUntil(), name(), CheckFailure, classifyNetworkError(), HttpChecker (+32 more)
 
 ### Community 221 - "security-audit.mjs"
 Cohesion: 0.06
@@ -937,9 +926,9 @@ Nodes (13): as, bankLedger, client2Rut, clientRut, companyRut, credit, debit, ev
 Cohesion: 0.13
 Nodes (9): public.quote_payment_plan_guard, private.can_view_quote_payments(), private.portal_quote_client(), public.portal_quote_payments, public.quote_payment_installments_effective, quote_payment_plans_guard, public.client_portal_settings, public.client_portal_users (+1 more)
 
-### Community 224 - "Public"
-Cohesion: 0.11
-Nodes (11): AuthController, Controller, Get, Public(), file(), PaymentWebhookController, PortalQuotePaymentsController, PublicPaymentController (+3 more)
+### Community 224 - ".exportReport"
+Cohesion: 0.12
+Nodes (7): file(), PaymentWebhookController, PortalQuotePaymentsController, PublicPaymentController, Controller, HttpCode, Res
 
 ### Community 225 - "public.invoices"
 Cohesion: 0.12
@@ -949,10 +938,6 @@ Nodes (23): billing_schedules_service_active, invoices_client_status_idx, invoic
 Cohesion: 0.14
 Nodes (6): as, clientRut, companyRut, pdf, today, users
 
-### Community 227 - "ContractsService"
-Cohesion: 0.11
-Nodes (6): ClientContractsController, Controller, at(), ContractsService, empty(), Injectable
-
 ### Community 228 - "SecurityRepository"
 Cohesion: 0.26
 Nodes (8): camel(), fromRow(), now(), Row, SecurityRepository, snake(), toRow(), Injectable
@@ -961,13 +946,9 @@ Nodes (8): camel(), fromRow(), now(), Row, SecurityRepository, snake(), toRow(),
 Cohesion: 0.26
 Nodes (8): camel(), fromRow(), now(), Row, SecurityRepository, snake(), toRow(), Injectable
 
-### Community 230 - "HrReadService"
-Cohesion: 0.29
-Nodes (4): HrController, HrReadService, now(), Injectable
-
-### Community 231 - "clients.dto.ts"
-Cohesion: 0.61
-Nodes (5): optionalUuid(), validateCreateClient(), isValidChileanRut(), normalizeRut(), packages_contracts_dist_index_clientstatuses
+### Community 230 - "hr.controller.ts"
+Cohesion: 0.11
+Nodes (12): header(), HeaderMap, hr, HrController, managers, MedicalLeaveController, page(), readers (+4 more)
 
 ### Community 232 - "LeadsService"
 Cohesion: 0.14
@@ -979,19 +960,19 @@ Nodes (52): activeIncidentStatuses, AlertChannel, alertChannels, AlertDelivery, 
 
 ### Community 234 - "OnlinePaymentService"
 Cohesion: 0.13
-Nodes (5): documentLabel(), MercadoPagoPaymentProvider, mpStatus(), OnlinePaymentService, Injectable
+Nodes (3): MercadoPagoPaymentProvider, OnlinePaymentService, PaymentProvider
 
 ### Community 235 - "Módulo 07 · Financial & Accounting Control Center"
 Cohesion: 0.25
 Nodes (7): Arquitectura, Configuración del servidor, Flujos, Módulo 07 · Financial & Accounting Control Center, Principios no negociables, Roles y permisos, Verificación
 
 ### Community 236 - "MonitoringService"
-Cohesion: 0.12
-Nodes (11): hasMonitoringPermission(), containsIp(), iso(), MonitoringService, normalizeMonitorUrl(), oneOf(), optionalText(), optionalUuid() (+3 more)
+Cohesion: 0.13
+Nodes (10): hasMonitoringPermission(), containsIp(), iso(), MonitoringService, oneOf(), optionalText(), optionalUuid(), text() (+2 more)
 
 ### Community 237 - "AuditsRepository"
 Cohesion: 0.15
-Nodes (14): AuditPage, AuditsRepository, camel(), excluded, Filters, fromRow(), relationValue(), Row (+6 more)
+Nodes (9): AuditsRepository, camel(), fromRow(), relationValue(), selectFor(), snake(), stamp(), toRow() (+1 more)
 
 ### Community 238 - "20261004180000_contractual_system_cl.sql"
 Cohesion: 0.22
@@ -1022,12 +1003,12 @@ Cohesion: 0.40
 Nodes (4): Answer, Outcome, Q: Security SQL falla con ERROR 42P01 relation public.documents does not exist, Source Nodes
 
 ### Community 245 - "crm.controller.ts"
-Cohesion: 0.17
+Cohesion: 0.18
 Nodes (9): CrmController, Body, Controller, Get, Post, CrmService, Injectable, packages_contracts_dist_index_createcommercialrecord (+1 more)
 
-### Community 246 - "authorization.service.ts"
-Cohesion: 0.17
-Nodes (8): AuthorizationContext, AuthorizationService, browser(), os(), safeIp(), Injectable, RoleGuard, Injectable
+### Community 246 - "ref_node_crypto"
+Cohesion: 0.06
+Nodes (29): excluded, Filters, Row, AuthorizationContext, AuthorizationService, browser(), os(), safeIp() (+21 more)
 
 ### Community 247 - "finance/package.json"
 Cohesion: 0.15
@@ -1038,12 +1019,8 @@ Cohesion: 0.23
 Nodes (8): acc(), entry(), folios, ids, one(), post(), q(), td
 
 ### Community 251 - "monitoring.test-kit.ts"
-Cohesion: 0.05
-Nodes (49): CertificateObservation, sslAlertThreshold(), HttpCheckRequest, HttpCheckResult, MonitoringAlerts, MonitoringMailer, resolveTargets(), scopeFromMonitor() (+41 more)
-
-### Community 252 - "contract-template-catalog.ts"
-Cohesion: 0.24
-Nodes (9): ChileanContractTemplate, chileanContractTemplates, contractTemplateByCode(), ContractTemplateCategory, ContractVariableDefinition, definitions(), labelFor(), originFor() (+1 more)
+Cohesion: 0.11
+Nodes (19): CertificateObservation, sslAlertThreshold(), HttpCheckRequest, HttpCheckResult, monitored(), setup(), MonitoringScheduler, Injectable (+11 more)
 
 ### Community 253 - "rate-limit.middleware 2.ts"
 Cohesion: 0.29
@@ -1053,9 +1030,9 @@ Nodes (7): Bucket, buckets, positive(), RateRequest, RateResponse, rule(), secur
 Cohesion: 0.27
 Nodes (10): bank_transactions_status_idx, public.bank_accounts, public.bank_statement_imports, public.bank_transactions, public.commission_payments, public.finance_refresh_bank_transaction(), public.reconciliation_matches, public.vendor_payments (+2 more)
 
-### Community 255 - "SupportCatalogService"
-Cohesion: 0.16
-Nodes (5): Optional, SupportRelationsController, now(), SupportCatalogService, SupportReadService
+### Community 255 - "Get"
+Cohesion: 0.10
+Nodes (4): SupportKnowledgeController, SupportRelationsController, Controller, Get
 
 ### Community 256 - "domain-insights.service.ts"
 Cohesion: 0.15
@@ -1074,12 +1051,12 @@ Cohesion: 0.38
 Nodes (4): DeferredVaultSecretProvider, SecurityProviderStatus, Injectable, VaultSecretProvider
 
 ### Community 260 - "ref_vitest"
-Cohesion: 0.14
-Nodes (13): input(), nested(), manager, manager, admin, requester, aal1, admin (+5 more)
+Cohesion: 0.10
+Nodes (19): manager, commercialRoles, managerRoles, operationsRoles, projectTransitions, taskTransitions, workTransitions, manager (+11 more)
 
-### Community 261 - "ContractDetail"
-Cohesion: 0.31
-Nodes (10): ContractDetail(), action(), approve(), authority(), pdf(), receipt(), signature(), transition() (+2 more)
+### Community 261 - "Q: ¿Cómo reparar el contrato 500 y garantizar cotización aceptada → OT → proyecto?"
+Cohesion: 0.40
+Nodes (4): Answer, Outcome, Q: ¿Cómo reparar el contrato 500 y garantizar cotización aceptada → OT → proyecto?, Source Nodes
 
 ### Community 262 - "security.controller.ts"
 Cohesion: 0.22
@@ -1141,9 +1118,9 @@ Nodes (4): public.finance_reserve_folio(), public.tax_folio_authorizations, publ
 Cohesion: 0.67
 Nodes (4): public.finance_reserve_folio(), public.tax_folio_authorizations, public.tax_folios, tax_folios_available_idx
 
-### Community 277 - "quote-document.service.ts"
-Cohesion: 0.16
-Nodes (15): blue, clean(), dateLong(), drawLogo(), lightSlate, line, money(), navy (+7 more)
+### Community 277 - "commercial.repository.ts"
+Cohesion: 0.06
+Nodes (40): PageInput, pageQuery(), scopedPageQuery(), roles, readers, MailMessage, MailProviderService, Injectable (+32 more)
 
 ### Community 278 - "Q: Por qué Clientes mostraba 0 proyectos para Fenice cuando existía una OT y cómo integrar ambas secciones"
 Cohesion: 0.40
@@ -1156,10 +1133,6 @@ Nodes (3): private.portal_finance_client(), public.client_portal_settings, publi
 ### Community 324 - "public.monitoring_execution_payload"
 Cohesion: 0.25
 Nodes (6): public.monitors, public.monitoring_execution_payload(), public.monitoring_monitor_scope_sync(), public.clients, public.project_endpoints, public.projects
-
-### Community 325 - "operations.service.ts"
-Cohesion: 0.20
-Nodes (9): commercialRoles, managerRoles, operationsRoles, projectTransitions, taskTransitions, workTransitions, packages_contracts_dist_index_operationspriorityitem, packages_contracts_dist_index_projectoperationalsummary (+1 more)
 
 ### Community 326 - "Q: intente crear una OT y no funciono"
 Cohesion: 0.40
@@ -1209,10 +1182,6 @@ Nodes (8): D, G, ids, J, scheduler, store, tick(), X
 Cohesion: 0.14
 Nodes (13): Cliente, Detección y confirmación, Downtime, MTTA y MTTR, Escalamiento, Estados, Gestión de incidentes de monitoreo, Investigación, Mantenimiento (+5 more)
 
-### Community 338 - "Seguridad documental"
-Cohesion: 0.50
-Nodes (3): Descarga, Seguridad documental, Upload
-
 ### Community 339 - "20261004195000_support_ticket_idempotency.sql"
 Cohesion: 0.83
 Nodes (3): public.support_idempotency_keys, support_idempotency_created_idx, support_idempotency_resource_idx
@@ -1225,9 +1194,9 @@ Nodes (9): version(), apply(), base(), cA, ids, now, one(), project() (+1 more)
 Cohesion: 0.18
 Nodes (10): description, devDependencies, @electric-sql/pglite, @electric-sql/pglite, name, private, scripts, engine (+2 more)
 
-### Community 349 - ".index"
-Cohesion: 0.25
-Nodes (5): IncidentsController, Controller, Get, Headers, Query
+### Community 349 - "monitoring.service.ts"
+Cohesion: 0.05
+Nodes (38): uuidPattern, Get, Headers, Query, B, HeadersMap, Q, BOM (+30 more)
 
 ### Community 350 - "finance/harness.mjs"
 Cohesion: 0.29
@@ -1266,9 +1235,9 @@ Cohesion: 0.40
 Nodes (4): Answer, Outcome, Q: Security SQL falla con ERROR 42P01 relation public.documents does not exist, Source Nodes
 
 ## Knowledge Gaps
-- **1342 isolated node(s):** `$schema`, `collection`, `sourceRoot`, `name`, `version` (+1337 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 2484 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **146 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **1345 isolated node(s):** `$schema`, `collection`, `sourceRoot`, `name`, `version` (+1340 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 2489 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **154 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Work-memory lessons
 
@@ -1287,17 +1256,17 @@ Nodes (4): Answer, Outcome, Q: Security SQL falla con ERROR 42P01 relation publi
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `RequireRoles()` connect `RequireRoles` to `domain-insights.service.ts`, `settings.service.ts`, `@nestjs/common`, `SupportCatalogService`, `ref_vitest`, `actorFromHeaders`, `security.controller.ts`, `Headers`, `RenewalsRepository`, `GitHubSourceControlProvider`, `RequirePermissions`, `UsersController`, `SettingsController`, `SupportController`, `ClientServicesRepository`, `SupportRepository`, `monitoring.module.ts`, `HrActor`, `Param`, `pageBounds`, `audits.module.ts`, `SecurityController`, `actor`, `CommercialService`, `OpportunitiesService`, `support.controller.ts`, `FinanceController`, `ContractsController`, `FollowUpsService`, `MonitoringController`, `finance.module.ts`, `Módulo 05 · Monitoreo / Site Reliability Center`, `contracts/contracts.service.ts`, `ClientsRepository`, `.index`, `Public`, `HrReadService`, `LeadsService`, `crm.controller.ts`, `actor`, `actor`, `monitoring.test-kit.ts`, `Get`, `Headers`?**
-  _High betweenness centrality (0.181) - this node is a cross-community bridge._
-- **Why does `@nestjs/common` connect `@nestjs/common` to `domain-insights.service.ts`, `settings.service.ts`, `security.providers 2.ts`, `ref_vitest`, `actorFromHeaders`, `security.controller.ts`, `Headers`, `audits.service.ts`, `FinanceActor`, `RenewalsRepository`, `GitHubSourceControlProvider`, `support.service.ts`, `SettingsService`, `ClientServicesRepository`, `quote-document.service.ts`, `monitoring.module.ts`, `HrActor`, `hr.module.ts`, `SupportRepository`, `audits.module.ts`, `employees.service.ts`, `formatDate`, `documents.service.ts`, `client-360.tsx`, `actor`, `finance.quote-payments.ts`, `support.controller.ts`, `finance.module.ts`, `contract-document.service.ts`, `api/package.json`, `finance.sources.ts`, `finance.payables.ts`, `security.service.ts`, `operations.service.ts`, `finance.test.ts`, `security.test 2.ts`, `finance.dte.ts`, `monitoring.service.ts`, `authorization.service 2.ts`, `contracts/contracts.service.ts`, `SecurityRepository`, `security.repository 2.ts`, `clients.dto.ts`, `AuditsRepository`, `crm.controller.ts`, `authorization.service.ts`, `actor`, `FinanceRepository`, `monitoring.test-kit.ts`, `finance.reports.ts`?**
+- **Why does `RequireRoles()` connect `RequireRoles` to `domain-insights.service.ts`, `settings.service.ts`, `@nestjs/common`, `ref_vitest`, `actorFromHeaders`, `security.controller.ts`, `Headers`, `RenewalsRepository`, `GitHubSourceControlProvider`, `RequirePermissions`, `ContractsService`, `support.service.ts`, `SettingsController`, `SupportController`, `UsersController`, `client-domain.test.ts`, `commercial.repository.ts`, `ContactsRepository`, `.list`, `Param`, `SalesService`, `audits.service.ts`, `EmployeesService`, `SecurityController`, `actor`, `ClientsController`, `actor`, `CommercialService`, `OpportunitiesService`, `.signed`, `FinanceController`, `FollowUpsService`, `MonitoringController`, `finance.module.ts`, `Get`, `packages_contracts_dist_index`, `Módulo 05 · Monitoreo / Site Reliability Center`, `ClientsRepository`, `monitoring.service.ts`, `.exportReport`, `.list`, `hr.controller.ts`, `LeadsService`, `crm.controller.ts`, `documents.service.ts`, `actor`, `.alertRules`, `Get`, `Get`?**
+  _High betweenness centrality (0.182) - this node is a cross-community bridge._
+- **Why does `@nestjs/common` connect `@nestjs/common` to `domain-insights.service.ts`, `settings.service.ts`, `security.providers 2.ts`, `ref_vitest`, `actorFromHeaders`, `security.controller.ts`, `Headers`, `operations-workspace.tsx`, `monitoring.types.ts`, `RenewalsRepository`, `GitHubSourceControlProvider`, `support.service.ts`, `SettingsService`, `client-domain.test.ts`, `commercial.repository.ts`, `ContactsRepository`, `hr.test.ts`, `audits.service.ts`, `formatDate`, `CommercialService`, `monitoring.alerts.ts`, `finance.quote-payments.ts`, `finance.module.ts`, `packages_contracts_dist_index`, `api/package.json`, `finance.sources.ts`, `security.service.ts`, `finance.test.ts`, `security.test 2.ts`, `finance.dte-providers.ts`, `monitoring.memory-store.ts`, `ClientsRepository`, `monitoring.service.ts`, `SecurityRepository`, `security.repository 2.ts`, `hr.controller.ts`, `crm.controller.ts`, `ref_node_crypto`, `documents.service.ts`, `nowIso`, `monitoring.test-kit.ts`, `finance.reports.ts`?**
   _High betweenness centrality (0.109) - this node is a cross-community bridge._
-- **Why does `FinanceController` connect `FinanceController` to `Public`, `RequireRoles`, `actor`, `finance.module.ts`, `Headers`?**
+- **Why does `FinanceController` connect `FinanceController` to `.exportReport`, `RequireRoles`, `.discardEntry`, `actor`, `finance.module.ts`, `.budgetLines`?**
   _High betweenness centrality (0.053) - this node is a cross-community bridge._
 - **What connects `$schema`, `collection`, `sourceRoot` to the rest of the system?**
-  _1342 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _1345 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `index.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.007462686567164179 - nodes in this community are weakly interconnected._
 - **Should `RequireRoles` be split into smaller, more focused modules?**
-  _Cohesion score 0.08625840179238238 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.09720044792833146 - nodes in this community are weakly interconnected._
 - **Should `@nestjs/common` be split into smaller, more focused modules?**
-  _Cohesion score 0.024461482292807594 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.03539282990083906 - nodes in this community are weakly interconnected._

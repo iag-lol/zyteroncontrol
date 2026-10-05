@@ -3172,5 +3172,17 @@
     "seen": 1791185386.03217,
     "ast_hash": "d627dcdf03475808072d7b774183d3ee",
     "semantic_hash": ""
+  },
+  "supabase/migrations/20261005081500_repair_fenice_commercial_chain.sql": {
+    "mtime": 1791186034.6863906,
+    "seen": 1791186116.5786629,
+    "ast_hash": "317adbd39429a73789db46845f576ae2",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20261005_073004_e8e5a411_c\u00f3mo_reparar_el_contrato_500_y_garantizar_cotizac.md": {
+    "mtime": 1791185404.402202,
+    "seen": 1791186116.578763,
+    "ast_hash": "0f67bb6d43e179310b744829974055b9",
+    "semantic_hash": ""
   }
 }
