@@ -1,5 +1,5 @@
 import { Injectable, ServiceUnavailableException } from "@nestjs/common";
-import type { ClientIntegrationSummary, ExecutiveDashboard, IntegrationSourceHealth } from "@zyteron/contracts";
+import type { ClientIntegrationSummary, ClientPortfolioSummary, ExecutiveDashboard, IntegrationSourceHealth } from "@zyteron/contracts";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { createServerSupabase } from "../domain/server-supabase.js";
 
@@ -91,6 +91,41 @@ export class DomainInsightsService {
       ["SEGURIDAD","Eventos de seguridad (30 días)",metrics.securityEvents,"/security/events"],
     ] as Array<[string,string,number,string]>).filter(([, , count])=>count>0).map(([domain,label,count,href])=>({domain,label,count,href,severity:domain==="SEGURIDAD"||label.includes("crític")?"CRITICAL":"ATTENTION"}));
     return { generatedAt:new Date().toISOString(), status:sources.every(source=>source.status==="OK")?"OK":"DEGRADED", sources, metrics, attention };
+  }
+
+  async portfolio(pageClientIds:string[],includeFinance=false):Promise<{summary:ClientPortfolioSummary;byClient:Record<string,{activeServiceCount:number|null;activeProjectCount:number|null;lastActivityAt:string|null}>}> {
+    const cutoff=new Date(Date.now()-90*86_400_000).toISOString();
+    const renewalLimit=new Date(Date.now()+90*86_400_000).toISOString().slice(0,10);
+    const activeProjects=["PLANNING","READY","IN_PROGRESS","BLOCKED","INTERNAL_REVIEW","QA","WAITING_CLIENT","READY_FOR_PRODUCTION","PRODUCTION","MAINTENANCE","ON_HOLD"];
+    const activeIncidents=["DETECTED","CONFIRMED","ACKNOWLEDGED","INVESTIGATING","MITIGATING","MONITORING"];
+    const [clients,projects,incidents,finance,renewals,recentActivity,pageServices,pageActivity]=await Promise.all([
+      this.domain("CLIENTES",[] as Row[],()=>this.rows("clients","id,status,created_at",q=>q.neq("status","ARCHIVED"))),
+      this.domain("OPERACIONES",[] as Row[],()=>this.rows("projects","client_id,status",q=>q.in("status",activeProjects).not("client_id","is",null))),
+      this.domain("MONITOREO",[] as Row[],()=>this.rows("incidents","client_id,severity,status",q=>q.eq("severity","CRITICAL").in("status",activeIncidents).not("client_id","is",null))),
+      includeFinance?this.domain("FINANZAS",[] as Row[],()=>this.rows("invoices","client_id,status,balance_due",q=>q.in("status",["ISSUED","PARTIALLY_PAID"]).gt("balance_due",0).not("client_id","is",null))):Promise.resolve({value:[] as Row[],health:{domain:"FINANZAS",status:"UNAVAILABLE" as const,detail:"Requiere permiso financiero explícito."}}),
+      this.domain("RENOVACIONES",[] as Row[],()=>this.rows("client_renewals","client_id,status,renewal_date",q=>q.gte("renewal_date",today()).lte("renewal_date",renewalLimit).not("status","in","(RENEWED,NOT_RENEWED,CANCELLED)").not("client_id","is",null))),
+      this.domain("ACTIVIDAD",[] as Row[],()=>this.rows("client_events","client_id,occurred_at",q=>q.gte("occurred_at",cutoff))),
+      pageClientIds.length?this.domain("SERVICIOS",[] as Row[],()=>this.rows("client_services","client_id,status",q=>q.in("client_id",pageClientIds).eq("status","ACTIVE"))):Promise.resolve({value:[] as Row[],health:{domain:"SERVICIOS",status:"OK" as const,detail:null}}),
+      pageClientIds.length?this.domain("ACTIVIDAD_CLIENTE",[] as Row[],()=>this.rows("client_events","client_id,occurred_at",q=>q.in("client_id",pageClientIds).order("occurred_at",{ascending:false}))):Promise.resolve({value:[] as Row[],health:{domain:"ACTIVIDAD_CLIENTE",status:"OK" as const,detail:null}}),
+    ]);
+    const countClients=(rows:Row[])=>new Set(rows.map(row=>row.client_id).filter(Boolean)).size;
+    const recentIds=new Set(recentActivity.value.map(row=>row.client_id));
+    const start=monthStart();
+    const summary:ClientPortfolioSummary={
+      active:clients.health.status==="OK"?clients.value.filter(row=>row.status==="ACTIVE").length:null,
+      newThisMonth:clients.health.status==="OK"?clients.value.filter(row=>String(row.created_at)>=start).length:null,
+      onboarding:clients.health.status==="OK"?clients.value.filter(row=>row.status==="ONBOARDING").length:null,
+      activeProjects:projects.health.status==="OK"?countClients(projects.value):null,
+      criticalIncidents:incidents.health.status==="OK"?countClients(incidents.value):null,
+      pendingPayments:finance.health.status==="OK"?countClients(finance.value):null,
+      upcomingRenewals:renewals.health.status==="OK"?countClients(renewals.value):null,
+      inactiveRelationship:clients.health.status==="OK"&&recentActivity.health.status==="OK"?clients.value.filter(row=>!recentIds.has(row.id)).length:null,
+    };
+    const serviceCounts=new Map<string,number>(),projectCounts=new Map<string,number>(),lastActivity=new Map<string,string>();
+    for(const row of pageServices.value)serviceCounts.set(row.client_id,(serviceCounts.get(row.client_id)??0)+1);
+    for(const row of projects.value)if(pageClientIds.includes(row.client_id))projectCounts.set(row.client_id,(projectCounts.get(row.client_id)??0)+1);
+    for(const row of pageActivity.value)if(!lastActivity.has(row.client_id))lastActivity.set(row.client_id,row.occurred_at);
+    return{summary,byClient:Object.fromEntries(pageClientIds.map(id=>[id,{activeServiceCount:pageServices.health.status==="OK"?serviceCounts.get(id)??0:null,activeProjectCount:projects.health.status==="OK"?projectCounts.get(id)??0:null,lastActivityAt:pageActivity.health.status==="OK"?lastActivity.get(id)??null:null}]))};
   }
 
   async client(clientId:string, includeFinance=false):Promise<ClientIntegrationSummary> {

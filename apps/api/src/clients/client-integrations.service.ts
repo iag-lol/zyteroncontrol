@@ -36,5 +36,6 @@ export class ClientIntegrationsService {
       ownership: domain === "PORTAL_CLIENT" ? "CLIENTS" : domain,
     })).concat(Object.entries(clientProviderPorts).map(([domain, status]) => ({ domain, relation: status, ownership: "PROVIDER_PORT" })));
   }
+  portfolio(clientIds:string[],includeFinance=false){return this.insights.portfolio(clientIds,includeFinance);}
   summary(clientId:string, includeFinance=false) { return this.insights.client(clientId, includeFinance); }
 }

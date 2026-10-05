@@ -179,6 +179,9 @@ export interface Client {
   paymentCustomerReference: string | null;
   health: ClientHealthStatus;
   healthFactors: ClientHealthFactor[];
+  activeServiceCount?: number | null;
+  activeProjectCount?: number | null;
+  lastActivityAt?: string | null;
   createdAt: string;
   updatedAt: string;
   archivedAt: string | null;

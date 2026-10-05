@@ -21,9 +21,11 @@ export class ClientsService {
     @Optional() private readonly documents?: DocumentReadService,
   ) {}
 
-  list(query: Record<string, string | undefined>) {
+  async list(query: Record<string, string | undefined>, includeFinance=false) {
     const { page, pageSize } = parsePagination(query.page, query.pageSize);
-    return this.repository.list({ page, pageSize, search: query.search, status: query.status, health: query.health });
+    const result=await this.repository.list({ page, pageSize, search: query.search, status: query.status, health: query.health });
+    const portfolio=await this.integrations.portfolio(result.items.map(item=>item.id),includeFinance);
+    return{...result,summary:portfolio.summary,items:result.items.map(item=>({...item,...portfolio.byClient[item.id]}))};
   }
   private async ensureClient(id:string){const client=await this.repository.findById(id);if(!client)throw new NotFoundException("Cliente no encontrado.");return client;}
   async get(id: string) {

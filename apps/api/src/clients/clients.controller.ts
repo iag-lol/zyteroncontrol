@@ -9,7 +9,7 @@ const clientManagers = ["GERENTE_GENERAL", "JEFE_VENTAS", "EJECUTIVA_VENTAS", "C
 @Controller("clients")
 export class ClientsController {
   constructor(private readonly service: ClientsService) {}
-  @Get() @RequireRoles(...clientReaders) list(@Query() query: Record<string, string | undefined>) { return this.service.list(query); }
+  @Get() @RequireRoles(...clientReaders) list(@Query() query: Record<string, string | undefined>, @Headers("x-zyteron-role") role?:string) { return this.service.list(query,["GERENTE_GENERAL","FINANZAS","CONTADOR"].includes(role??"")); }
   @Post("audit-export") @RequireRoles(...clientReaders) auditExport(@Body() body:{domain:string}) { return this.service.auditExport(body.domain); }
   @Post() @RequireRoles(...clientManagers) create(@Body() body: CreateClientInput) { return this.service.create(body); }
   @Get(":id") @RequireRoles(...clientReaders) get(@Param("id") id: string) { return this.service.get(id); }

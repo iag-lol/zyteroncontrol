@@ -11,7 +11,7 @@ source_nodes: ["ClientsService", "ClientIntegrationsService", "DomainInsightsSer
 
 ## Answer
 
-Se consolidaron los dominios empresariales mediante DomainInsightsService y ExecutiveDashboard, se reemplazaron los snapshots nulos de ClientsService y ClientIntegrationsService por métricas reales, se conectó Client360 con Comercial, Operaciones, Documentos, Soporte, Monitoreo, Auditorías y Finanzas con control de permisos, se aisló la degradación por fuente, se eliminó la reevaluación repetitiva de Client Health en cada subrecurso y se preservó clientId al navegar a Proyectos, OT y planes de Auditoría.
+Se consolidaron los dominios empresariales mediante DomainInsightsService y ExecutiveDashboard, se reemplazaron los snapshots nulos de ClientsService y ClientIntegrationsService por métricas reales, se conectó Client360 con Comercial, Operaciones, Documentos, Soporte, Monitoreo, Auditorías y Finanzas con control de permisos, y ClientHub ahora presenta cartera, servicios, proyectos, actividad, renovaciones, incidentes y pagos desde sus fuentes canónicas. También se aisló la degradación por fuente, se eliminó la reevaluación repetitiva de Client Health en cada subrecurso y se preservó clientId al navegar a Proyectos, OT y planes de Auditoría.
 
 ## Outcome
 

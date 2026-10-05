@@ -18,4 +18,12 @@ describe("DomainInsightsService",()=>{
     expect(result.finance).toBeNull();
     expect(result.sources.find(source=>source.domain==="FINANZAS")?.status).toBe("UNAVAILABLE");
   });
+
+  it("mantiene pagos de cartera ocultos cuando el rol no tiene permiso financiero",async()=>{
+    const service=new DomainInsightsService();
+    Object.defineProperty(service,"db",{value:undefined});
+    const result=await service.portfolio([],false);
+    expect(result.summary.pendingPayments).toBeNull();
+    expect(result.byClient).toEqual({});
+  });
 });
