@@ -2364,9 +2364,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/clients/contract-builder.tsx": {
-    "mtime": 1791189065.3950512,
-    "seen": 1791189187.022548,
-    "ast_hash": "8c796c8d32ab82e5a9238cd42e178a0c",
+    "mtime": 1791189541.8211355,
+    "seen": 1791189561.0576289,
+    "ast_hash": "427d91117dc150b9255651e071d73bbe",
     "semantic_hash": ""
   },
   "apps/web/src/components/entity-reference-select.tsx": {
@@ -3186,15 +3186,15 @@
     "semantic_hash": ""
   },
   "apps/web/src/lib/contract-builder-model.test.ts": {
-    "mtime": 1791188870.4437094,
-    "seen": 1791188977.221025,
-    "ast_hash": "4509279dbb985b8f19b6fa46dc737cfb",
+    "mtime": 1791189541.821887,
+    "seen": 1791189561.057673,
+    "ast_hash": "f46d18660bb54996f3836bac99d24959",
     "semantic_hash": ""
   },
   "apps/web/src/lib/contract-builder-model.ts": {
-    "mtime": 1791188870.4428425,
-    "seen": 1791188977.221025,
-    "ast_hash": "88234b043a4cb59d063886aa23620247",
+    "mtime": 1791189541.820177,
+    "seen": 1791189561.057673,
+    "ast_hash": "94f44da06dc29ce9b6c94b8a58012ae2",
     "semantic_hash": ""
   },
   "graphify-out/memory/query_20261005_074156_3db17710_c\u00f3mo_reconciliar_el_flujo_roto_de_fenice_entre_co.md": {
