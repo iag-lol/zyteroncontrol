@@ -167,15 +167,15 @@ const humanFacts=new Set(["cliente.representante_rut","cliente.personeria","empr
 const canonicalKeys=new Set([
   "cliente.razon_social","cliente.rut","cliente.domicilio","cliente.email_dte",
   "empresa.razon_social","empresa.rut","empresa.domicilio",
-  "contrato.fecha","contrato.lugar","proyecto.codigo","proyecto.nombre","proyecto.alcance",
+  "contrato.fecha","contrato.lugar","proyecto.codigo","proyecto.nombre","proyecto.alcance","proyecto.objetivo","proyecto.situacion_inicial","proyecto.exclusiones","proyecto.integraciones_y_requisitos",
   "cotizacion.numero","cotizacion.version","cotizacion.fecha_aceptacion","ot.identificacion_o_no_aplica",
-  "precio.moneda","precio.neto","precio.impuestos","precio.total","precio.conversion_o_no_aplica",
+  "calendario.inicio","pagos.medios","tabla.pagos","precio.moneda","precio.neto","precio.impuestos","precio.total","precio.conversion_o_no_aplica","pi.inventario","pi.plataforma",
 ]);
 
 export function applyContractDefaults(values:ContractValues,variables:ContractTemplateVariable[],context:ContractDefaultContext){
   let next=values,changed=false;
   for(const variable of variables){
-    const current=contractValue(next,variable.key),canonical=canonicalKeys.has(variable.key);
+    const current=contractValue(next,variable.key),canonical=canonicalKeys.has(variable.key)||variable.key.startsWith("tabla.");
     if(variable.key==="contrato.numero"||humanFacts.has(variable.key)||(!canonical&&clean(current)))continue;
     const value=defaultFor(variable.key,context);if(value===null||value===undefined||value==="")continue;
     if(canonical&&String(current??"")===String(value))continue;

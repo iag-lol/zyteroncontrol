@@ -42,7 +42,7 @@ describe("modelo guiado del constructor contractual",()=>{
     const variables=[variable("precio.total","QUOTE"),variable("proyecto.objetivo","PROJECT")];
     const first=applyContractDefaults({},variables,context),second=applyContractDefaults(first,variables,{...context,total:250000,project:{...context.project,scope:"Nuevo alcance"}});
     expect(contractValue(second,"precio.total")).toBe("CLP 250.000");
-    expect(contractValue(second,"proyecto.objetivo")).toBe("Diseño y desarrollo del portal");
+    expect(contractValue(second,"proyecto.objetivo")).toBe("Nuevo alcance");
     expect(contractValue(withoutContractNamespaces(second,["precio","proyecto"]),"precio.total")).toBeUndefined();
   });
 });
