@@ -664,7 +664,17 @@ export interface TrainingAssignment { id:string; courseId:string; employeeId:str
 export interface HrEvent { id:string; employeeId:string|null; aggregateType:string; aggregateId:string; eventType:string; actorId:string|null; payload:Record<string,unknown>; occurredAt:string; }
 export interface HrAttentionItem { id:string; type:"CONTRACT"|"DOCUMENT"|"ONBOARDING"|"OFFBOARDING"|"LEAVE"|"LRE"|"COMPLIANCE"|"ASSET"; title:string; reason:string; severity:"ATTENTION"|"AT_RISK"|"CRITICAL"; href:string; dueAt:string|null; }
 export interface HrSummary { activeEmployees:number; hiresThisMonth:number; terminationsThisMonth:number; onboardingActive:number; vacationsUpcoming:number; absencesToday:number; contractsExpiring:number; annexesPendingSignature:number; documentsPending:number; requestsPending:number; lrePending:number; offboardingPending:number; }
-export interface HrWorkspace { summary:HrSummary; attention:HrAttentionItem[]; employees:Employee[]; relationships:EmploymentRelationship[]; departments:HrDepartment[]; teams:HrTeam[]; positions:JobPosition[]; contracts:EmploymentContract[]; annexes:EmploymentAnnex[]; onboarding:OnboardingInstance[]; offboarding:OffboardingInstance[]; leave:LeaveRequest[]; medical:MedicalLeaveRecord[]; payroll:PayrollPeriod[]; lre:LreExport[]; assets:HrAssetAssignment[]; goals:EmployeeGoal[]; training:TrainingAssignment[]; activity:HrEvent[]; providers:{signature:string;laborAuthority:string;attendance:string;payrollSubmission:string}; generatedAt:string; }
+export interface HrProviderReadiness {
+  key:"signature"|"laborAuthority"|"attendance"|"payrollSubmission";
+  label:string;
+  status:string;
+  state:"READY"|"ACTION_REQUIRED"|"EXTERNAL_STEP";
+  title:string;
+  detail:string;
+  actionHref:string;
+  actionLabel:string;
+}
+export interface HrWorkspace { summary:HrSummary; attention:HrAttentionItem[]; employees:Employee[]; relationships:EmploymentRelationship[]; departments:HrDepartment[]; teams:HrTeam[]; positions:JobPosition[]; contracts:EmploymentContract[]; annexes:EmploymentAnnex[]; onboarding:OnboardingInstance[]; offboarding:OffboardingInstance[]; leave:LeaveRequest[]; medical:MedicalLeaveRecord[]; payroll:PayrollPeriod[]; lre:LreExport[]; assets:HrAssetAssignment[]; goals:EmployeeGoal[]; training:TrainingAssignment[]; activity:HrEvent[]; providers:{signature:string;laborAuthority:string;attendance:string;payrollSubmission:string}; providerReadiness:HrProviderReadiness[]; generatedAt:string; }
 export interface EmployeeDetail { employee:Employee; relationship:EmploymentRelationship|null; contracts:EmploymentContract[]; annexes:EmploymentAnnex[]; leave:LeaveRequest[]; balance:LeaveBalance|null; medical:MedicalLeaveRecord[]; onboarding:OnboardingInstance[]; offboarding:OffboardingInstance[]; assets:HrAssetAssignment[]; goals:EmployeeGoal[]; training:TrainingAssignment[]; documents:RelatedDocumentsSnapshot|null; activity:HrEvent[]; compensationVisible:boolean; compensation?:Array<Record<string,unknown>>; }
 
 export type AuthenticatorAssuranceLevel="aal1"|"aal2";

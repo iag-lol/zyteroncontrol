@@ -55,7 +55,14 @@ export interface BillingSchedule { id: string; clientId: string; clientName?: st
 export type TaxDocumentStatus = "DRAFT" | "VALIDATED" | "SIGNED" | "SUBMITTED" | "RECEIVED_BY_SII" | "ACCEPTED" | "ACCEPTED_WITH_REPAIRS" | "REJECTED" | "CANCELLED";
 export interface TaxDocument { id: string; invoiceId: string; documentTypeCode: number; folio: number | null; provider: "SII_DIRECT" | "EXTERNAL"; environment: "CERTIFICATION" | "PRODUCTION"; status: TaxDocumentStatus; trackId: string | null; submissionId: string | null; submittedAt: string | null; statusCode: string | null; statusMessage: string | null; lastCheckedAt: string | null; acceptedAt: string | null; rejectedAt: string | null; xmlSignedSha256: string | null; pdfPath: string | null; emitterRut: string | null; receiverRut: string | null; issueDate: string | null; netAmount: number | null; exemptAmount: number | null; taxAmount: number | null; totalAmount: number | null; createdAt: string; }
 export interface TaxDocumentEvent { id: string; taxDocumentId: string; status: string; code: string | null; message: string | null; detail: Record<string, unknown>; occurredAt: string; }
-export interface DteRequirement { key: string; label: string; satisfied: boolean; detail: string; }
+export interface DteRequirement {
+  key: string;
+  label: string;
+  satisfied: boolean;
+  detail: string;
+  actionHref?: string;
+  actionLabel?: string;
+}
 export interface DteReadiness { canIssue: boolean; provider: string; environment: string; requirements: DteRequirement[]; missing: string[]; }
 export interface DteCertificate { id: string; label: string; subject: string; issuer: string; serialNumber: string; holderRut: string | null; validFrom: string; expiresAt: string; fingerprintSha256: string; secretRef: string; status: string; daysRemaining: number; }
 export interface FolioAuthorization { id: string; documentTypeCode: number; environment: string; rangeFrom: number; rangeTo: number; authorizedAt: string; status: string; available: number; used: number; reserved: number; voided: number; }

@@ -10,6 +10,22 @@ import { daysBetween, decryptSecret, encryptionConfigured, encryptSecret, type F
 export interface UploadedFile { fileName:string; contentBase64:string; mimeType?:string; }
 export function decodeUpload(file:unknown,label:string,maxBytes=10*1024*1024){const value=file as UploadedFile|undefined;if(!value?.contentBase64||!value.fileName)throw new BadRequestException(`${label}: adjunta el archivo.`);const bytes=Buffer.from(value.contentBase64,"base64");if(!bytes.length)throw new BadRequestException(`${label}: archivo vacío.`);if(bytes.length>maxBytes)throw new BadRequestException(`${label}: excede ${Math.round(maxBytes/1048576)} MB.`);return{bytes,fileName:value.fileName.replace(/[^\w.\- ]+/g,"_").slice(0,120),mimeType:value.mimeType||"application/octet-stream",sha256:sha256(bytes)};}
 const alertDays=[60,30,15,7,3,1];
+const dteRequirementActions:Record<string,{actionHref:string;actionLabel:string}>={
+  provider:{actionHref:"/finance/settings#dte-emission",actionLabel:"Elegir proveedor"},
+  company:{actionHref:"/finance/settings#dte-company",actionLabel:"Completar emisor"},
+  resolution:{actionHref:"/finance/settings#dte-emission",actionLabel:"Registrar resolución"},
+  environment:{actionHref:"/finance/settings#dte-emission",actionLabel:"Revisar ambiente"},
+  certificate_registry:{actionHref:"/finance/settings#dte-certificate",actionLabel:"Registrar certificado"},
+  certificate_secret:{actionHref:"/finance/settings#dte-certificate",actionLabel:"Configurar certificado"},
+  xsd:{actionHref:"/finance/settings#dte-integrations",actionLabel:"Configurar esquemas"},
+  external_provider:{actionHref:"/finance/settings#dte-integrations",actionLabel:"Configurar credenciales"},
+  document_type:{actionHref:"/finance/settings#dte-document-types",actionLabel:"Habilitar documento"},
+  folios:{actionHref:"/finance/settings#dte-caf",actionLabel:"Cargar CAF"},
+  receiver:{actionHref:"/clients",actionLabel:"Completar cliente"},
+  status:{actionHref:"/finance/invoices",actionLabel:"Revisar factura"},
+  reference:{actionHref:"/finance/tax-documents",actionLabel:"Revisar referencia"},
+};
+export const guideDteRequirements=(requirements:DteRequirement[])=>requirements.map((requirement)=>({...requirement,...dteRequirementActions[requirement.key]}));
 
 @Injectable()
 export class DteService {
@@ -34,7 +50,7 @@ export class DteService {
       add("receiver","Datos tributarios del receptor",!receiver.length,receiver.length?`Completa en la ficha del cliente: ${receiver.join(", ")}.`:"Completos.");
       if(invoice.referenceInvoiceId){const reference=await this.repo.get<Invoice>("invoices",invoice.referenceInvoiceId);const refDoc=reference?.taxDocumentId?await this.repo.get<TaxDocument>("tax_documents",reference.taxDocumentId):undefined;add("reference","Documento referenciado con folio",Boolean(refDoc?.folio),refDoc?.folio?`Referencia folio ${refDoc.folio}.`:"El documento original no tiene folio emitido.");}
     }
-    const missing=requirements.filter((r)=>!r.satisfied).map((r)=>`${r.label}: ${r.detail}`);void actor;return{canIssue:!missing.length&&Boolean(invoiceId),provider:settings.dteProvider,environment:settings.dteEnvironment,requirements,missing};
+    const guided=guideDteRequirements(requirements),missing=guided.filter((r)=>!r.satisfied).map((r)=>`${r.label}: ${r.detail}`);void actor;return{canIssue:!missing.length&&Boolean(invoiceId),provider:settings.dteProvider,environment:settings.dteEnvironment,requirements:guided,missing};
   }
   private companyMissing(settings:Row){return[!validRut(settings.companyRut)&&"RUT",!settings.companyLegalName&&"razón social",!settings.companyBusinessActivity&&"giro",!settings.companyActivityCode&&"código de actividad (Acteco)",!settings.companyAddress&&"dirección",!settings.companyCommune&&"comuna"].filter(Boolean) as string[];}
 
