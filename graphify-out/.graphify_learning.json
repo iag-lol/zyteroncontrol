@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-05T03:38:42.671921+00:00",
+  "generated_at": "2026-10-05T06:07:05.382864+00:00",
   "nodes": {
     "apps_api_package": {
       "code_fingerprint": "f50f972ab97c6e8c3e9775804afaf098480fde94ad3136bf6e944716d3377239",
@@ -22,13 +22,13 @@
           "q": "¿Qué directorio raíz y comandos de build/start requiere Render para desplegar la aplicación web Next.js dentro de este monorepo pnpm?"
         }
       ],
-      "score": 2.686310487,
+      "score": 2.679922675,
       "source_file": "apps/api/package.json",
       "status": "preferred",
       "uses": 3
     },
     "apps_api_src_app_module": {
-      "code_fingerprint": "6be21a6aa17c101285916d6c63ca94212a092fa17b3706bdf8331c94dd550519",
+      "code_fingerprint": "d1b1a63c2e1e6758b2f5ebd430da2b5fba31f8815a629c696e4ec894ab2ca6bb",
       "label": "app.module.ts",
       "last": "2026-09-30T06:46:34.303786+00:00",
       "provenance": [
@@ -38,7 +38,7 @@
           "q": "¿Cómo se conectan los dominios, permisos y rutas empresariales?"
         }
       ],
-      "score": 0.893588148,
+      "score": 0.891463274,
       "source_file": "apps/api/src/app.module.ts",
       "status": "tentative",
       "uses": 1
@@ -54,7 +54,7 @@
           "q": "¿Qué causa el 500 en GET /api/clients del despliegue Render si /api/health responde 200 y CORS ya es correcto?"
         }
       ],
-      "score": 0.895868628,
+      "score": 0.893738331,
       "source_file": "apps/api/src/auth/role.guard.ts",
       "status": "tentative",
       "uses": 1
@@ -70,7 +70,7 @@
           "q": "otro errror en configuracion!!!! nada funciona"
         }
       ],
-      "score": 0.986149104,
+      "score": 0.983804128,
       "source_file": "apps/api/src/auth/role.guard.ts",
       "status": "tentative",
       "uses": 1
@@ -86,13 +86,13 @@
           "q": "¿Cómo se conectan los dominios, permisos y rutas empresariales?"
         }
       ],
-      "score": 0.893588148,
+      "score": 0.891463274,
       "source_file": "apps/api/src/auth/roles.decorator.ts",
       "status": "tentative",
       "uses": 1
     },
     "apps_api_src_clients_client_integrations_service_clientdomainmodules": {
-      "code_fingerprint": "68e013e686d682844478028aaa1d33a00e129e37e726cda926ae53ffdeff3179",
+      "code_fingerprint": "2ad07aa4cfb14b2be67b58789e890a0fbdb5b3bef7a227155fc94c8433d68bdc",
       "label": "clientDomainModules",
       "last": "2026-09-30T07:58:15.448453+00:00",
       "provenance": [
@@ -102,26 +102,31 @@
           "q": "¿Cómo conecta Client 360 con los dominios empresariales?"
         }
       ],
-      "score": 0.894616548,
+      "score": 0.892489228,
       "source_file": "apps/api/src/clients/client-integrations.service.ts",
       "status": "tentative",
       "uses": 1
     },
     "apps_api_src_clients_client_integrations_service_clientintegrationsservice": {
-      "code_fingerprint": "68e013e686d682844478028aaa1d33a00e129e37e726cda926ae53ffdeff3179",
+      "code_fingerprint": "2ad07aa4cfb14b2be67b58789e890a0fbdb5b3bef7a227155fc94c8433d68bdc",
       "label": "ClientIntegrationsService",
-      "last": "2026-09-30T07:58:15.448453+00:00",
+      "last": "2026-10-05T03:55:24.095636+00:00",
       "provenance": [
+        {
+          "date": "2026-10-05T03:55:24.095636+00:00",
+          "outcome": "useful",
+          "q": "dale una lectura a la web ve que no esta bien conectado, que no esta bien integrado, que funcinoes faltan, que esta fallando y resuelvelo todo!, quiero que lo potencies todas las secciones entre si, tiene que haber comunicacion clara y fluida, tambien estar todo preparado para la conexion con la seccion de clientes!, para que lo revises bien y al nivel mas profesional y avanzado"
+        },
         {
           "date": "2026-09-30T07:58:15.448453+00:00",
           "outcome": "useful",
           "q": "¿Cómo conecta Client 360 con los dominios empresariales?"
         }
       ],
-      "score": 0.894616548,
+      "score": 1.890378513,
       "source_file": "apps/api/src/clients/client-integrations.service.ts",
-      "status": "tentative",
-      "uses": 1
+      "status": "preferred",
+      "uses": 2
     },
     "apps_api_src_clients_client_provider_ports_clientproviderports": {
       "code_fingerprint": "d216429c70c9da13d8ab9759fe2c66ae03a455683dccbc40325b4397f8793d7b",
@@ -134,7 +139,7 @@
           "q": "¿Qué puertos externos prepara Client 360 sin simular integraciones?"
         }
       ],
-      "score": 0.894668728,
+      "score": 0.892541284,
       "source_file": "apps/api/src/clients/client-provider-ports.ts",
       "status": "tentative",
       "uses": 1
@@ -150,13 +155,13 @@
           "q": "¿Qué puertos externos prepara Client 360 sin simular integraciones?"
         }
       ],
-      "score": 0.894668728,
+      "score": 0.892541284,
       "source_file": "apps/api/src/clients/client-provider-ports.ts",
       "status": "tentative",
       "uses": 1
     },
     "apps_api_src_clients_clients_repository_clientsrepository": {
-      "code_fingerprint": "d02a50a1428bfefde1f417d6bcb9ea7b3ef84af65f659f8c7d7d223b05441e6d",
+      "code_fingerprint": "41dd49c293486f25bb40e7261bcb9144380f60fae76330f3e36af244092612a2",
       "label": "ClientsRepository",
       "last": "2026-09-30T09:39:36.107309+00:00",
       "provenance": [
@@ -176,26 +181,31 @@
           "q": "¿Cómo conecta Client 360 con los dominios empresariales?"
         }
       ],
-      "score": 2.686557622,
+      "score": 2.680169223,
       "source_file": "apps/api/src/clients/clients.repository.ts",
       "status": "preferred",
       "uses": 3
     },
     "apps_api_src_clients_clients_service_clientsservice": {
-      "code_fingerprint": "c2036536733659d1c580af22ea98b40c3350c3766840b6096d844e1b7e3ddd96",
+      "code_fingerprint": "aef26b33c7f3344ca1eb915678242798ec6060df721578a78af2555520968722",
       "label": "ClientsService",
-      "last": "2026-09-30T07:58:15.448453+00:00",
+      "last": "2026-10-05T03:55:24.095636+00:00",
       "provenance": [
+        {
+          "date": "2026-10-05T03:55:24.095636+00:00",
+          "outcome": "useful",
+          "q": "dale una lectura a la web ve que no esta bien conectado, que no esta bien integrado, que funcinoes faltan, que esta fallando y resuelvelo todo!, quiero que lo potencies todas las secciones entre si, tiene que haber comunicacion clara y fluida, tambien estar todo preparado para la conexion con la seccion de clientes!, para que lo revises bien y al nivel mas profesional y avanzado"
+        },
         {
           "date": "2026-09-30T07:58:15.448453+00:00",
           "outcome": "useful",
           "q": "¿Cómo conecta Client 360 con los dominios empresariales?"
         }
       ],
-      "score": 0.894616548,
+      "score": 1.890378513,
       "source_file": "apps/api/src/clients/clients.service.ts",
-      "status": "tentative",
-      "uses": 1
+      "status": "preferred",
+      "uses": 2
     },
     "apps_api_src_documents_documents_service": {
       "code_fingerprint": "dc0de7135e381d8ac3d5c475b334597964b0a9725bf0ab5490d541e80f11bb39",
@@ -218,7 +228,7 @@
           "q": "Security SQL falla con ERROR 42P01 relation public.documents does not exist"
         }
       ],
-      "score": 2.938842919,
+      "score": 2.931854608,
       "source_file": "apps/api/src/documents/documents.service.ts",
       "status": "preferred",
       "uses": 3
@@ -234,8 +244,24 @@
           "q": "¿Qué causa el 500 en GET /api/clients del despliegue Render si /api/health responde 200 y CORS ya es correcto?"
         }
       ],
-      "score": 0.895868628,
+      "score": 0.893738331,
       "source_file": "apps/api/src/health.controller.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_api_src_insights_domain_insights_service_domaininsightsservice": {
+      "code_fingerprint": "c0250869dec56fb7295351fa24193276faf75bef73905a09a264c584dec32e70",
+      "label": "DomainInsightsService",
+      "last": "2026-10-05T03:55:24.095636+00:00",
+      "provenance": [
+        {
+          "date": "2026-10-05T03:55:24.095636+00:00",
+          "outcome": "useful",
+          "q": "dale una lectura a la web ve que no esta bien conectado, que no esta bien integrado, que funcinoes faltan, que esta fallando y resuelvelo todo!, quiero que lo potencies todas las secciones entre si, tiene que haber comunicacion clara y fluida, tambien estar todo preparado para la conexion con la seccion de clientes!, para que lo revises bien y al nivel mas profesional y avanzado"
+        }
+      ],
+      "score": 0.997889285,
+      "source_file": "apps/api/src/insights/domain-insights.service.ts",
       "status": "tentative",
       "uses": 1
     },
@@ -255,7 +281,7 @@
           "q": "¿Por qué Render muestra Failed to fetch y CORS al llamar localhost:4000 desde zyteroncontrol.onrender.com?"
         }
       ],
-      "score": 1.791421468,
+      "score": 1.787161625,
       "source_file": "apps/api/src/main.ts",
       "status": "preferred",
       "uses": 2
@@ -271,7 +297,7 @@
           "q": "porfa puedes revisarlo el de monitoreo, solo quedaron los registros manuales que hice, en ningun momento reviso periodicamente la web de forma autonoma o automatica!!!! haz que sea autonomo si se registra una web para monitoreo"
         }
       ],
-      "score": 0.999000205,
+      "score": 0.99662467,
       "source_file": "apps/api/src/monitoring/monitoring.module.ts",
       "status": "tentative",
       "uses": 1
@@ -287,7 +313,7 @@
           "q": "porfa puedes revisarlo el de monitoreo, solo quedaron los registros manuales que hice, en ningun momento reviso periodicamente la web de forma autonoma o automatica!!!! haz que sea autonomo si se registra una web para monitoreo"
         }
       ],
-      "score": 0.999000205,
+      "score": 0.99662467,
       "source_file": "apps/api/src/monitoring/monitoring.scheduler.ts",
       "status": "tentative",
       "uses": 1
@@ -303,7 +329,7 @@
           "q": "porfa puedes revisarlo el de monitoreo, solo quedaron los registros manuales que hice, en ningun momento reviso periodicamente la web de forma autonoma o automatica!!!! haz que sea autonomo si se registra una web para monitoreo"
         }
       ],
-      "score": 0.999000205,
+      "score": 0.99662467,
       "source_file": "apps/api/src/monitoring/monitoring.scheduler.ts",
       "status": "tentative",
       "uses": 1
@@ -319,7 +345,7 @@
           "q": "¿Por qué Órdenes de trabajo muestra Internal server error y cómo hacer que Monitoreo no exija un proyecto?"
         }
       ],
-      "score": 0.985237337,
+      "score": 0.982894529,
       "source_file": "apps/api/src/monitoring/monitoring.service.ts",
       "status": "tentative",
       "uses": 1
@@ -340,7 +366,7 @@
           "q": "da este error Internal server error"
         }
       ],
-      "score": 1.96984327,
+      "score": 1.965159155,
       "source_file": "apps/api/src/monitoring/monitoring.supabase-store.ts",
       "status": "preferred",
       "uses": 2
@@ -356,7 +382,7 @@
           "q": "porfa puedes revisarlo el de monitoreo, solo quedaron los registros manuales que hice, en ningun momento reviso periodicamente la web de forma autonoma o automatica!!!! haz que sea autonomo si se registra una web para monitoreo"
         }
       ],
-      "score": 0.999000205,
+      "score": 0.99662467,
       "source_file": "apps/api/src/monitoring/worker-main.ts",
       "status": "tentative",
       "uses": 1
@@ -372,7 +398,7 @@
           "q": "¿Por qué Órdenes de trabajo muestra Internal server error y cómo hacer que Monitoreo no exija un proyecto?"
         }
       ],
-      "score": 0.985237337,
+      "score": 0.982894529,
       "source_file": "apps/api/src/operations/operations.repository.ts",
       "status": "tentative",
       "uses": 1
@@ -388,7 +414,7 @@
           "q": "otro errror en configuracion!!!! nada funciona"
         }
       ],
-      "score": 0.986149104,
+      "score": 0.983804128,
       "source_file": "apps/api/src/settings/settings.controller.ts",
       "status": "tentative",
       "uses": 1
@@ -404,7 +430,7 @@
           "q": "y no resolvistev ese error? Internal server error en Soporte Inbox"
         }
       ],
-      "score": 0.98594659,
+      "score": 0.983602095,
       "source_file": "apps/api/src/support/support.controller.ts",
       "status": "tentative",
       "uses": 1
@@ -420,7 +446,7 @@
           "q": "y no resolvistev ese error? Internal server error en Soporte Inbox"
         }
       ],
-      "score": 0.98594659,
+      "score": 0.983602095,
       "source_file": "apps/api/src/support/support.repository.ts",
       "status": "tentative",
       "uses": 1
@@ -436,7 +462,7 @@
           "q": "y no resolvistev ese error? Internal server error en Soporte Inbox"
         }
       ],
-      "score": 0.98594659,
+      "score": 0.983602095,
       "source_file": "apps/api/src/support/support.repository.ts",
       "status": "tentative",
       "uses": 1
@@ -452,7 +478,7 @@
           "q": "y no resolvistev ese error? Internal server error en Soporte Inbox"
         }
       ],
-      "score": 0.98594659,
+      "score": 0.983602095,
       "source_file": "apps/api/src/support/support.service.ts",
       "status": "tentative",
       "uses": 1
@@ -468,7 +494,7 @@
           "q": "¿Qué directorio raíz y comandos de build/start requiere Render para desplegar la aplicación web Next.js dentro de este monorepo pnpm?"
         }
       ],
-      "score": 0.894889018,
+      "score": 0.892761051,
       "source_file": "apps/web/next.config.ts",
       "status": "tentative",
       "uses": 1
@@ -494,7 +520,7 @@
           "q": "¿Qué directorio raíz y comandos de build/start requiere Render para desplegar la aplicación web Next.js dentro de este monorepo pnpm?"
         }
       ],
-      "score": 2.686310487,
+      "score": 2.679922675,
       "source_file": "apps/web/package.json",
       "status": "preferred",
       "uses": 3
@@ -510,13 +536,13 @@
           "q": "¿Por qué sólo funciona Todos los clientes y las demás secciones del menú devuelven Internal server error?"
         }
       ],
-      "score": 0.896514841,
+      "score": 0.894383007,
       "source_file": "apps/web/src/app/clients/[[...segments]]/page.tsx",
       "status": "tentative",
       "uses": 1
     },
     "apps_web_src_components_clients_client_360_client360": {
-      "code_fingerprint": "6ae4dd13c0c2a430c019b5738c310a4577db923178dedaea19de1b1842be29ea",
+      "code_fingerprint": "6392c26d8c65cef47ab94cfc79dddcbacb65be4c6a491a78ef1a2ad133c31e9c",
       "label": "Client360()",
       "last": "2026-09-30T10:10:21.841033+00:00",
       "provenance": [
@@ -531,13 +557,13 @@
           "q": "¿Cómo conecta Client 360 con los dominios empresariales?"
         }
       ],
-      "score": 1.791131388,
+      "score": 1.786872235,
       "source_file": "apps/web/src/components/clients/client-360.tsx",
       "status": "preferred",
       "uses": 2
     },
     "apps_web_src_components_clients_client_hub_clienthub": {
-      "code_fingerprint": "e4e066bc84c7d81d25f040c5dca17590005e5e810823019ae50f1207068796e5",
+      "code_fingerprint": "fbcbebdade36b564d6be954563107bbd4dbfee9793ef6eb11d6dc61d7fc70f3e",
       "label": "ClientHub()",
       "last": "2026-09-30T10:10:21.841033+00:00",
       "provenance": [
@@ -547,7 +573,7 @@
           "q": "¿Por qué sólo funciona Todos los clientes y las demás secciones del menú devuelven Internal server error?"
         }
       ],
-      "score": 0.896514841,
+      "score": 0.894383007,
       "source_file": "apps/web/src/components/clients/client-hub.tsx",
       "status": "tentative",
       "uses": 1
@@ -568,7 +594,7 @@
           "q": "¿Por qué POST /api/clients devuelve 500 en producción mientras GET /api/clients funciona y la lista sigue vacía?"
         }
       ],
-      "score": 1.792364444,
+      "score": 1.788102358,
       "source_file": "apps/web/src/components/clients/new-client-wizard.tsx",
       "status": "preferred",
       "uses": 2
@@ -584,7 +610,7 @@
           "q": "¿Cómo se conectan los dominios, permisos y rutas empresariales?"
         }
       ],
-      "score": 0.893588148,
+      "score": 0.891463274,
       "source_file": "apps/web/src/components/enterprise/access.tsx",
       "status": "tentative",
       "uses": 1
@@ -600,7 +626,7 @@
           "q": "¿Cómo se conectan los dominios, permisos y rutas empresariales?"
         }
       ],
-      "score": 0.893588148,
+      "score": 0.891463274,
       "source_file": "apps/web/src/components/enterprise-shell.tsx",
       "status": "tentative",
       "uses": 1
@@ -621,7 +647,7 @@
           "q": "¿Cómo se conectan los dominios, permisos y rutas empresariales?"
         }
       ],
-      "score": 1.790102989,
+      "score": 1.785846281,
       "source_file": "apps/web/src/components/module-page.tsx",
       "status": "preferred",
       "uses": 2
@@ -647,7 +673,7 @@
           "q": "Cómo se conecta el nuevo módulo Security 11 entre UI, API, autorización, repositorio, contratos y migración, y existen referencias rotas"
         }
       ],
-      "score": 2.936651642,
+      "score": 2.929668541,
       "source_file": "apps/web/src/components/security/security-workspace.tsx",
       "status": "preferred",
       "uses": 3
@@ -663,7 +689,7 @@
           "q": "Por qué los botones de Soporte no cambian el cursor ni transmiten sensación de clic"
         }
       ],
-      "score": 0.985791243,
+      "score": 0.983447118,
       "source_file": "apps/web/src/components/support/support-workspace.tsx",
       "status": "tentative",
       "uses": 1
@@ -679,13 +705,13 @@
           "q": "¿Cómo se conectan los dominios, permisos y rutas empresariales?"
         }
       ],
-      "score": 0.893588148,
+      "score": 0.891463274,
       "source_file": "apps/web/src/lib/access-control.ts",
       "status": "tentative",
       "uses": 1
     },
     "apps_web_src_lib_clients_api": {
-      "code_fingerprint": "e0bc75d8c5675dc2494ca6b9ffe6be534ef12f2b549acdbcc3f9af00129aeea3",
+      "code_fingerprint": "44312fab3139aa0c1c9db26a6ec447c491408260144877c7d8084d20264e91f5",
       "label": "clients-api.ts",
       "last": "2026-09-30T09:15:35.768642+00:00",
       "provenance": [
@@ -705,13 +731,13 @@
           "q": "¿Qué directorio raíz y comandos de build/start requiere Render para desplegar la aplicación web Next.js dentro de este monorepo pnpm?"
         }
       ],
-      "score": 2.686310487,
+      "score": 2.679922675,
       "source_file": "apps/web/src/lib/clients-api.ts",
       "status": "preferred",
       "uses": 3
     },
     "apps_web_src_lib_clients_api_clientsapi": {
-      "code_fingerprint": "e0bc75d8c5675dc2494ca6b9ffe6be534ef12f2b549acdbcc3f9af00129aeea3",
+      "code_fingerprint": "44312fab3139aa0c1c9db26a6ec447c491408260144877c7d8084d20264e91f5",
       "label": "clientsApi",
       "last": "2026-09-30T09:54:52.220380+00:00",
       "provenance": [
@@ -721,7 +747,7 @@
           "q": "¿Por qué aparecen alertas de UUID después de desplegar el wizard corregido?"
         }
       ],
-      "score": 0.896291998,
+      "score": 0.894160694,
       "source_file": "apps/web/src/lib/clients-api.ts",
       "status": "tentative",
       "uses": 1
@@ -747,7 +773,7 @@
           "q": "Cómo se conecta el nuevo módulo Security 11 entre UI, API, autorización, repositorio, contratos y migración, y existen referencias rotas"
         }
       ],
-      "score": 2.936651642,
+      "score": 2.929668541,
       "source_file": "apps/web/src/lib/security-api.ts",
       "status": "preferred",
       "uses": 3
@@ -763,13 +789,13 @@
           "q": "y no resolvistev ese error? Internal server error en Soporte Inbox"
         }
       ],
-      "score": 0.98594659,
+      "score": 0.983602095,
       "source_file": "apps/web/src/lib/support-api.ts",
       "status": "tentative",
       "uses": 1
     },
     "packages_contracts_src_index_settingsworkspace": {
-      "code_fingerprint": "82928def719a6aba4c941d350ec6320e16fdfe63392fd6ceb88f2e7f7194b6d3",
+      "code_fingerprint": "371195ba2f614e4b6a9376434af449979647e292e65b558f843c43ba29100c09",
       "label": "SettingsWorkspace",
       "last": "2026-10-04T13:09:25.673874+00:00",
       "provenance": [
@@ -779,13 +805,13 @@
           "q": "otro errror en configuracion!!!! nada funciona"
         }
       ],
-      "score": 0.986149104,
+      "score": 0.983804128,
       "source_file": "packages/contracts/src/index.ts",
       "status": "tentative",
       "uses": 1
     },
     "packages_contracts_src_index_supportworkspace": {
-      "code_fingerprint": "82928def719a6aba4c941d350ec6320e16fdfe63392fd6ceb88f2e7f7194b6d3",
+      "code_fingerprint": "371195ba2f614e4b6a9376434af449979647e292e65b558f843c43ba29100c09",
       "label": "SupportWorkspace",
       "last": "2026-10-04T12:56:37.663862+00:00",
       "provenance": [
@@ -800,7 +826,7 @@
           "q": "Por qué los botones de Soporte no cambian el cursor ni transmiten sensación de clic"
         }
       ],
-      "score": 1.971737833,
+      "score": 1.967049213,
       "source_file": "packages/contracts/src/index.ts",
       "status": "preferred",
       "uses": 2
@@ -816,7 +842,7 @@
           "q": "da este error Internal server error"
         }
       ],
-      "score": 0.984605933,
+      "score": 0.982264626,
       "source_file": "packages/contracts/src/monitoring.ts",
       "status": "tentative",
       "uses": 1
@@ -852,7 +878,7 @@
           "q": "Ayúdame con ERROR 42703: column user_id does not exist en commercial_notifications_own de Comercial Sales SQL"
         }
       ],
-      "score": 5.875874626,
+      "score": 5.861902311,
       "source_file": "supabase/migrations/20260930160000_commercial_sales_operations.sql",
       "status": "preferred",
       "uses": 6
@@ -878,7 +904,7 @@
           "q": "Site Reliability falla porque public.project_endpoints no existe; Financial y Security fallan porque public.projects no existe"
         }
       ],
-      "score": 2.938343083,
+      "score": 2.931355961,
       "source_file": "supabase/migrations/20261001010000_delivery_operations_center.sql",
       "status": "preferred",
       "uses": 3
@@ -909,7 +935,7 @@
           "q": "Site Reliability falla porque public.project_endpoints no existe; Financial y Security fallan porque public.projects no existe"
         }
       ],
-      "score": 3.922949016,
+      "score": 3.913620587,
       "source_file": "supabase/migrations/20261001050000_site_reliability_monitoring.sql",
       "status": "preferred",
       "uses": 4
@@ -935,7 +961,7 @@
           "q": "Security SQL falla con ERROR 42P01 relation public.documents does not exist"
         }
       ],
-      "score": 2.938842919,
+      "score": 2.931854608,
       "source_file": "supabase/migrations/20261001080000_document_control_center.sql",
       "status": "preferred",
       "uses": 3
@@ -971,7 +997,7 @@
           "q": "Site Reliability falla porque public.project_endpoints no existe; Financial y Security fallan porque public.projects no existe"
         }
       ],
-      "score": 5.87710799,
+      "score": 5.863132741,
       "source_file": "supabase/migrations/20261001150000_financial_accounting_center.sql",
       "status": "preferred",
       "uses": 6
@@ -1007,7 +1033,7 @@
           "q": "Site Reliability falla porque public.project_endpoints no existe; Financial y Security fallan porque public.projects no existe"
         }
       ],
-      "score": 8.813837644,
+      "score": 8.79287911,
       "source_file": "supabase/migrations/20261004010000_security_control_plane.sql",
       "status": "preferred",
       "uses": 9
@@ -1043,7 +1069,7 @@
           "q": "Ayúdame con ERROR 42703: column user_id does not exist en commercial_notifications_own de Comercial Sales SQL"
         }
       ],
-      "score": 5.875874626,
+      "score": 5.861902311,
       "source_file": "supabase/migrations/20261004020000_commercial_notifications_owner_fix.sql",
       "status": "preferred",
       "uses": 6
@@ -1059,7 +1085,7 @@
           "q": "otro errror en configuracion!!!! nada funciona"
         }
       ],
-      "score": 0.986149104,
+      "score": 0.983804128,
       "source_file": "supabase/migrations/20261004060000_enterprise_control_plane.sql",
       "status": "tentative",
       "uses": 1
@@ -1075,7 +1101,7 @@
           "q": "da este error Internal server error"
         }
       ],
-      "score": 0.984605933,
+      "score": 0.982264626,
       "source_file": "supabase/migrations/20261004190000_monitoring_recovery.sql",
       "status": "tentative",
       "uses": 1

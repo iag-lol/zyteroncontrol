@@ -30,6 +30,11 @@ describe("Delivery Operations Center", () => {
     expect((await service.acceptHandoff(order.id, manager)).status).toBe("PENDING_PLANNING");
   });
 
+  it("crea la OT manual en DRAFT aunque el cliente envíe un estado de otra entidad", async () => {
+    const order = await service.createWorkOrder({ title: "Integración GPS", scope: "Implementación", status: "BACKLOG" }, manager);
+    expect(order.status).toBe("DRAFT");
+  });
+
   it("convierte una OT a un único proyecto aunque se repita la solicitud", async () => {
     const order = await plannedWorkOrder();
     const first = await service.convertWorkOrder(order.id, {}, "create-project-1", manager);
