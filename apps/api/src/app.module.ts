@@ -24,6 +24,7 @@ import { ContractsModule } from "./contracts/contracts.module.js";
 import { ClientServicesModule } from "./client-services/client-services.module.js";
 import { RenewalsModule } from "./renewals/renewals.module.js";
 import { CommercialModule } from "./commercial/commercial.module.js";
+import { ExecutiveModule } from "./executive/executive.module.js";
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { CommercialModule } from "./commercial/commercial.module.js";
     ClientServicesModule,
     RenewalsModule,
     CommercialModule,
+    ExecutiveModule,
     OperationsModule,
     DevelopmentModule,
     MonitoringModule,

@@ -8,6 +8,7 @@ import { ProjectsModule } from "../projects/projects.module.js";
 import { QuotesModule } from "../quotes/quotes.module.js";
 import { SupportModule } from "../support/support.module.js";
 import { WorkOrdersModule } from "../work-orders/work-orders.module.js";
+import { DomainInsightsService } from "../insights/domain-insights.service.js";
 import { clientProviderPorts } from "./client-provider-ports.js";
 
 export const clientDomainModules = {
@@ -27,6 +28,7 @@ export const clientDomainModules = {
 
 @Injectable()
 export class ClientIntegrationsService {
+  constructor(private readonly insights:DomainInsightsService = new DomainInsightsService()) {}
   describe() {
     return Object.keys(clientDomainModules).map((domain) => ({
       domain,
@@ -34,4 +36,5 @@ export class ClientIntegrationsService {
       ownership: domain === "PORTAL_CLIENT" ? "CLIENTS" : domain,
     })).concat(Object.entries(clientProviderPorts).map(([domain, status]) => ({ domain, relation: status, ownership: "PROVIDER_PORT" })));
   }
+  summary(clientId:string, includeFinance=false) { return this.insights.client(clientId, includeFinance); }
 }

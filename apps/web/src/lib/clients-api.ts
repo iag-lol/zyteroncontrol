@@ -1,4 +1,4 @@
-import type { Client, ClientContact, ClientEvent, ClientListResponse, ClientPortalSettings, ClientService, CreateClientInput, RelatedAuditSnapshot, RelatedSupportSnapshot, Role } from "@zyteron/contracts";
+import type { Client, ClientContact, ClientEvent, ClientIntegrationSummary, ClientListResponse, ClientPortalSettings, ClientService, CreateClientInput, RelatedAuditSnapshot, RelatedDocumentsSnapshot, RelatedSupportSnapshot, Role } from "@zyteron/contracts";
 import { apiHeaders } from "./api-auth";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api";
@@ -22,7 +22,7 @@ export const clientsApi = {
   create: (role: Role, input: CreateClientInput) => request<Client>("/clients", role, { method: "POST", body: JSON.stringify(input) }),
   update: (role: Role, id: string, input: Partial<Client>) => request<Client>(`/clients/${id}`, role, { method: "PATCH", body: JSON.stringify(input) }),
   archive: (role: Role, id: string) => request<Client>(`/clients/${id}/archive`, role, { method: "POST" }),
-  summary: (role: Role, id: string) => request<Record<string, unknown>>(`/clients/${id}/summary`, role),
+  summary: (role: Role, id: string) => request<ClientIntegrationSummary>(`/clients/${id}/summary`, role),
   contacts: (role: Role, id: string) => request<ClientContact[]>(`/clients/${id}/contacts`, role),
   addContact: (role: Role, id: string, input: NonNullable<CreateClientInput["primaryContact"]>) => request<ClientContact>(`/clients/${id}/contacts`, role, { method: "POST", body: JSON.stringify(input) }),
   services: (role: Role, id: string) => request<ClientService[]>(`/clients/${id}/services`, role),
@@ -33,4 +33,7 @@ export const clientsApi = {
   related: (role: Role, id: string, endpoint: string) => request<Record<string, unknown>>(`/clients/${id}/${endpoint}`, role),
   audits: (role:Role,id:string)=>request<RelatedAuditSnapshot>(`/clients/${id}/audits`,role),
   support: (role:Role,id:string)=>request<RelatedSupportSnapshot>(`/clients/${id}/support-summary`,role),
+  documents: (role:Role,id:string)=>request<RelatedDocumentsSnapshot>(`/clients/${id}/documents`,role),
+  finance: (role:Role,id:string)=>request<NonNullable<ClientIntegrationSummary["finance"]>>(`/clients/${id}/finance-summary`,role),
+  monitoring: (role:Role,id:string)=>request<ClientIntegrationSummary["monitoring"]>(`/clients/${id}/monitoring-summary`,role),
 };

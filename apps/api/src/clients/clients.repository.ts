@@ -61,7 +61,7 @@ export class ClientsRepository {
       return { totalContracts:0, expiredContracts:0, totalServices:services.length, suspendedServices:services.filter((item)=>item.status==="SUSPENDED").length, totalRenewals:0, overdueRenewals:0, openSupportTickets:0, criticalSupportTickets:0, supportSlaBreaches:0 };
     }
     const today = new Date().toISOString().slice(0, 10);
-    const [contracts, expiredContracts, services, suspendedServices, renewals, overdueRenewals, openSupport, criticalSupport, breachedSupport] = await Promise.all([
+    const queries = await Promise.allSettled([
       this.supabase.from("client_contracts").select("id", { count:"exact", head:true }).eq("client_id", clientId).is("archived_at", null),
       this.supabase.from("client_contracts").select("id", { count:"exact", head:true }).eq("client_id", clientId).is("archived_at", null).or(`status.eq.EXPIRED,end_date.lt.${today}`),
       this.supabase.from("client_services").select("id", { count:"exact", head:true }).eq("client_id", clientId),
@@ -71,19 +71,19 @@ export class ClientsRepository {
       this.supabase.from("support_tickets").select("id", { count:"exact", head:true }).eq("client_id",clientId).is("archived_at",null).not("status","in","(RESOLVED,CLOSED,CANCELLED)"),
       this.supabase.from("support_tickets").select("id", { count:"exact", head:true }).eq("client_id",clientId).eq("severity","CRITICAL").is("archived_at",null).not("status","in","(RESOLVED,CLOSED,CANCELLED)"),
       this.supabase.from("support_tickets").select("id", { count:"exact", head:true }).eq("client_id",clientId).is("resolved_at",null).lt("resolution_due_at",new Date().toISOString()),
+      this.supabase.from("invoices").select("id",{count:"exact",head:true}).eq("client_id",clientId).in("status",["ISSUED","PARTIALLY_PAID"]),
+      this.supabase.from("invoices").select("id",{count:"exact",head:true}).eq("client_id",clientId).in("status",["ISSUED","PARTIALLY_PAID"]).lt("due_date",today),
+      this.supabase.from("incidents").select("id",{count:"exact",head:true}).eq("client_id",clientId).in("status",["DETECTED","CONFIRMED","ACKNOWLEDGED","INVESTIGATING","MITIGATING","MONITORING"]),
+      this.supabase.from("incidents").select("id",{count:"exact",head:true}).eq("client_id",clientId).eq("severity","CRITICAL").in("status",["DETECTED","CONFIRMED","ACKNOWLEDGED","INVESTIGATING","MITIGATING","MONITORING"]),
+      this.supabase.from("monitors").select("id",{count:"exact",head:true}).eq("client_id",clientId).eq("enabled",true).eq("status","OFFLINE"),
+      this.supabase.from("projects").select("id",{count:"exact",head:true}).eq("client_id",clientId).not("status","in","(COMPLETED,CANCELLED,ARCHIVED)"),
+      this.supabase.from("projects").select("id",{count:"exact",head:true}).eq("client_id",clientId).not("status","in","(COMPLETED,CANCELLED,ARCHIVED)").lt("target_date",today),
+      this.supabase.from("projects").select("id",{count:"exact",head:true}).eq("client_id",clientId).in("health",["AT_RISK","CRITICAL"]).not("status","in","(COMPLETED,CANCELLED,ARCHIVED)"),
     ]);
-    const error = [contracts, expiredContracts, services, suspendedServices, renewals, overdueRenewals, openSupport, criticalSupport, breachedSupport].find((result) => result.error)?.error;
-    if (error) throw error;
+    const count=(index:number)=>{const result=queries[index];return result?.status==="fulfilled"&&!result.value.error?result.value.count??0:undefined;};
     return {
-      totalContracts: contracts.count ?? 0,
-      expiredContracts: expiredContracts.count ?? 0,
-      totalServices: services.count ?? 0,
-      suspendedServices: suspendedServices.count ?? 0,
-      totalRenewals: renewals.count ?? 0,
-      overdueRenewals: overdueRenewals.count ?? 0,
-      openSupportTickets: openSupport.count ?? 0,
-      criticalSupportTickets: criticalSupport.count ?? 0,
-      supportSlaBreaches: breachedSupport.count ?? 0,
+      totalContracts:count(0)??0,expiredContracts:count(1)??0,totalServices:count(2)??0,suspendedServices:count(3)??0,totalRenewals:count(4)??0,overdueRenewals:count(5)??0,
+      openSupportTickets:count(6),criticalSupportTickets:count(7),supportSlaBreaches:count(8),openInvoices:count(9),overdueInvoices:count(10),activeMonitoringIncidents:count(11),criticalMonitoringIncidents:count(12),downMonitors:count(13),activeProjects:count(14),overdueProjects:count(15),atRiskProjects:count(16),
     };
   }
 

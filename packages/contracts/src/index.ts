@@ -55,6 +55,36 @@ export interface PipelineSummary {
   generatedAt: string;
 }
 
+export type IntegrationHealth = "OK" | "DEGRADED" | "UNAVAILABLE";
+export interface IntegrationSourceHealth { domain:string; status:IntegrationHealth; detail:string|null; }
+export interface ExecutiveAttentionItem { domain:string; label:string; count:number; severity:"ATTENTION"|"CRITICAL"; href:string; }
+export interface ExecutiveDashboard {
+  generatedAt:string;
+  status:IntegrationHealth;
+  sources:IntegrationSourceHealth[];
+  metrics:{
+    salesThisMonth:number; pipelineValue:number; pipelineCount:number; activeClients:number; newClientsThisMonth:number;
+    activeProjects:number; overdueProjects:number; openWorkOrders:number; pendingQuotes:number; onlineMonitors:number; downMonitors:number;
+    criticalIncidents:number; sslExpiring:number; activeEmployees:number; overdueTasks:number; pendingAudits:number;
+    pendingInvoices:number; overdueReceivables:number; criticalTickets:number; securityEvents:number;
+  };
+  attention:ExecutiveAttentionItem[];
+}
+
+export interface ClientIntegrationSummary {
+  clientId:string;
+  generatedAt:string;
+  status:IntegrationHealth;
+  sources:IntegrationSourceHealth[];
+  commercial:{openOpportunities:number; pipelineValue:number; pendingQuotes:number; sales:number; salesValue:number};
+  operations:{activeProjects:number; atRiskProjects:number; overdueProjects:number; openWorkOrders:number};
+  documents:{total:number; pendingReview:number; pendingSignature:number};
+  support:{open:number; critical:number; breached:number};
+  monitoring:{total:number; online:number; down:number; activeIncidents:number};
+  audits:{scheduled:number; openFindings:number; criticalFindings:number};
+  finance:{openInvoices:number; overdueInvoices:number; balanceDue:number; overdueBalance:number}|null;
+}
+
 export interface CreateCommercialRecord {
   company: string;
   contact: string;

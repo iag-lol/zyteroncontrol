@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Archive, ArrowLeft, BriefcaseBusiness, Building2, CalendarClock, CircleDollarSign, ContactRound, FileStack, Globe2, MoreHorizontal, Plus, Receipt, Settings, ShieldCheck, TicketCheck, Upload, Wrench } from "lucide-react";
-import type { Client, ClientContact, ClientContract, ClientEvent, ClientPortalSettings, ClientRenewal, ClientService, OperationsProject, RelatedAuditSnapshot, RelatedSupportSnapshot, Sale, SalesFollowUp, SalesOpportunity, SalesQuote, WorkOrder } from "@zyteron/contracts";
+import type { Client, ClientContact, ClientContract, ClientEvent, ClientIntegrationSummary, ClientPortalSettings, ClientRenewal, ClientService, OperationsProject, RelatedAuditSnapshot, RelatedDocumentsSnapshot, RelatedSupportSnapshot, Sale, SalesFollowUp, SalesOpportunity, SalesQuote, WorkOrder } from "@zyteron/contracts";
 import { ClientMonitoringPanel } from "@/components/monitoring/embedded";
 import { useAccess } from "@/components/access-context";
 import { ClientFinancePanel } from "@/components/finance/entity-finance-panels";
@@ -31,30 +31,37 @@ export function Client360({ id, initialTab = "summary" }: { id: string; initialT
   const [services, setServices] = useState<ClientService[]>([]);
   const [renewals, setRenewals] = useState<ClientRenewal[]>([]);
   const [activity, setActivity] = useState<ClientEvent[]>([]);
+  const [insights,setInsights]=useState<ClientIntegrationSummary|null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [warning,setWarning]=useState("");
   const tab = (tabs.some(([key]) => key === initialTab) ? initialTab : "summary") as ClientTab;
   const canManage = ["GERENTE_GENERAL", "EJECUTIVA_VENTAS", "COMERCIAL"].includes(role);
   const visibleTabs = useMemo(() => tabs.filter(([key]) => key !== "finance" || hasFinancePermission(role, "invoice.view")), [role]);
 
-  const refresh = () => Promise.all([
+  const refresh = async () => {
+    const results=await Promise.allSettled([
     clientsApi.get(role, id),
     clientsApi.contacts(role, id),
     contractsApi.list(role, new URLSearchParams({ clientId: id, pageSize: "100" })),
     clientsApi.services(role, id),
     renewalsApi.list(role, new URLSearchParams({ clientId: id, pageSize: "100" })),
     clientsApi.activity(role, id),
-  ])
-    .then(([clientData, contactData, contractData, serviceData, renewalData, activityData]) => {
-      setClient(clientData);
-      setContacts(contactData);
-      setContracts(contractData.items);
-      setServices(serviceData);
-      setRenewals(renewalData.items);
-      setActivity(activityData);
-      setError("");
-    })
-    .catch((reason: Error) => setError(reason.message)).finally(() => setLoading(false));
+    clientsApi.summary(role,id),
+    ]);
+    const clientResult=results[0];
+    if(clientResult.status==="rejected"){setError(clientResult.reason instanceof Error?clientResult.reason.message:"Cliente no encontrado.");setLoading(false);return;}
+    setClient(clientResult.value as Client);
+    if(results[1]?.status==="fulfilled")setContacts(results[1].value as ClientContact[]);
+    if(results[2]?.status==="fulfilled")setContracts((results[2].value as {items:ClientContract[]}).items);
+    if(results[3]?.status==="fulfilled")setServices(results[3].value as ClientService[]);
+    if(results[4]?.status==="fulfilled")setRenewals((results[4].value as {items:ClientRenewal[]}).items);
+    if(results[5]?.status==="fulfilled")setActivity(results[5].value as ClientEvent[]);
+    if(results[6]?.status==="fulfilled")setInsights(results[6].value as ClientIntegrationSummary);
+    const failed=results.slice(1).filter(result=>result.status==="rejected").length;
+    setWarning(failed?`${failed} fuente${failed===1?"":"s"} relacionada${failed===1?"":"s"} no respondió. El expediente principal sigue disponible.`:"");
+    setError("");setLoading(false);
+  };
   useEffect(() => {
     setLoading(true);
     void refresh();
@@ -66,6 +73,7 @@ export function Client360({ id, initialTab = "summary" }: { id: string; initialT
 
   return <main className="client360">
     <Link className="clientBack" href="/clients"><ArrowLeft size={15}/> Volver a la cartera</Link>
+    {warning?<div className="clientError">{warning}</div>:null}
     <header className="client360Header">
       <div className="clientCompanyIdentity"><span className="clientLogo">{initials(client)}</span><div><span className="clientKicker">Client 360°</span><h1>{client.tradeName || client.legalName}</h1><p>{client.legalName} · {client.rut}</p><div className="clientIdentityMeta"><b>{statusLabel(client.status)}</b><span className={`clientHealth ${client.health.toLowerCase()}`}>{healthLabel(client.health)}</span><span>Cliente desde {formatDate(client.createdAt)}</span></div></div></div>
       <div className="clientOwnership"><span><small>Ejecutiva</small><strong>{client.accountExecutiveId || "Sin asignar"}</strong></span><span><small>Responsable técnico</small><strong>{client.developmentLeadId || "Sin asignar"}</strong></span></div>
@@ -83,7 +91,7 @@ export function Client360({ id, initialTab = "summary" }: { id: string; initialT
     </div>
     <nav className="clientTabs" aria-label="Secciones del cliente">{visibleTabs.map(([key, label]) => <Link className={tab === key ? "active" : ""} href={`/clients/${id}/${key}`} key={key}>{label}</Link>)}</nav>
     <section className="clientTabContent">
-      {tab === "summary" ? <Summary client={client} contacts={contacts} contracts={contracts} services={services} renewals={renewals} activity={activity}/> : null}
+      {tab === "summary" ? <Summary client={client} contacts={contacts} contracts={contracts} services={services} renewals={renewals} activity={activity} insights={insights}/> : null}
       {tab === "contacts" ? <Contacts clientId={id} contacts={contacts} roleCanManage={canManage} onCreated={refresh}/> : null}
       {tab === "commercial" ? <Commercial clientId={id}/> : null}
       {tab === "contracts" ? <ClientContracts clientId={id} contracts={contracts}/> : null}
@@ -91,7 +99,7 @@ export function Client360({ id, initialTab = "summary" }: { id: string; initialT
       {tab === "renewals" ? <ClientRenewals clientId={id} renewals={renewals}/> : null}
       {tab === "projects" ? <ClientOperations clientId={id} mode="projects"/> : null}
       {tab === "work-orders" ? <ClientOperations clientId={id} mode="work-orders"/> : null}
-      {tab === "documents" ? <DomainPanel icon={FileStack} title="Documentos y versiones" description="Storage privado en clients/{clientId}/ con clasificación y trazabilidad." action={{ href: `/documents/clients?clientId=${id}`, label: "Subir documento" }} empty="No hay documentos asociados a este cliente."/> : null}
+      {tab === "documents" ? <ClientDocuments clientId={id}/> : null}
       {tab === "finance" ? <ClientFinancePanel clientId={id}/> : null}
       {tab === "support" ? <ClientSupport clientId={id}/> : null}
       {tab === "monitoring" ? <ClientMonitoringPanel clientId={id}/> : null}
@@ -103,7 +111,7 @@ export function Client360({ id, initialTab = "summary" }: { id: string; initialT
   </main>;
 }
 
-function Summary({ client, contacts, contracts, services, renewals, activity }: { client: Client; contacts: ClientContact[]; contracts: ClientContract[]; services: ClientService[]; renewals: ClientRenewal[]; activity: ClientEvent[] }) {
+function Summary({ client, contacts, contracts, services, renewals, activity, insights }: { client: Client; contacts: ClientContact[]; contracts: ClientContract[]; services: ClientService[]; renewals: ClientRenewal[]; activity: ClientEvent[]; insights:ClientIntegrationSummary|null }) {
   const nextRenewal = [...renewals].filter((item) => !["RENEWED", "NOT_RENEWED", "CANCELLED"].includes(item.status)).sort((a, b) => a.renewalDate.localeCompare(b.renewalDate))[0];
   return <div className="clientSummaryGrid">
     <section className="relationshipPanel"><div className="panelHeading"><span>Relación Zyteron</span><h2>Contexto del cliente</h2></div><dl><div><dt>Empresa</dt><dd>{client.legalName}</dd></div><div><dt>Giro</dt><dd>{client.businessActivity || "Sin información"}</dd></div><div><dt>Ubicación</dt><dd>{[client.commune, client.region, client.country].filter(Boolean).join(", ")}</dd></div><div><dt>Contacto principal</dt><dd>{contacts.find((item) => item.isPrimary)?.name || "Sin contacto principal"}</dd></div><div><dt>Próximo compromiso</dt><dd>{nextRenewal ? `${nextRenewal.title} · ${formatDate(`${nextRenewal.renewalDate}T12:00:00Z`)}` : "Sin compromiso registrado"}</dd></div></dl></section>
@@ -111,9 +119,9 @@ function Summary({ client, contacts, contracts, services, renewals, activity }: 
     <section className="snapshotPanel services"><div className="panelHeading"><span>Servicios</span><h2>{services.filter((item) => item.status === "ACTIVE").length} activos</h2></div>{services.length ? services.slice(0, 3).map((service) => <p key={service.id}><strong>{service.serviceName}</strong><span>{service.status}</span></p>) : <EmptyLine text="No hay servicios contratados."/>}</section>
     <section className="snapshotPanel contracts"><div className="panelHeading"><span>Contratos</span><h2>{contracts.filter((item) => item.status === "ACTIVE").length} activos</h2></div>{contracts.length ? contracts.slice(0, 3).map((contract) => <p key={contract.id}><strong>{contract.name}</strong><span>{contract.status}</span></p>) : <EmptyLine text="No hay contratos registrados."/>}</section>
     <section className="snapshotPanel renewals"><div className="panelHeading"><span>Renovaciones</span><h2>{renewals.filter((item) => !["RENEWED", "NOT_RENEWED", "CANCELLED"].includes(item.status)).length} abiertas</h2></div>{renewals.length ? renewals.slice(0, 3).map((renewal) => <p key={renewal.id}><strong>{renewal.title}</strong><span>{formatDate(`${renewal.renewalDate}T12:00:00Z`)}</span></p>) : <EmptyLine text="No hay renovaciones registradas."/>}</section>
-    <section className="snapshotPanel projects"><div className="panelHeading"><span>Operación</span><h2>Proyectos y OT</h2></div><EmptyLine text="No hay proyectos activos ni OT abiertas."/></section>
-    <section className="snapshotPanel finance"><div className="panelHeading"><span>Finanzas</span><h2>Snapshot financiero</h2></div><EmptyLine text="Finance aún no entrega saldos para este cliente."/></section>
-    <section className="snapshotPanel risk"><div className="panelHeading"><span>Soporte y monitoreo</span><h2>Situación operacional</h2></div><EmptyLine text="No hay tickets ni incidentes registrados."/></section>
+    <section className="snapshotPanel projects"><div className="panelHeading"><span>Operación</span><h2>{insights?`${insights.operations.activeProjects} proyectos · ${insights.operations.openWorkOrders} OT`:"—"}</h2></div><p><strong>{insights?`${insights.operations.atRiskProjects} en riesgo · ${insights.operations.overdueProjects} atrasados`:"Consolidando Operaciones"}</strong></p></section>
+    <section className="snapshotPanel finance"><div className="panelHeading"><span>Finanzas</span><h2>{insights?.finance?formatMoney(insights.finance.balanceDue,"CLP"):"Acceso restringido"}</h2></div><p><strong>{insights?.finance?`${insights.finance.openInvoices} facturas abiertas · ${insights.finance.overdueInvoices} vencidas`:"Disponible para Gerencia y Finanzas"}</strong></p></section>
+    <section className="snapshotPanel risk"><div className="panelHeading"><span>Soporte y monitoreo</span><h2>{insights?`${insights.support.open} tickets · ${insights.monitoring.down} caídos`:"—"}</h2></div><p><strong>{insights?`${insights.support.breached} SLA vencidos · ${insights.monitoring.activeIncidents} incidentes activos`:"Consolidando señales"}</strong></p></section>
     <section className="timelinePanel"><div className="panelHeading"><span>Actividad consolidada</span><h2>Últimos eventos</h2></div><ActivityTimeline events={activity.slice(0, 6)}/></section>
   </div>;
 }
@@ -146,7 +154,7 @@ function ClientRenewals({ clientId, renewals }: { clientId: string; renewals: Cl
 
 function Commercial({ clientId }: { clientId:string }) { const{role}=useAccess();const[items,setItems]=useState<{opportunities:SalesOpportunity[];quotes:SalesQuote[];followUps:SalesFollowUp[];sales:Sale[]}|null>(null);useEffect(()=>{const q=`&clientId=${clientId}`;Promise.all([commercialApi.opportunities(role,q),commercialApi.quotes(role,q),commercialApi.followUps(role,q),commercialApi.sales(role,q)]).then(([o,qts,f,s])=>setItems({opportunities:o.items,quotes:qts.items,followUps:f.items,sales:s.items})).catch(()=>setItems({opportunities:[],quotes:[],followUps:[],sales:[]}));},[clientId,role]);const total=(items?.sales??[]).reduce((sum,item)=>sum+item.amount,0);return <div className="commercialClientView"><section><span>Pipeline del cliente</span><h2>Relación comercial</h2><p>Información real de oportunidades, cotizaciones, ventas y seguimientos vinculados por client_id.</p><div><Link href={`/commercial/opportunities?clientId=${clientId}`}><Plus size={15}/> Oportunidades</Link><Link href={`/commercial/quotes?clientId=${clientId}&new=1`}><Receipt size={15}/> Nueva cotización</Link></div></section><div className="clientCommercialFacts">{items&&[...items.opportunities,...items.quotes,...items.sales,...items.followUps].length?<><article><small>Oportunidades</small><strong>{items.opportunities.length}</strong></article><article><small>Cotizaciones</small><strong>{items.quotes.length}</strong></article><article><small>Ventas</small><strong>{items.sales.length}</strong></article><article><small>Valor ganado</small><strong>{formatMoney(total,"CLP")}</strong></article><article><small>Seguimientos</small><strong>{items.followUps.filter((i)=>i.status!=="COMPLETED").length}</strong></article></>:<div className="clientEmpty compact"><BriefcaseBusiness size={22}/><h3>Sin actividad comercial vinculada</h3><p>No hay oportunidades ni cotizaciones para este cliente.</p></div>}</div></div>; }
 function ClientOperations({clientId,mode}:{clientId:string;mode:"projects"|"work-orders"}){const{role}=useAccess();const[items,setItems]=useState<Array<OperationsProject|WorkOrder>>([]),[loading,setLoading]=useState(true),[error,setError]=useState("");useEffect(()=>{const query=`&clientId=${clientId}`;const call=mode==="projects"?operationsApi.projects(role,query):operationsApi.workOrders(role,query);call.then((result)=>{setItems(result.items);setError("");}).catch((cause:Error)=>setError(cause.message)).finally(()=>setLoading(false));},[clientId,mode,role]);const projects=mode==="projects"?items as OperationsProject[]:[],orders=mode==="work-orders"?items as WorkOrder[]:[];return <div className="clientSection"><div className="clientSectionHeader"><div><span>Delivery Operations</span><h2>{mode==="projects"?"Proyectos del cliente":"Órdenes de trabajo"}</h2><p>Datos reales vinculados por client_id, sin duplicar el origen operacional.</p></div><Link href={`/${mode}?clientId=${clientId}`}><Plus size={15}/>{mode==="projects"?"Abrir proyectos":"Abrir OT"}</Link></div>{loading?<div className="clientInlineEmpty"><p>Cargando operación…</p></div>:error?<div className="clientError">{error}</div>:items.length?<div className="serviceCards">{projects.map((project)=><Link href={`/projects/${project.id}`} key={project.id}><div><Building2 size={18}/><span className={`serviceStatus ${project.health.toLowerCase()}`}>{project.health.replaceAll("_"," ")}</span></div><h3>{project.name}</h3><dl><div><dt>Número</dt><dd>{project.projectNumber}</dd></div><div><dt>Avance</dt><dd>{project.progress}%</dd></div><div><dt>Objetivo</dt><dd>{formatDate(project.targetDate)}</dd></div></dl></Link>)}{orders.map((order)=><article key={order.id}><div><BriefcaseBusiness size={18}/><span className={`serviceStatus ${order.status.toLowerCase()}`}>{order.status.replaceAll("_"," ")}</span></div><h3>{order.title}</h3><dl><div><dt>Número</dt><dd>{order.workOrderNumber}</dd></div><div><dt>Prioridad</dt><dd>{order.priority}</dd></div><div><dt>Objetivo</dt><dd>{formatDate(order.targetDate)}</dd></div></dl></article>)}</div>:<EmptyLine text={mode==="projects"?"No hay proyectos activos para este cliente.":"No hay órdenes de trabajo para este cliente."}/>}</div>}
-function DomainPanel({ icon:Icon,title,description,empty,action }:{icon:typeof Building2;title:string;description:string;empty:string;action?:{href:string;label:string}}){return <div className="clientSection"><div className="domainHero"><span><Icon size={22}/></span><div><h2>{title}</h2><p>{description}</p></div>{action?<Link href={action.href}><Plus size={15}/>{action.label}</Link>:null}</div><div className="clientEmpty compact"><Icon size={24}/><h3>{empty}</h3><p>La relación está preparada mediante client_id y no duplica información.</p></div></div>;}
+function ClientDocuments({clientId}:{clientId:string}){const{role}=useAccess();const[data,setData]=useState<RelatedDocumentsSnapshot|null>(null);const[error,setError]=useState("");useEffect(()=>{void clientsApi.documents(role,clientId).then(value=>{setData(value);setError("");}).catch((cause:Error)=>setError(cause.message));},[clientId,role]);return <div className="clientSection"><div className="domainHero"><span><FileStack size={22}/></span><div><h2>Documentos y versiones</h2><p>Expediente documental canónico, clasificación, firma y trazabilidad por client_id.</p></div><Link href={`/documents/clients?clientId=${clientId}`}><Upload size={15}/>Subir documento</Link></div>{error?<div className="clientError">{error}</div>:!data?<div className="clientInlineEmpty"><p>Cargando documentos…</p></div>:data.documents.length?<><div className="clientSummaryGrid"><section className="snapshotPanel"><div className="panelHeading"><span>Total vinculado</span><h2>{data.total}</h2></div></section><section className="snapshotPanel"><div className="panelHeading"><span>En revisión</span><h2>{data.pendingReview}</h2></div></section><section className="snapshotPanel"><div className="panelHeading"><span>Firma pendiente</span><h2>{data.pendingSignature}</h2></div></section><section className="snapshotPanel"><div className="panelHeading"><span>Próximos a vencer</span><h2>{data.expiring}</h2></div></section></div><div className="serviceCards">{data.documents.slice(0,12).map(document=><Link href={`/documents/all?document=${document.id}`} key={document.id}><div><FileStack size={18}/><span className={`serviceStatus ${document.status.toLowerCase()}`}>{document.status.replaceAll("_"," ")}</span></div><h3>{document.title}</h3><dl><div><dt>Número</dt><dd>{document.documentNumber||"Sin folio"}</dd></div><div><dt>Versión</dt><dd>v{document.currentVersionNumber}</dd></div><div><dt>Clasificación</dt><dd>{document.classification}</dd></div></dl></Link>)}</div></>:<div className="clientEmpty compact"><FileStack size={24}/><h3>No hay documentos asociados a este cliente.</h3><p>Al vincular un documento como CLIENT aparecerá aquí sin copiarlo.</p></div>}</div>}
 
 function ClientSupport({clientId}:{clientId:string}){const{role}=useAccess();const[data,setData]=useState<RelatedSupportSnapshot|null>(null);const[error,setError]=useState("");useEffect(()=>{void clientsApi.support(role,clientId).then(setData).catch((cause:Error)=>setError(cause.message));},[clientId,role]);return <div className="clientSection"><div className="domainHero"><span><TicketCheck size={22}/></span><div><h2>Soporte y SLA</h2><p>Tickets, criticidad, compromisos vencidos y experiencia del cliente desde Service Desk.</p></div><Link href={`/support?clientId=${clientId}`}><Plus size={15}/>Nuevo ticket</Link></div>{error?<div className="clientEmpty compact"><TicketCheck size={24}/><h3>{error}</h3></div>:data?<><div className="clientSummaryGrid"><section className="snapshotPanel"><div className="panelHeading"><span>Tickets abiertos</span><h2>{data.open}</h2></div><p><strong>{data.critical} críticos</strong></p></section><section className="snapshotPanel"><div className="panelHeading"><span>SLA vencidos</span><h2>{data.breached}</h2></div><p><strong>Primera respuesta media: {data.averageFirstResponseMinutes===null?"—":`${data.averageFirstResponseMinutes} min`}</strong></p></section><section className="snapshotPanel"><div className="panelHeading"><span>Última atención</span><h2>{data.lastTicketAt?formatDate(data.lastTicketAt):"—"}</h2></div><p><strong>{data.tickets[0]?.ticketNumber||"Sin tickets"}</strong></p></section><section className="snapshotPanel"><div className="panelHeading"><span>CSAT</span><h2>{data.csat===null?"—":`${data.csat}/5`}</h2></div><p><strong>Encuestas reales posteriores al cierre</strong></p></section></div>{data.tickets.length?<div className="serviceCards">{data.tickets.slice(0,6).map(ticket=><article key={ticket.id}><div><TicketCheck size={18}/><span className={`serviceStatus ${ticket.status.toLowerCase()}`}>{ticket.status}</span></div><h3>{ticket.ticketNumber} · {ticket.subject}</h3><dl><div><dt>Prioridad</dt><dd>{ticket.priority}</dd></div><div><dt>Actualizado</dt><dd>{formatDateTime(ticket.updatedAt)}</dd></div></dl><Link href={`/support/inbox/${ticket.id}`}>Abrir ticket</Link></article>)}</div>:<div className="clientEmpty compact"><TicketCheck size={24}/><h3>No hay tickets registrados para este cliente.</h3></div>}</>:<div className="clientEmpty compact"><TicketCheck size={24}/><h3>Cargando soporte…</h3></div>}</div>}
 

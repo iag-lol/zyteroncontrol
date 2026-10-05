@@ -1,8 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import { ArrowUpRight, CircleDollarSign, FolderKanban, Globe2, Headphones, ReceiptText, ShieldAlert, Users } from "lucide-react";
-import type { CommercialRecord, PipelineSummary } from "@zyteron/contracts";
+import type { ExecutiveDashboard } from "@zyteron/contracts";
+import { useAccess } from "@/components/access-context";
+import { executiveDashboard } from "@/lib/executive-api";
 
 const money = new Intl.NumberFormat("es-CL", {
   style: "currency",
@@ -11,57 +14,37 @@ const money = new Intl.NumberFormat("es-CL", {
 });
 
 export function ControlDashboard() {
-  const [records, setRecords] = useState<CommercialRecord[]>([]);
-  const [online, setOnline] = useState(false);
+  const {role}=useAccess();
+  const [data,setData]=useState<ExecutiveDashboard|null>(null);
+  const [error,setError]=useState("");
+  const [loading,setLoading]=useState(true);
 
   useEffect(() => {
-    const controller = new AbortController();
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api";
-    const role = process.env.NEXT_PUBLIC_DEV_ROLE;
+    let active=true;setLoading(true);
+    void executiveDashboard(role).then(result=>{if(active){setData(result);setError("");}}).catch((cause:Error)=>{if(active)setError(cause.message);}).finally(()=>{if(active)setLoading(false);});
+    return()=>{active=false;};
+  }, [role]);
 
-    fetch(`${apiUrl}/crm/pipeline`, {
-      headers: role ? { "x-zyteron-role": role } : {},
-      signal: controller.signal,
-    })
-      .then((response) => {
-        if (!response.ok) throw new Error("API no disponible");
-        return response.json() as Promise<PipelineSummary>;
-      })
-      .then((summary) => {
-        setRecords(summary.records);
-        setOnline(true);
-      })
-      .catch(() => setOnline(false));
-
-    return () => controller.abort();
-  }, []);
-
-  const totalValue = useMemo(
-    () => records.reduce((sum, record) => sum + record.valueClp, 0),
-    [records],
-  );
+  const source=(domain:string)=>data?.sources.find(item=>item.domain===domain)?.status??"UNAVAILABLE";
+  const value=(domain:string,amount:number,format:"count"|"money"="count")=>source(domain)==="OK"?(format==="money"?money.format(amount):String(amount)):"—";
+  const m=data?.metrics;
 
   const metrics = [
-    ["Ventas del mes", "Sin datos", "No hay ventas registradas", CircleDollarSign],
-    ["Pipeline", money.format(totalValue), `${records.length} registros activos`, ArrowUpRight],
-    ["Clientes activos", "Sin datos", "No hay clientes registrados", Users],
-    ["Ingresos", "Sin datos", "No hay ingresos registrados", ReceiptText],
-    ["Proyectos activos", "Sin datos", "No hay proyectos registrados", FolderKanban],
-    ["Proyectos atrasados", "Sin datos", "Sin información de plazos", FolderKanban],
-    ["OT pendientes", "Sin datos", "No existen OT registradas", FolderKanban],
-    ["Cotizaciones pendientes", "Sin datos", "No existen cotizaciones", CircleDollarSign],
-    ["Sitios online", "Sin datos", "Sin sitios monitoreados", Globe2],
-    ["Sitios caídos", "Sin datos", "Sin sitios monitoreados", Globe2],
-    ["Incidentes críticos", "0", "No hay incidentes activos", ShieldAlert],
-    ["SSL próximos a vencer", "Sin datos", "Sin certificados registrados", ShieldAlert],
-    ["Personal activo", "Sin datos", "Sin personal registrado", Users],
-    ["Programadores ocupados", "Sin datos", "Sin asignaciones registradas", Users],
-    ["Tareas vencidas", "Sin datos", "Sin tareas registradas", FolderKanban],
-    ["Auditorías pendientes", "Sin datos", "Sin auditorías registradas", ShieldAlert],
-    ["Facturas pendientes", "Sin datos", "Sin facturas registradas", ReceiptText],
-    ["Pagos atrasados", "Sin datos", "Sin pagos registrados", ReceiptText],
-    ["Tickets críticos", "0", "No hay tickets activos", Headphones],
-    ["Eventos de seguridad", "0", "No hay eventos registrados", ShieldAlert],
+    ["Ventas del mes",value("COMERCIAL",m?.salesThisMonth??0,"money"),"Ventas ganadas en CLP",CircleDollarSign],
+    ["Pipeline",value("COMERCIAL",m?.pipelineValue??0,"money"),`${m?.pipelineCount??0} oportunidades abiertas`,ArrowUpRight],
+    ["Clientes activos",value("CLIENTES",m?.activeClients??0),`${m?.newClientsThisMonth??0} incorporados este mes`,Users],
+    ["Proyectos activos",value("OPERACIONES",m?.activeProjects??0),`${m?.overdueProjects??0} fuera de plazo`,FolderKanban],
+    ["OT abiertas",value("OPERACIONES",m?.openWorkOrders??0),"Pendientes de cierre operacional",FolderKanban],
+    ["Cotizaciones abiertas",value("COMERCIAL",m?.pendingQuotes??0),"Incluye aprobación, envío y negociación",CircleDollarSign],
+    ["Sitios online",value("MONITOREO",m?.onlineMonitors??0),`${m?.downMonitors??0} monitores caídos`,Globe2],
+    ["Incidentes críticos",value("MONITOREO",m?.criticalIncidents??0),"Incidentes operacionales activos",ShieldAlert],
+    ["SSL en riesgo",value("MONITOREO",m?.sslExpiring??0),"Por vencer, vencidos o inválidos",ShieldAlert],
+    ["Personal activo",value("RRHH",m?.activeEmployees??0),"Fuente canónica People Operations",Users],
+    ["Tareas vencidas",value("OPERACIONES",m?.overdueTasks??0),"Trabajo aún no finalizado",FolderKanban],
+    ["Auditorías pendientes",value("AUDITORIAS",m?.pendingAudits??0),"Programadas o en ejecución",ShieldAlert],
+    ["Facturas pendientes",value("FINANZAS",m?.pendingInvoices??0),`${m?.overdueReceivables??0} vencidas`,ReceiptText],
+    ["Tickets críticos",value("SOPORTE",m?.criticalTickets??0),"Tickets activos con severidad crítica",Headphones],
+    ["Eventos de seguridad",value("SEGURIDAD",m?.securityEvents??0),"Eventos registrados en 30 días",ShieldAlert],
   ] as const;
 
   return (
@@ -72,8 +55,8 @@ export function ControlDashboard() {
           <h1>Resumen ejecutivo</h1>
           <p>Visión operacional de Zyteron Control para Gerencia General.</p>
         </div>
-        <div className={`connectionStatus ${online ? "online" : "offline"}`}>
-          <span />{online ? "API conectada" : "API sin conexión"}
+        <div className={`connectionStatus ${data ? "online" : "offline"}`}>
+          <span />{loading?"Consolidando dominios…":data?.status==="OK"?"Todos los dominios conectados":data?`${data.sources.filter(item=>item.status!=="OK").length} dominios degradados`:"API sin conexión"}
         </div>
       </header>
 
@@ -84,8 +67,8 @@ export function ControlDashboard() {
         </div>
         <div className="overviewValue">
           <span>Pipeline registrado</span>
-          <strong>{money.format(totalValue)}</strong>
-          <small>{records.length ? `${records.length} iniciativas activas` : "Sin registros comerciales"}</small>
+          <strong>{value("COMERCIAL",m?.pipelineValue??0,"money")}</strong>
+          <small>{m?.pipelineCount?`${m.pipelineCount} oportunidades activas`:"Sin oportunidades abiertas"}</small>
         </div>
       </section>
 
@@ -95,7 +78,7 @@ export function ControlDashboard() {
 
       <section className="emptyOperations">
         <div><p className="eyebrow">Atención requerida</p><h2>Actividad operacional</h2></div>
-        <div className="enterpriseEmptyState"><span>✓</span><strong>Sin actividad pendiente</strong><p>No hay incidentes, tareas vencidas ni aprobaciones registradas.</p></div>
+        {error?<div className="enterpriseEmptyState"><span>!</span><strong>No fue posible consolidar los dominios</strong><p>{error}</p></div>:data?.attention.length?<div className="executiveAttentionList">{data.attention.slice(0,8).map(item=><Link href={item.href} key={`${item.domain}-${item.label}`}><span>{item.count}</span><strong>{item.label}</strong><small>{item.domain}</small><ArrowUpRight size={15}/></Link>)}</div>:<div className="enterpriseEmptyState"><span>✓</span><strong>Sin actividad pendiente</strong><p>No hay señales críticas ni vencimientos operacionales.</p></div>}
       </section>
 
     </main>

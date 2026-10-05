@@ -9,9 +9,10 @@ import { ClientsService } from "./clients.service.js";
 import { AuditsModule } from "../audits/audits.module.js";
 import { SupportModule } from "../support/support.module.js";
 import { DocumentsModule } from "../documents/documents.module.js";
+import { InsightsModule } from "../insights/insights.module.js";
 
 @Module({
-  imports: [AuditsModule, SupportModule, DocumentsModule],
+  imports: [AuditsModule, SupportModule, DocumentsModule, InsightsModule],
   controllers: [ClientsController],
   providers: [ClientsRepository, ClientsService, ClientsPolicy, ClientEventsService, ClientHealthService, ClientIntegrationsService],
   exports: [ClientsService, ClientsPolicy, ClientEventsService, ClientHealthService, ClientIntegrationsService],
