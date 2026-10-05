@@ -20,13 +20,16 @@ export class ContractsRepository {
   }
 
   async builderContext(clientId?:string){
-    if(!this.supabase)return{client:null,projects:[],quotes:[],contacts:[]};
-    const client=clientId?await this.supabase.from("clients").select("*").eq("id",clientId).maybeSingle():null;
-    const projects=clientId?await this.supabase.from("projects").select("id,project_number,name,client_id,quote_id,scope,status,planned_start_date,target_date").eq("client_id",clientId).is("archived_at",null).order("updated_at",{ascending:false}):null;
-    const quotes=clientId?await this.supabase.from("quotes").select("id,quote_number,version,status,client_id,currency,net_amount,tax_amount,total_amount,accepted_at,document_id,document_hash").eq("client_id",clientId).in("status",["ACCEPTED","CONVERTED"]).order("updated_at",{ascending:false}):null;
-    const contacts=clientId?await this.supabase.from("client_contacts").select(CONTRACT_BUILDER_CONTACT_COLUMNS).eq("client_id",clientId).is("archived_at",null):null;
-    for(const result of [client,projects,quotes,contacts])if(result?.error)throw result.error;
-    return{client:client?.data??null,projects:projects?.data??[],quotes:quotes?.data??[],contacts:contacts?.data??[]};
+    if(!this.supabase)return{client:null,company:{company_legal_name:"Zyteron SpA",company_rut:"78.398.774-0",company_address:"Santiago, Chile",company_city:"Santiago"},projects:[],quotes:[],contacts:[]};
+    const[client,projects,quotes,contacts,company]=await Promise.all([
+      clientId?this.supabase.from("clients").select("*").eq("id",clientId).maybeSingle():Promise.resolve(null),
+      clientId?this.supabase.from("projects").select("id,project_number,name,client_id,quote_id,scope,status,planned_start_date,target_date").eq("client_id",clientId).is("archived_at",null).order("updated_at",{ascending:false}):Promise.resolve(null),
+      clientId?this.supabase.from("quotes").select("id,quote_number,version,status,client_id,currency,net_amount,tax_amount,total_amount,accepted_at,document_id,document_hash,payment_terms,commercial_terms,notes").eq("client_id",clientId).in("status",["ACCEPTED","CONVERTED"]).order("updated_at",{ascending:false}):Promise.resolve(null),
+      clientId?this.supabase.from("client_contacts").select(CONTRACT_BUILDER_CONTACT_COLUMNS).eq("client_id",clientId).is("archived_at",null):Promise.resolve(null),
+      this.supabase.from("finance_settings").select("company_legal_name,company_rut,company_address,company_commune,company_city,company_email").eq("id",true).maybeSingle(),
+    ]);
+    for(const result of [client,projects,quotes,contacts,company])if(result?.error)throw result.error;
+    return{client:client?.data??null,company:company?.data??null,projects:projects?.data??[],quotes:quotes?.data??[],contacts:contacts?.data??[]};
   }
 
   async list(input:Record<string,string|number|undefined>&{page:number;pageSize:number}){

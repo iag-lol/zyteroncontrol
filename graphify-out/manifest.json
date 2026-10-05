@@ -210,9 +210,9 @@
     "semantic_hash": ""
   },
   "apps/api/src/contracts/contracts.repository.ts": {
-    "mtime": 1791185035.3146887,
-    "seen": 1791185386.0318751,
-    "ast_hash": "2cf954632f0c887c97928abb1afc6fcd",
+    "mtime": 1791187664.2392561,
+    "seen": 1791188725.76366,
+    "ast_hash": "eaa178aa358c598748b83196decc2344",
     "semantic_hash": ""
   },
   "apps/api/src/contracts/contracts.service.ts": {
@@ -708,9 +708,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/lib/client-domain-api.ts": {
-    "mtime": 1791108407.1636224,
-    "seen": 1791108499.447258,
-    "ast_hash": "6eea2640be776dd562a369e7354e4eea",
+    "mtime": 1791188546.265511,
+    "seen": 1791188725.763805,
+    "ast_hash": "7fa93adfa1725dfb73ef2b9098f8f041",
     "semantic_hash": ""
   },
   "apps/web/src/lib/client-domain-realtime.test.ts": {
@@ -2364,9 +2364,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/clients/contract-builder.tsx": {
-    "mtime": 1791185035.3149478,
-    "seen": 1791185386.0319822,
-    "ast_hash": "400df718023dc91faf2e944ec72f5256",
+    "mtime": 1791189065.3950512,
+    "seen": 1791189187.022548,
+    "ast_hash": "8c796c8d32ab82e5a9238cd42e178a0c",
     "semantic_hash": ""
   },
   "apps/web/src/components/entity-reference-select.tsx": {
@@ -3183,6 +3183,24 @@
     "mtime": 1791185404.402202,
     "seen": 1791186116.578763,
     "ast_hash": "0f67bb6d43e179310b744829974055b9",
+    "semantic_hash": ""
+  },
+  "apps/web/src/lib/contract-builder-model.test.ts": {
+    "mtime": 1791188870.4437094,
+    "seen": 1791188977.221025,
+    "ast_hash": "4509279dbb985b8f19b6fa46dc737cfb",
+    "semantic_hash": ""
+  },
+  "apps/web/src/lib/contract-builder-model.ts": {
+    "mtime": 1791188870.4428425,
+    "seen": 1791188977.221025,
+    "ast_hash": "88234b043a4cb59d063886aa23620247",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20261005_074156_3db17710_c\u00f3mo_reconciliar_el_flujo_roto_de_fenice_entre_co.md": {
+    "mtime": 1791186116.7398164,
+    "seen": 1791188725.763954,
+    "ast_hash": "009696c9b01419d6ba2b0b22af644f09",
     "semantic_hash": ""
   }
 }
