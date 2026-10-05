@@ -10,7 +10,7 @@ Esta documentación distingue código implementado de infraestructura desplegada
 |---|---|---|---|---|
 | API/engine de monitores | Implementado | `apps/api/src/monitoring` | Tests locales | Desplegar rama |
 | Persistencia | Supabase obligatorio; `503` explícito si falta | `monitoring.module.ts`, test runtime | Tests locales | Aplicar migraciones |
-| Scheduler | Background Worker dedicado; API productiva no ejecuta checks | `monitoring.scheduler.ts`, script `start:monitoring-worker` | Tests locales | Crear/configurar worker Render |
+| Scheduler | Worker integrado en el API por defecto; Background Worker opcional | `monitoring.scheduler.ts`, script `start:monitoring-worker` | Tests locales | Verificar heartbeat y checks periódicos en Render |
 | Concurrencia de checks | Lease, versión y `SKIP LOCKED` | migración canónica | SQL revisado | Smoke test con dos workers |
 | Alertas durables | Outbox con lease, reintento y deduplicación | migración correctiva + scheduler | Tests unitarios/locales | Confirmar entrega real |
 | Realtime | Canal privado autenticado; fallback a sondeo informado | `monitoring-realtime.ts` | Tests web | Verificar publicación/RLS real |
@@ -30,17 +30,19 @@ Esta documentación distingue código implementado de infraestructura desplegada
 
 ## Arquitectura de despliegue decidida
 
-Render debe tener dos procesos distintos:
+El despliegue actual de dos web services usa el worker integrado:
 
-1. API web: `pnpm --filter @zyteron/api start`, `MONITORING_PROCESS_ROLE=api`, `MONITORING_WORKER_ENABLED=false`.
-2. Background Worker: `pnpm --filter @zyteron/api start:monitoring-worker`, `MONITORING_PROCESS_ROLE=worker`, `MONITORING_WORKER_ENABLED=true`.
+1. API web: `pnpm --filter @zyteron/api start`. `MONITORING_WORKER_ENABLED` puede omitirse o configurarse en `true`.
+2. Web Next.js: no ejecuta checks; sólo consume el API.
+
+Si se contrata un Background Worker dedicado, éste usa `pnpm --filter @zyteron/api start:monitoring-worker`, `MONITORING_PROCESS_ROLE=worker` y `MONITORING_WORKER_ENABLED=true`. Recién entonces el web service del API se configura con `MONITORING_PROCESS_ROLE=api` y `MONITORING_WORKER_ENABLED=false`.
 
 Ambos usan el mismo `SUPABASE_URL` y `SUPABASE_SERVICE_ROLE_KEY`. El navegador sólo usa `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY`; la service-role jamás se expone al frontend.
 
 Variables relevantes:
 
-- API y worker: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `MONITORING_PROCESS_ROLE`.
-- Worker: `MONITORING_WORKER_ENABLED=true`, opcionalmente `MONITORING_TICK_MS`, `MONITORING_MAX_CONCURRENCY`, `MONITORING_ALLOWED_PORTS`.
+- API y worker: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`; `MONITORING_PROCESS_ROLE` sólo identifica el proceso en diagnósticos.
+- Scheduler: `MONITORING_WORKER_ENABLED=true` explícito u omitido; opcionalmente `MONITORING_TICK_MS`, `MONITORING_MAX_CONCURRENCY`, `MONITORING_ALLOWED_PORTS`.
 - Web: `NEXT_PUBLIC_API_URL=https://<api>.onrender.com/api`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
 - Correo opcional: `RESEND_API_KEY`, `MONITORING_MAIL_FROM`. Un HTTP aceptado por Resend queda `ACCEPTED`, no se presenta falsamente como entregado.
 
@@ -48,11 +50,11 @@ Variables relevantes:
 
 1. Aplicar `20261001050000_site_reliability_monitoring.sql` si aún no figura en el historial real.
 2. Aplicar `20261004190000_monitoring_recovery.sql`.
-3. Desplegar API con scheduler desactivado y verificar `/api/health` y `/api/monitoring/diagnostics` con una sesión autorizada.
-4. Desplegar el worker y confirmar heartbeat, SHA, `persistenceMode=supabase`, `scheduler.active=true`, próxima tarea y último check.
+3. Desplegar API con scheduler integrado y verificar `/api/health` y `/api/monitoring/diagnostics` con una sesión autorizada.
+4. Confirmar heartbeat, SHA, `persistenceMode=supabase`, `scheduler.active=true`, próxima tarea y último check.
 5. Crear un monitor controlado, ejecutar `Check now`, comprobar historial, Realtime y un incidente de prueba autorizado.
 
-Rollback seguro: detener primero el Background Worker y volver el código de la API/web. La migración correctiva es aditiva; no borrar tablas ni evidencia. Las columnas adicionales pueden permanecer hasta una migración de retiro revisada.
+Rollback seguro: configurar `MONITORING_WORKER_ENABLED=false` en el API y volver el código. Si existe un Background Worker dedicado, detenerlo primero. La migración correctiva es aditiva; no borrar tablas ni evidencia. Las columnas adicionales pueden permanecer hasta una migración de retiro revisada.
 
 ## Condiciones que bloquean un “producción verificada”
 

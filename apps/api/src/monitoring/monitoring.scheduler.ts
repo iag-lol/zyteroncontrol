@@ -15,10 +15,12 @@ const MAX_CONCURRENCY = Math.min(32, Math.max(1, Number(process.env.MONITORING_M
 const HOUSEKEEPING_MS = 60_000, ROLLUP_MS = 5 * 60_000, PURGE_MS = 6 * 3_600_000;
 
 export function monitoringWorkerEnabled() {
-  if (process.env.MONITORING_WORKER_ENABLED === "false") return false;
   if (process.env.VITEST || process.env.NODE_ENV === "test") return false;
-  if (process.env.NODE_ENV === "production") return process.env.MONITORING_PROCESS_ROLE === "worker";
-  return process.env.MONITORING_PROCESS_ROLE !== "api";
+  // El despliegue económico de Zyteron usa el mismo proceso del API para ejecutar los checks.
+  // Un Background Worker dedicado sigue siendo compatible: en ese caso se configura
+  // MONITORING_WORKER_ENABLED=false únicamente en el web service del API. Los leases de
+  // Supabase hacen segura una superposición breve durante despliegues o escalado horizontal.
+  return process.env.MONITORING_WORKER_ENABLED?.trim().toLowerCase() !== "false";
 }
 
 @Injectable()
