@@ -93,12 +93,13 @@ export class DomainInsightsService {
     return { generatedAt:new Date().toISOString(), status:sources.every(source=>source.status==="OK")?"OK":"DEGRADED", sources, metrics, attention };
   }
 
-  async portfolio(pageClientIds:string[],includeFinance=false):Promise<{summary:ClientPortfolioSummary;byClient:Record<string,{activeServiceCount:number|null;activeProjectCount:number|null;lastActivityAt:string|null}>}> {
+  async portfolio(pageClientIds:string[],includeFinance=false):Promise<{summary:ClientPortfolioSummary;byClient:Record<string,{activeServiceCount:number|null;activeProjectCount:number|null;openWorkOrderCount:number|null;lastActivityAt:string|null}>}> {
     const cutoff=new Date(Date.now()-90*86_400_000).toISOString();
     const renewalLimit=new Date(Date.now()+90*86_400_000).toISOString().slice(0,10);
     const activeProjects=["PLANNING","READY","IN_PROGRESS","BLOCKED","INTERNAL_REVIEW","QA","WAITING_CLIENT","READY_FOR_PRODUCTION","PRODUCTION","MAINTENANCE","ON_HOLD"];
+    const openWorkOrders=["DRAFT","READY_FOR_HANDOFF","PENDING_PLANNING","PLANNING","PENDING_ASSIGNMENT","ASSIGNED","IN_PROGRESS","IN_REVIEW","WAITING_CLIENT","PENDING_HANDOFF","READY"];
     const activeIncidents=["DETECTED","CONFIRMED","ACKNOWLEDGED","INVESTIGATING","MITIGATING","MONITORING"];
-    const [clients,projects,incidents,finance,renewals,recentActivity,pageServices,pageActivity]=await Promise.all([
+    const [clients,projects,incidents,finance,renewals,recentActivity,pageServices,pageWorkOrders,pageActivity]=await Promise.all([
       this.domain("CLIENTES",[] as Row[],()=>this.rows("clients","id,status,created_at",q=>q.neq("status","ARCHIVED"))),
       this.domain("OPERACIONES",[] as Row[],()=>this.rows("projects","client_id,status",q=>q.in("status",activeProjects).not("client_id","is",null))),
       this.domain("MONITOREO",[] as Row[],()=>this.rows("incidents","client_id,severity,status",q=>q.eq("severity","CRITICAL").in("status",activeIncidents).not("client_id","is",null))),
@@ -106,6 +107,7 @@ export class DomainInsightsService {
       this.domain("RENOVACIONES",[] as Row[],()=>this.rows("client_renewals","client_id,status,renewal_date",q=>q.gte("renewal_date",today()).lte("renewal_date",renewalLimit).not("status","in","(RENEWED,NOT_RENEWED,CANCELLED)").not("client_id","is",null))),
       this.domain("ACTIVIDAD",[] as Row[],()=>this.rows("client_events","client_id,occurred_at",q=>q.gte("occurred_at",cutoff))),
       pageClientIds.length?this.domain("SERVICIOS",[] as Row[],()=>this.rows("client_services","client_id,status",q=>q.in("client_id",pageClientIds).eq("status","ACTIVE"))):Promise.resolve({value:[] as Row[],health:{domain:"SERVICIOS",status:"OK" as const,detail:null}}),
+      pageClientIds.length?this.domain("ORDENES_TRABAJO",[] as Row[],()=>this.rows("work_orders","client_id,status",q=>q.in("client_id",pageClientIds).in("status",openWorkOrders))):Promise.resolve({value:[] as Row[],health:{domain:"ORDENES_TRABAJO",status:"OK" as const,detail:null}}),
       pageClientIds.length?this.domain("ACTIVIDAD_CLIENTE",[] as Row[],()=>this.rows("client_events","client_id,occurred_at",q=>q.in("client_id",pageClientIds).order("occurred_at",{ascending:false}))):Promise.resolve({value:[] as Row[],health:{domain:"ACTIVIDAD_CLIENTE",status:"OK" as const,detail:null}}),
     ]);
     const countClients=(rows:Row[])=>new Set(rows.map(row=>row.client_id).filter(Boolean)).size;
@@ -121,11 +123,12 @@ export class DomainInsightsService {
       upcomingRenewals:renewals.health.status==="OK"?countClients(renewals.value):null,
       inactiveRelationship:clients.health.status==="OK"&&recentActivity.health.status==="OK"?clients.value.filter(row=>!recentIds.has(row.id)).length:null,
     };
-    const serviceCounts=new Map<string,number>(),projectCounts=new Map<string,number>(),lastActivity=new Map<string,string>();
+    const serviceCounts=new Map<string,number>(),projectCounts=new Map<string,number>(),workOrderCounts=new Map<string,number>(),lastActivity=new Map<string,string>();
     for(const row of pageServices.value)serviceCounts.set(row.client_id,(serviceCounts.get(row.client_id)??0)+1);
     for(const row of projects.value)if(pageClientIds.includes(row.client_id))projectCounts.set(row.client_id,(projectCounts.get(row.client_id)??0)+1);
+    for(const row of pageWorkOrders.value)workOrderCounts.set(row.client_id,(workOrderCounts.get(row.client_id)??0)+1);
     for(const row of pageActivity.value)if(!lastActivity.has(row.client_id))lastActivity.set(row.client_id,row.occurred_at);
-    return{summary,byClient:Object.fromEntries(pageClientIds.map(id=>[id,{activeServiceCount:pageServices.health.status==="OK"?serviceCounts.get(id)??0:null,activeProjectCount:projects.health.status==="OK"?projectCounts.get(id)??0:null,lastActivityAt:pageActivity.health.status==="OK"?lastActivity.get(id)??null:null}]))};
+    return{summary,byClient:Object.fromEntries(pageClientIds.map(id=>[id,{activeServiceCount:pageServices.health.status==="OK"?serviceCounts.get(id)??0:null,activeProjectCount:projects.health.status==="OK"?projectCounts.get(id)??0:null,openWorkOrderCount:pageWorkOrders.health.status==="OK"?workOrderCounts.get(id)??0:null,lastActivityAt:pageActivity.health.status==="OK"?lastActivity.get(id)??null:null}]))};
   }
 
   async client(clientId:string, includeFinance=false):Promise<ClientIntegrationSummary> {

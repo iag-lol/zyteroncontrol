@@ -181,6 +181,7 @@ export interface Client {
   healthFactors: ClientHealthFactor[];
   activeServiceCount?: number | null;
   activeProjectCount?: number | null;
+  openWorkOrderCount?: number | null;
   lastActivityAt?: string | null;
   createdAt: string;
   updatedAt: string;

@@ -396,9 +396,9 @@
     "semantic_hash": "4acca8bd653ae8eabbec76094b3e237c"
   },
   "apps/web/next-env.d.ts": {
-    "mtime": 1791181528.6883256,
-    "seen": 1791181557.483389,
-    "ast_hash": "aa94238a90e7d04b7a47ecc3145ba6a0",
+    "mtime": 1791181853.2501423,
+    "seen": 1791184022.590552,
+    "ast_hash": "8195d2c60ce847a459ae9d308d6a5724",
     "semantic_hash": ""
   },
   "apps/web/next.config.ts": {
@@ -552,9 +552,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/clients/client-hub.tsx": {
-    "mtime": 1791172860.3961506,
-    "seen": 1791172958.435394,
-    "ast_hash": "68a4851b30c97015c30ec19b667cfc50",
+    "mtime": 1791183904.836814,
+    "seen": 1791184022.5905752,
+    "ast_hash": "85c51c7e957ecb84686459aec9b0bfef",
     "semantic_hash": ""
   },
   "apps/web/src/components/clients/contact-directory.tsx": {
@@ -792,9 +792,9 @@
     "semantic_hash": ""
   },
   "packages/contracts/src/index.ts": {
-    "mtime": 1791172860.3936121,
-    "seen": 1791172958.435461,
-    "ast_hash": "47842d0f00dce8a3cc1119400e38e336",
+    "mtime": 1791183904.8356383,
+    "seen": 1791184022.590645,
+    "ast_hash": "9fc919fc397128ad4238a636f09a26df",
     "semantic_hash": ""
   },
   "packages/contracts/tsconfig.json": {
@@ -3060,15 +3060,15 @@
     "semantic_hash": ""
   },
   "apps/api/src/insights/domain-insights.service.test.ts": {
-    "mtime": 1791172976.3691707,
-    "seen": 1791180876.610847,
-    "ast_hash": "1e4b087e5226bd1761e8c582de5ecada",
+    "mtime": 1791183954.8013704,
+    "seen": 1791184022.590503,
+    "ast_hash": "900775f8f6bf2416d4268f290262fe9a",
     "semantic_hash": ""
   },
   "apps/api/src/insights/domain-insights.service.ts": {
-    "mtime": 1791172860.3942795,
-    "seen": 1791172958.4353259,
-    "ast_hash": "f0200951f2304dd8a32a8f921bc43793",
+    "mtime": 1791183904.8363671,
+    "seen": 1791184022.590504,
+    "ast_hash": "58a130ce0bf66753a8dad0ae727f7d79",
     "semantic_hash": ""
   },
   "apps/api/src/insights/insights.module.ts": {

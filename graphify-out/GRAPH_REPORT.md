@@ -1,7 +1,7 @@
 # Graph Report - CONTROL ZYTERON  (2026-10-05)
 
 ## Corpus Check
-- 523 files · ~266,991 words
+- 523 files · ~267,047 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 16 file(s) not represented in the graph (top: .css 13, (none) 2, .example 1)
 
@@ -11,7 +11,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `69c53b62`
+- Built from commit: `cb975b0f`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -356,8 +356,8 @@
 - .exportReport
 - Q: dale una lectura a la web ve que no esta bien conectado, que no esta bien integrado, que funcinoes faltan, que esta fallando y resuelvelo todo!, quiero que lo potencies todas las secciones entre si, tiene que haber comunicacion clara y fluida, tambien estar todo preparado para la conexion con la seccion de clientes!, para que lo revises bien y al nivel mas profesional y avanzado
 - Reparación e integración de Monitoreo
-- apps_web_next_types_root_params_d
-- apps_web_next_types_routes_d
+- apps_web_next_dev_types_root_params_d
+- apps_web_next_dev_types_routes_d
 - Q: Cómo se conecta el nuevo módulo Security 11 entre UI, API, autorización, repositorio, contratos y migración, y existen referencias rotas
 - Q: Ayúdame con ERROR 42703: column user_id does not exist en commercial_notifications_own de Comercial Sales SQL
 - Q: Failed to run sql query: ERROR 42703: column audience_role does not exist en commercial_notifications
@@ -817,7 +817,7 @@ Nodes (14): payment_allocations_invoice_idx, payment_allocations_payment_idx, pa
 
 ### Community 109 - "next-env.d.ts"
 Cohesion: 0.50
-Nodes (3): apps_web_next_dev_types_root_params_d, apps_web_next_dev_types_routes_d, NOTE: This file should not be edited
+Nodes (3): NOTE: This file should not be edited, apps_web_next_types_root_params_d, apps_web_next_types_routes_d
 
 ### Community 115 - "20261004010000_security_control_plane.sql"
 Cohesion: 0.13
@@ -1279,16 +1279,16 @@ Nodes (4): Answer, Outcome, Q: Security SQL falla con ERROR 42P01 relation publi
 ## Work-memory lessons
 
 **Preferred sources** — corroborated by past sessions; start here.
-- `20261004010000_security_control_plane.sql` (9× useful, score=8.79287911)
-- `20261001150000_financial_accounting_center.sql` (6× useful, score=5.863132741)
-- `20260930160000_commercial_sales_operations.sql` (6× useful, score=5.861902311)
-- `20261004020000_commercial_notifications_owner_fix.sql` (6× useful, score=5.861902311)
-- `20261001050000_site_reliability_monitoring.sql` (4× useful, score=3.913620587)
-- `documents.service.ts` (3× useful, score=2.931854608)
-- `20261001080000_document_control_center.sql` (3× useful, score=2.931854608)
-- `20261001010000_delivery_operations_center.sql` (3× useful, score=2.931355961)
-- `security-workspace.tsx` (3× useful, score=2.929668541)
-- `security-api.ts` (3× useful, score=2.929668541)
+- `20261004010000_security_control_plane.sql` (9× useful, score=8.785331831)
+- `20261001150000_financial_accounting_center.sql` (6× useful, score=5.858100181)
+- `20260930160000_commercial_sales_operations.sql` (6× useful, score=5.856870807)
+- `20261004020000_commercial_notifications_owner_fix.sql` (6× useful, score=5.856870807)
+- `20261001050000_site_reliability_monitoring.sql` (4× useful, score=3.91026137)
+- `documents.service.ts` (3× useful, score=2.92933808)
+- `20261001080000_document_control_center.sql` (3× useful, score=2.92933808)
+- `20261001010000_delivery_operations_center.sql` (3× useful, score=2.928839861)
+- `security-workspace.tsx` (3× useful, score=2.92715389)
+- `security-api.ts` (3× useful, score=2.92715389)
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
@@ -1296,7 +1296,7 @@ _Questions this graph is uniquely positioned to answer:_
 - **Why does `RequireRoles()` connect `RequireRoles` to `domain-insights.service.ts`, `settings.service.ts`, `@nestjs/common`, `monitoring.service.ts`, `ref_vitest`, `actorFromHeaders`, `SupportCatalogService`, `Headers`, `RenewalsRepository`, `development.controller.ts`, `RequirePermissions`, `ContractsService`, `support.service.ts`, `SettingsController`, `SupportController`, `SettingsService`, `ClientServicesRepository`, `AuditPlanService`, `ContactsRepository`, `Param`, `SalesService`, `audits.service.ts`, `SecurityController`, `actor`, `commercial.module.ts`, `ClientsController`, `OpportunitiesService`, `Get`, `FollowUpsService`, `MonitoringController`, `finance.module.ts`, `contracts/contracts.service.ts`, `FinanceController`, `monitoring.module.ts`, `ClientsRepository`, `.index`, `Public`, `hr.controller.ts`, `LeadsService`, `documents.controller.ts`, `actor`, `Get`, `Param`?**
   _High betweenness centrality (0.181) - this node is a cross-community bridge._
 - **Why does `@nestjs/common` connect `@nestjs/common` to `domain-insights.service.ts`, `settings.service.ts`, `monitoring.service.ts`, `security.providers 2.ts`, `ref_vitest`, `actorFromHeaders`, `FinanceActor`, `monitoring.alerts.ts`, `development.controller.ts`, `RenewalsRepository`, `RequirePermissions`, `support.service.ts`, `SettingsService`, `.getProject`, `ClientServicesRepository`, `quote-document.service.ts`, `ContactsRepository`, `SupportRepository`, `hr.module.ts`, `audits.service.ts`, `employees.service.ts`, `formatDate`, `SecurityController`, `documents.service.ts`, `hr/contracts.service.ts`, `commercial.module.ts`, `finance.quote-payments.ts`, `DocumentsRepository`, `finance.module.ts`, `contracts/contracts.service.ts`, `api/package.json`, `finance.sources.ts`, `finance.payables.ts`, `security.service.ts`, `operations.service.ts`, `finance.test.ts`, `security.test.ts`, `finance.dte.ts`, `monitoring.types.ts`, `monitoring.module.ts`, `payroll.service.ts`, `ClientsRepository`, `monitoring.memory-store.ts`, `SecurityRepository`, `security.repository 2.ts`, `hr.controller.ts`, `clients.dto.ts`, `AuditsRepository`, `FinanceRepository`, `documents.controller.ts`, `finance.reports.ts`?**
-  _High betweenness centrality (0.114) - this node is a cross-community bridge._
+  _High betweenness centrality (0.116) - this node is a cross-community bridge._
 - **Why does `FinanceController` connect `FinanceController` to `Public`, `RequireRoles`, `.exportReport`, `.documentTypes`, `.discardEntry`, `.categories`, `Headers`, `.analyticsGuard`, `.costCenters`, `finance.module.ts`, `Param`?**
   _High betweenness centrality (0.053) - this node is a cross-community bridge._
 - **What connects `$schema`, `collection`, `sourceRoot` to the rest of the system?**
