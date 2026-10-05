@@ -396,10 +396,10 @@
     "semantic_hash": "4acca8bd653ae8eabbec76094b3e237c"
   },
   "apps/web/next-env.d.ts": {
-    "mtime": 1791172930.852344,
-    "seen": 1791172958.435371,
-    "ast_hash": "8195d2c60ce847a459ae9d308d6a5724",
-    "semantic_hash": "8195d2c60ce847a459ae9d308d6a5724"
+    "mtime": 1791181528.6883256,
+    "seen": 1791181557.483389,
+    "ast_hash": "aa94238a90e7d04b7a47ecc3145ba6a0",
+    "semantic_hash": ""
   },
   "apps/web/next.config.ts": {
     "mtime": 1791095070.973642,
@@ -1146,9 +1146,9 @@
     "semantic_hash": "5de531e1edab9fd9d0ccc17d6ec4405b"
   },
   "apps/web/src/components/operations/operations-workspace.tsx": {
-    "mtime": 1791180741.598895,
-    "seen": 1791180876.610948,
-    "ast_hash": "cca97cc6cd64d8355d7061f152ac3d13",
+    "mtime": 1791181480.5937173,
+    "seen": 1791181557.483445,
+    "ast_hash": "fae8ff52bd151f656ed7f371539c8381",
     "semantic_hash": ""
   },
   "apps/web/src/lib/operations-api.ts": {
@@ -3153,6 +3153,12 @@
     "mtime": 1791180741.597476,
     "seen": 1791180876.610973,
     "ast_hash": "8c205b046d3f241fdad10104cd769dd2",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20261005_061452_b85f3eac_intente_crear_una_ot_y_no_funciono.md": {
+    "mtime": 1791180892.239264,
+    "seen": 1791181557.483595,
+    "ast_hash": "b33bb90fa929accfaadb6b49aa8a226c",
     "semantic_hash": ""
   }
 }
