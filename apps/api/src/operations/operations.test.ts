@@ -66,6 +66,29 @@ describe("Delivery Operations Center", () => {
     expect((await service.taskStatus(a.id, "BLOCKED", "Esperando credenciales", "DEPENDENCY", manager)).blockedReason).toBe("Esperando credenciales");
   });
 
+  it("recalcula el avance al terminar, anular y reabrir tareas junto con hitos", async () => {
+    const project = await service.convertWorkOrder((await plannedWorkOrder()).id, {}, "project-reporting", manager);
+    const analysis = await service.createMilestone(project.id, { name: "Análisis", weight: 40 }, manager);
+    const delivery = await service.createMilestone(project.id, { name: "Entrega", weight: 60 }, manager);
+    const task = await service.createTask({ projectId: project.id, title: "Integración" }, manager);
+    const pending = await service.createTask({ projectId: project.id, title: "Validación" }, manager);
+    await service.createWorklog({ projectId: project.id, taskId: task.id, durationMinutes: 45, description: "Preparación de la integración" }, manager);
+    await service.taskStatus(task.id, "TODO", null, null, manager);
+    await service.taskStatus(task.id, "IN_PROGRESS", null, null, manager);
+    expect((await service.getProject(project.id, manager)).progress).toBe(0);
+    await service.taskStatus(task.id, "DONE", null, null, manager);
+    expect((await service.getProject(project.id, manager)).progress).toBe(15);
+    await service.completeMilestone(analysis.id, manager);
+    expect((await service.getProject(project.id, manager)).progress).toBe(43);
+    await service.taskStatus(pending.id, "CANCELLED", null, null, manager);
+    expect((await service.getProject(project.id, manager)).progress).toBe(58);
+    await service.taskStatus(task.id, "IN_PROGRESS", null, null, manager);
+    expect((await service.getProject(project.id, manager)).progress).toBe(28);
+    await service.completeMilestone(delivery.id, manager);
+    await service.taskStatus(task.id, "DONE", null, null, manager);
+    expect((await service.getProject(project.id, manager)).progress).toBe(100);
+  });
+
   it("registra tiempo real y crea entregables y deployments sin simular CI/CD", async () => {
     const project = await service.convertWorkOrder((await plannedWorkOrder()).id, {}, "project-delivery", manager);
     const task = await service.createTask({ projectId: project.id, title: "Publicar" }, manager);

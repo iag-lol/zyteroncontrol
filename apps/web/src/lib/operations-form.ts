@@ -1,6 +1,8 @@
+import { todayInChile } from "./date-time";
+
 export type OperationsCreateKind = "work-order" | "task" | "milestone" | "worklog" | "deliverable" | "deployment";
 
-export function operationsCreateInitialValue(kind: OperationsCreateKind, initialClientId: string | null = null, today = new Date().toISOString().slice(0, 10)): Record<string, unknown> {
+export function operationsCreateInitialValue(kind: OperationsCreateKind, initialClientId: string | null = null, today = todayInChile()): Record<string, unknown> {
   switch (kind) {
     case "work-order":
       return { priority: "NORMAL", status: "DRAFT", ...(initialClientId ? { clientId: initialClientId } : {}) };
