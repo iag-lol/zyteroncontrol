@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { ConflictException, Injectable, ServiceUnavailableException } from "@nestjs/common";
 import { randomUUID } from "node:crypto";
 import { createServerSupabase } from "../domain/server-supabase.js";
 import { defaultSettings, seedAccounts, seedChecklist, seedCostCenters, seedDocumentTypes, seedExpenseCategories, seedForecastScenarios, seedReminderRules, seedRules, seedTaxRules } from "./finance.seed.js";
@@ -286,7 +286,24 @@ export class FinanceRepository {
     const existing=await this.findOne<Row>("finance_idempotency_keys",{idempotencyKey:key,operation});if(existing)return existing.resourceId;
     try{await this.create("finance_idempotency_keys",{idempotencyKey:key,operation,resourceId});return null;}catch{const again=await this.findOne<Row>("finance_idempotency_keys",{idempotencyKey:key,operation});return again?.resourceId??null;}
   }
-  async saveFile(bucket:string,path:string,bytes:Buffer,mime:string){if(!this.supabase){this.files.set(`${bucket}/${path}`,{bytes,mime});return path;}const{error}=await this.supabase.storage.from(bucket).upload(path,bytes,{contentType:mime,upsert:false});if(error)throw error;return path;}
+  /** Los reintentos de comprobantes pueden reutilizar un archivo idéntico; nunca lo sobrescriben. */
+  async saveFile(bucket:string,path:string,bytes:Buffer,mime:string,options:{reuseIdentical?:boolean}={}){
+    if(!this.supabase){
+      const existing=this.files.get(`${bucket}/${path}`);
+      if(options.reuseIdentical&&existing&&!existing.bytes.equals(bytes))throw new ConflictException("El comprobante almacenado no coincide con el archivo adjunto.");
+      this.files.set(`${bucket}/${path}`,{bytes,mime});return path;
+    }
+    const{error}=await this.supabase.storage.from(bucket).upload(path,bytes,{contentType:mime,upsert:false});
+    if(!error)return path;
+    const storageError=error as {code?:string;statusCode?:string|number};
+    if(options.reuseIdentical&&(storageError.code==="KeyAlreadyExists"||String(storageError.statusCode)==="409")){
+      const existing=await this.readFile(bucket,path);
+      if(!existing)throw new ServiceUnavailableException("No fue posible verificar el comprobante ya almacenado. Intenta nuevamente.");
+      if(!existing.equals(bytes))throw new ConflictException("El comprobante almacenado no coincide con el archivo adjunto.");
+      return path;
+    }
+    throw error;
+  }
   async readFile(bucket:string,path:string):Promise<Buffer|null>{if(!this.supabase)return this.files.get(`${bucket}/${path}`)?.bytes??null;const{data,error}=await this.supabase.storage.from(bucket).download(path);if(error||!data)return null;return Buffer.from(await data.arrayBuffer());}
   /** Sólo para revertir una subida cuyo registro no llegó a persistirse (archivo huérfano); nunca borra respaldos referenciados. */
   async discardFile(bucket:string,path:string){if(!this.supabase){this.files.delete(`${bucket}/${path}`);return;}await this.supabase.storage.from(bucket).remove([path]).catch(()=>undefined);}
