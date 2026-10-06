@@ -41,7 +41,7 @@ async function bootstrap() {
   app.enableCors({
     origin: origins,
     credentials:true,
-    allowedHeaders:["authorization","content-type","x-request-id","x-zyteron-role","x-zyteron-user-id","x-zyteron-aal","x-zyteron-session-id","x-zyteron-device-id"],
+    allowedHeaders:["authorization","content-type","idempotency-key","x-request-id","x-zyteron-role","x-zyteron-user-id","x-zyteron-aal","x-zyteron-session-id","x-zyteron-device-id"],
   });
 
   const port = Number(process.env.PORT ?? 4000);
