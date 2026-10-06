@@ -2,7 +2,7 @@ import { ConflictException, ForbiddenException, NotFoundException, Unprocessable
 import { createHash, createHmac, createVerify, generateKeyPairSync } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { financeRoleMatrix } from "./finance.access.js";
 import { BankService, detectMapping, ReconciliationService, StatementImportService } from "./finance.banking.js";
 import { BillingScheduleService, InvoiceService } from "./finance.billing.js";
@@ -88,6 +88,26 @@ describe("Financial & Accounting Control Center",()=>{
 
   // ------------------------------------------------------------------ cobros
   it("pagos: evidencia obligatoria, verificación, aplicación parcial, sobrepago y reversa",async()=>{const inv=await issuedInvoice(100000);await expect(payments.record({clientId:c1,grossAmount:1,receivedAt:today,bankAccountId:"cccccccc-0000-4000-8000-000000000001"},fin)).rejects.toThrow(/evidencia/);const account=await ctx.accountByCode("1.1.02.01");const bank=await banks.saveAccount(null,{bankName:"B",accountType:"CHECKING",accountNumber:"99887766",ledgerAccountId:account.id},fin);const p=await payments.record({clientId:c1,grossAmount:150000,receivedAt:today,bankAccountId:bank.id,evidence},fin);await expect(payments.allocate(p.id,{allocations:[{invoiceId:inv.id,amount:1000}]},fin)).rejects.toBeInstanceOf(ConflictException);await payments.confirm(p.id,{},gg);await expect(payments.allocate(p.id,{allocations:[{invoiceId:inv.id,amount:130000}]},fin)).rejects.toBeInstanceOf(UnprocessableEntityException);await payments.allocate(p.id,{allocations:[{invoiceId:inv.id,amount:119000}]},fin);expect((await repo.get<any>("invoices",inv.id)).status).toBe("PAID");expect((await payments.creditBalances(fin))[0]!.unappliedAmount).toBe(31000);const allocation=(await repo.list<any>("payment_allocations"))[0];await payments.reverseAllocation(allocation.id,{reason:"Error"},fin);expect((await repo.get<any>("invoices",inv.id)).status).toBe("ISSUED");await expect(repo.update("payment_allocations",allocation.id,{amount:1})).rejects.toBeTruthy();});
+  it("reintenta un pago cuyo comprobante se guardó antes de fallar la persistencia y no duplica el registro",async()=>{
+    const account=await ctx.accountByCode("1.1.02.01");
+    const bank=await banks.saveAccount(null,{bankName:"Banco",accountType:"CHECKING",accountNumber:"12345678",ledgerAccountId:account.id},fin);
+    const body={clientId:c1,grossAmount:195134,receivedAt:today,bankAccountId:bank.id,evidence};
+    const save=vi.spyOn(repo,"saveFile");const originalCreate=repo.create.bind(repo);
+    const failedCreate=vi.spyOn(repo,"create").mockImplementation(async(table,input)=>{
+      if(table==="payments")throw new Error("Persistencia interrumpida");
+      return originalCreate(table,input);
+    });
+    await expect(payments.record(body,fin,"payment-retry-key")).rejects.toThrow("Persistencia interrumpida");
+    failedCreate.mockRestore();
+    const path=save.mock.calls[0]![1];
+    expect(await repo.readFile("finance-documents",path)).not.toBeNull();
+    const payment=await payments.record(body,fin,"payment-retry-key");
+    const retry=await payments.record(body,fin,"payment-retry-key");
+    expect(payment.status).toBe("PENDING_VERIFICATION");expect(retry.id).toBe(payment.id);
+    expect(await repo.count("payments")).toBe(1);
+    expect(save.mock.calls.every((call)=>call[4]?.reuseIdentical)).toBe(true);
+    save.mockRestore();
+  });
   it("no aplica pagos entre clientes distintos y devolución sólo sobre saldo no aplicado",async()=>{const inv=await issuedInvoice(10000,c2);const p=await confirmedPayment(50000,c1);await expect(payments.allocate(p.id,{allocations:[{invoiceId:inv.id,amount:100}]},fin)).rejects.toThrow(/clientes distintos/);await expect(payments.refund(p.id,{amount:60000,reason:"x"},fin)).rejects.toBeInstanceOf(UnprocessableEntityException);const refund=await payments.refund(p.id,{amount:10000,reason:"Duplicado"},fin);expect(refund.refunds[0]!.status).toBe("REQUESTED");await payments.completeRefund(refund.refunds[0]!.id,{evidence},fin);expect((await repo.get<any>("payments",p.id)).status).toBe("PARTIALLY_REFUNDED");});
   it("webhook de Mercado Pago valida HMAC con id, request-id y ts",()=>{process.env.MERCADOPAGO_WEBHOOK_SECRET="secret";const mp=new MercadoPagoPaymentProvider();const ts=String(Math.floor(Date.now()/1000));const v1=createHmac("sha256","secret").update(`id:123;request-id:req-1;ts:${ts};`).digest("hex");expect(mp.verifyWebhook({"x-signature":`ts=${ts},v1=${v1}`,"x-request-id":"req-1"},"123")).toBe(true);expect(mp.verifyWebhook({"x-signature":`ts=${ts},v1=${v1}`,"x-request-id":"req-2"},"123")).toBe(false);expect(mp.verifyWebhook({"x-signature":`ts=1000,v1=${createHmac("sha256","secret").update("id:123;request-id:req-1;ts:1000;").digest("hex")}`,"x-request-id":"req-1"},"123")).toBe(false);});
   it("link de pago guarda sólo el hash del token, vence y no expone IDs",async()=>{const inv=await issuedInvoice(1000);const link=await online.createLink(inv.id,{expiresInDays:1},fin);const token=link.url.split("/").pop()!;const stored=(await repo.list<any>("payment_links"))[0];expect(stored.tokenHash).toBe(sha256(token));expect(JSON.stringify(stored)).not.toContain(token);const view=await online.publicView(token);expect(JSON.stringify(view)).not.toContain(inv.id);expect(view.online.enabled).toBe(false);await repo.update("payment_links",stored.id,{expiresAt:new Date(Date.now()-1000).toISOString()});await expect(online.publicView(token)).rejects.toBeInstanceOf(NotFoundException);});
