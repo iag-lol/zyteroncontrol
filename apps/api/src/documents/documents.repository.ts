@@ -27,5 +27,13 @@ export class DocumentsRepository{
  token(){const raw=randomBytes(32).toString("base64url");return{raw,hash:createHash("sha256").update(raw).digest("hex")};}
  hashToken(raw:string){return createHash("sha256").update(raw).digest("hex");}
  async byToken(hash:string){const items=await this.list<any>("document_share_links",{tokenHash:hash});return items[0]??null;}
- async portalIdentity(userId:string){if(!this.supabase)return null;const{data,error}=await this.supabase.from("client_portal_users").select("client_id,contact_id").eq("auth_user_id",userId).eq("status","ACTIVE").maybeSingle();if(error)throw error;return data?{clientId:String(data.client_id),contactId:String(data.contact_id)}:null;}
+ async portalIdentity(userId:string,clientId?:string){
+  if(!this.supabase)return null;
+  let query=this.supabase.from("client_portal_users").select("client_id,contact_id").eq("auth_user_id",userId).eq("status","ACTIVE");
+  if(clientId)query=query.eq("client_id",clientId);
+  const{data,error}=await query.maybeSingle();if(error)throw error;if(!data)return null;
+  const{data:settings,error:settingsError}=await this.supabase.from("client_portal_settings").select("enabled,documents_visible").eq("client_id",data.client_id).maybeSingle();
+  if(settingsError)throw settingsError;if(!settings?.enabled||!settings.documents_visible)return null;
+  return{clientId:String(data.client_id),contactId:String(data.contact_id)};
+ }
 }
