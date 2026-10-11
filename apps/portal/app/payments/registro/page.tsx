@@ -1,0 +1,2 @@
+import Link from 'next/link';
+export default function Registration(){return <main className="payment-page"><section className="payment-result"><p className="eyebrow">AUTORIZACIÓN RECURRENTE</p><h1>Revisa tu suscripción en el portal.</h1><p className="payment-result-description">El registro del medio de pago y la activación requieren verificación en el servidor. Volver de la pasarela no confirma un pago ni genera un comprobante.</p><Link className="button secondary" href="/login">Volver a mi sesión</Link></section></main>;}

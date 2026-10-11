@@ -19,6 +19,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, { rawBody: true });
   // Respaldos (comprobantes, XML/CAF, cartolas, facturas SII) viajan en base64: límite acotado y explícito.
   app.useBodyParser("json", { limit: "25mb" });
+  app.useBodyParser("urlencoded", { extended: false, limit: "2kb" });
   const http=app.getHttpAdapter().getInstance();
   http.disable?.("x-powered-by");
   if(process.env.NODE_ENV==="production")http.set?.("trust proxy",1);
@@ -44,8 +45,9 @@ async function bootstrap() {
     allowedHeaders:["authorization","content-type","idempotency-key","x-request-id","x-zyteron-role","x-zyteron-user-id","x-zyteron-aal","x-zyteron-session-id","x-zyteron-device-id"],
   });
 
+  app.enableShutdownHooks();
   const port = Number(process.env.PORT ?? 4000);
-  await app.listen(port);
+  await app.listen(port, process.env.API_BIND_ADDRESS ?? "0.0.0.0");
   console.log(`Zyteron Control API listening on http://localhost:${port}/api`);
 }
 

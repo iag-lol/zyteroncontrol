@@ -71,7 +71,15 @@ export class SupportKnowledgeController{
 @Controller("client/support")
 export class ClientSupportController{
   constructor(private readonly tickets:SupportTicketService,private readonly read:SupportReadService,private readonly attachments:SupportAttachmentService,private readonly repository:SupportRepository){}
-  private async portal(h:HeaderMap){const value=actor(h);if(!value.clientId&&value.userId){const identity=await this.repository.portalIdentity(value.userId);if(identity){value.clientId=identity.clientId;value.contactId=identity.contactId;}}if(!value.clientId)throw new ForbiddenException("Identidad de Portal Cliente no vinculada.");return value;}
+  private async portal(h:HeaderMap){
+    const value=actor(h);
+    if(!value.userId)throw new ForbiddenException("Identidad de Portal Cliente no vinculada.");
+    // Validate the current membership on every access, even with a JWT tenant.
+    const identity=await this.repository.portalIdentity(value.userId,value.clientId??undefined);
+    if(!identity)throw new ForbiddenException("Identidad de Portal Cliente no vinculada.");
+    value.clientId=identity.clientId;value.contactId=identity.contactId;
+    return value;
+  }
   @Get("tickets") @RequireRoles("PORTAL_CLIENT") async list(@Query() q:Record<string,string|undefined>,@Headers() h:HeaderMap){const a=await this.portal(h);return this.tickets.list({...supportPage(q),clientId:a.clientId!,clientVisibility:"CLIENT_VISIBLE"});}
   @Post("tickets") @RequireRoles("PORTAL_CLIENT") async create(@Body() b:any,@Headers() h:HeaderMap){const a=await this.portal(h);return this.tickets.create({...b,requesterType:"PORTAL",clientId:a.clientId,clientContactId:a.contactId,channel:"PORTAL",clientVisibility:"CLIENT_VISIBLE"},a,idempotencyKey(h));}
   @Get("tickets/:id") @RequireRoles("PORTAL_CLIENT") async detail(@Param("id") id:string,@Headers() h:HeaderMap){return this.tickets.detail(id,await this.portal(h));}

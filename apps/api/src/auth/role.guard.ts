@@ -41,6 +41,11 @@ export class RoleGuard implements CanActivate {
       const authorization = request.headers.authorization;
       const rawAuthorization = Array.isArray(authorization) ? authorization[0] : authorization;
       const token = rawAuthorization?.startsWith("Bearer ") ? rawAuthorization.slice(7) : undefined;
+      // Caller-supplied identity must never survive a missing verified claim.
+      // Repositories still need current membership/resource authorization.
+      for (const name of ["x-zyteron-role", "x-zyteron-user-id", "x-zyteron-client-id", "x-zyteron-contact-id", "x-zyteron-aal", "x-zyteron-session-id"]) {
+        delete request.headers[name];
+      }
       const supabase = createServerSupabase();
       if (!token || !supabase) throw new UnauthorizedException("Sesión Supabase ausente o inválida.");
       // getClaims validates the JWT signature locally when Supabase uses an

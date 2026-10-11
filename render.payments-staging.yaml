@@ -1,0 +1,158 @@
+{
+  "previews": {
+    "generation": "off"
+  },
+  "services": [
+    {
+      "type": "web",
+      "name": "zyteron-payments-api-staging",
+      "runtime": "node",
+      "region": "virginia",
+      "plan": "starter",
+      "branch": "feature/zyteron-payments-staging",
+      "autoDeployTrigger": "off",
+      "numInstances": 1,
+      "buildCommand": "npx --yes pnpm@10.17.1 install --frozen-lockfile --prod=false && npx --yes pnpm@10.17.1 --filter @zyteron/contracts build && npx --yes pnpm@10.17.1 --filter @zyteron/api build",
+      "startCommand": "node apps/api/dist/main.js",
+      "healthCheckPath": "/api/health",
+      "maxShutdownDelaySeconds": 60,
+      "envVars": [
+        {
+          "key": "NODE_VERSION",
+          "value": "22.23.3"
+        },
+        {
+          "key": "NODE_ENV",
+          "value": "production"
+        },
+        {
+          "key": "AUTH_MODE",
+          "value": "supabase"
+        },
+        {
+          "key": "SUPABASE_URL",
+          "sync": false
+        },
+        {
+          "key": "SUPABASE_SERVICE_ROLE_KEY",
+          "sync": false
+        },
+        {
+          "key": "WEB_ORIGIN",
+          "sync": false
+        },
+        {
+          "key": "FLOW_API_KEY",
+          "sync": false
+        },
+        {
+          "key": "FLOW_SECRET_KEY",
+          "sync": false
+        },
+        {
+          "key": "FLOW_TOKEN_ENCRYPTION_KEY",
+          "sync": false
+        },
+        {
+          "key": "FLOW_CONFIRMATION_URL",
+          "sync": false
+        },
+        {
+          "key": "FLOW_RETURN_URL",
+          "sync": false
+        },
+        {
+          "key": "FLOW_REGISTRATION_RETURN_URL",
+          "sync": false
+        },
+        {
+          "key": "CLIENT_PORTAL_URL",
+          "sync": false
+        },
+        {
+          "key": "RESEND_API_KEY",
+          "sync": false
+        },
+        {
+          "key": "PAYMENT_EMAIL_FROM",
+          "sync": false
+        },
+        {
+          "key": "FLOW_SANDBOX_EMAIL_ALLOWLIST",
+          "sync": false
+        },
+        {
+          "key": "FLOW_ENVIRONMENT",
+          "value": "sandbox"
+        },
+        {
+          "key": "FLOW_LIVE_PAYMENTS_ENABLED",
+          "value": "false"
+        },
+        {
+          "key": "FLOW_WORKER_ENABLED",
+          "value": "false"
+        },
+        {
+          "key": "FLOW_SITE_REGISTRY",
+          "value": "[]"
+        },
+        {
+          "key": "RATE_LIMIT_DEFAULT_PER_MINUTE",
+          "value": "120"
+        },
+        {
+          "key": "RATE_LIMIT_AUTH_PER_MINUTE",
+          "value": "10"
+        },
+        {
+          "key": "RATE_LIMIT_VAULT_PER_MINUTE",
+          "value": "10"
+        },
+        {
+          "key": "RATE_LIMIT_EXPORT_PER_MINUTE",
+          "value": "10"
+        },
+        {
+          "key": "RATE_LIMIT_WEBHOOK_PER_MINUTE",
+          "value": "300"
+        }
+      ]
+    },
+    {
+      "type": "web",
+      "name": "zyteron-portal-staging",
+      "runtime": "node",
+      "region": "virginia",
+      "plan": "starter",
+      "branch": "feature/zyteron-payments-staging",
+      "autoDeployTrigger": "off",
+      "numInstances": 1,
+      "buildCommand": "npx --yes pnpm@10.17.1 install --frozen-lockfile --prod=false && npx --yes pnpm@10.17.1 --filter @zyteron/portal build",
+      "startCommand": "npx --yes pnpm@10.17.1 --filter @zyteron/portal start",
+      "healthCheckPath": "/login",
+      "envVars": [
+        {
+          "key": "NODE_VERSION",
+          "value": "22.23.3"
+        },
+        {
+          "key": "NODE_ENV",
+          "value": "production"
+        },
+        {
+          "key": "PORTAL_PUBLIC_ORIGIN",
+          "sync": false
+        },
+        {
+          "key": "ZYTERON_API_URL",
+          "sync": false
+        },
+        {
+          "key": "ZYTERON_API_HOST",
+          "sync": false
+        }
+      ]
+    }
+  ]
+}
