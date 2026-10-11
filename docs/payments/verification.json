@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-11",
+  "status": "LOCAL_IMPLEMENTATION_ONLY",
+  "api_tests": 382,
+  "sql_tests": 15,
+  "playwright_tests": 10,
+  "passed": [
+    "API types",
+    "portal types",
+    "API modified-files lint",
+    "portal lint",
+    "portal build",
+    "PDF render and visual inspection",
+    "npm production audit: 0 vulnerabilities",
+    "API Nest build"
+  ],
+  "not_validated": [
+    "Real Flow Sandbox transaction",
+    "Supabase deployed Auth/RLS/PostgREST/Storage",
+    "Email delivery",
+    "Render staging deployment",
+    "Real website maintenance acknowledgement"
+  ],
+  "remote_mutations": "Render/GitHub login session changes only; no services, database schema or payments changed",
+  "branding": "ZYTERON_ONLY_ON_OWN_CLIENT_UI_PDF_EMAIL",
+  "render_account_verified": "basededatos.server@gmail.com",
+  "render_workspace": "tea-csp9vv3gbbvc73e6q2v0",
+  "sandbox_auth_probe": {
+    "authenticated": false,
+    "http_status": 401,
+    "error_code": 501,
+    "operation": "read-only plans/list"
+  },
+  "http_smoke": "passed; actual Nest bootstrap/API prefix/fail-closed/identity spoofing"
+}

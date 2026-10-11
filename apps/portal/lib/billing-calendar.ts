@@ -1,0 +1,9 @@
+export type BillingProjection={date:string;monthName:string;amount:string;kind:'confirmed'|'overdue'|'forecast'};
+export function moneyCLP(value:string){if(!/^\d+$/.test(value))throw new Error('Importe inválido');return new Intl.NumberFormat('es-CL',{style:'currency',currency:'CLP',maximumFractionDigits:0}).format(BigInt(value));}
+/** Civil dates and a fixed anchor day. No UTC conversion of dates and no summed currencies. */
+export function monthProjection(input:{start:string;end:string;amount:string;year:number;anchorDay:number;confirmedMonths:string[];overdueMonths:string[];referenceDate:string}):BillingProjection[]{
+ if(!Number.isInteger(input.year)||input.year<2000||input.year>2100||!Number.isInteger(input.anchorDay)||input.anchorDay<1||input.anchorDay>31||!/^\d+$/.test(input.amount))throw new Error('Proyección inválida');
+ const dates=[input.start,input.end,input.referenceDate];for(const date of dates){if(!/^\d{4}-\d{2}-\d{2}$/.test(date))throw new Error('Fecha inválida');const[y,m,d]=date.split('-').map(Number);const check=new Date(Date.UTC(y!,m!-1,d!));if(check.getUTCFullYear()!==y||check.getUTCMonth()!==m!-1||check.getUTCDate()!==d)throw new Error('Fecha inválida');}
+ if(input.end<input.start)throw new Error('Contrato inválido');
+ return Array.from({length:12},(_,i)=>{const period=`${input.year}-${String(i+1).padStart(2,'0')}`;const last=new Date(Date.UTC(input.year,i+1,0)).getUTCDate();const date=period+'-'+String(Math.min(input.anchorDay,last)).padStart(2,'0');const monthName=new Intl.DateTimeFormat('es-CL',{month:'long',timeZone:'UTC'}).format(new Date(Date.UTC(input.year,i,1)));return{date,monthName,amount:input.amount,kind:input.confirmedMonths.includes(period)?'confirmed' as const:input.overdueMonths.includes(period)?'overdue' as const:'forecast' as const};}).filter(r=>r.date>=input.start&&r.date<=input.end);
+}
