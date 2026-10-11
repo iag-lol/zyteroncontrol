@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, ServiceUnavailableException } from "@nestjs/common";
+import { BadRequestException, ConflictException, Injectable, ServiceUnavailableException } from "@nestjs/common";
 import { randomUUID } from "node:crypto";
 import { createServerSupabase } from "../domain/server-supabase.js";
 import { defaultSettings, seedAccounts, seedChecklist, seedCostCenters, seedDocumentTypes, seedExpenseCategories, seedForecastScenarios, seedReminderRules, seedRules, seedTaxRules } from "./finance.seed.js";
@@ -158,6 +158,11 @@ export class FinanceRepository {
   }
 
   // ------------------------------------------------------------------------------------------ procedimientos (RPC en Supabase, equivalentes en memoria)
+  async flowRpc<T>(name:string,args:Row):Promise<T>{
+    if(!this.supabase)throw new ServiceUnavailableException("Flow requiere persistencia real.");
+    if(!/^finance_flow_[a-z_]+$/.test(name))throw new BadRequestException("Procedimiento Flow inválido.");
+    return this.rpc<T>(name,args);
+  }
   private async rpc<T>(name:string,args:Row):Promise<T>{const{data,error}=await(this.supabase as any).rpc(name,args);if(error)throw toHttp(error);return data as T;}
   async ensurePeriod(date:string):Promise<string>{
     if(this.supabase)return this.rpc<string>("finance_ensure_period",{p_date:date});

@@ -1,3 +1,9 @@
+import { FlowPaymentProvider } from './flow.provider.js';
+import { FlowFinanceService } from './flow.service.js';
+import { FlowSubscriptionService } from './flow.subscriptions.js';
+import { FlowWorker } from './flow.worker.js';
+import { FlowSiteModeService } from './flow.site-mode.js';
+import { FlowInternalController, FlowClientSubscriptionsController, FlowCapabilityController, FlowCallbackController, FlowSiteModeController } from './flow.controller.js';
 import { Module } from "@nestjs/common";
 import { ClientServicesModule } from "../client-services/client-services.module.js";
 import { ClientsModule } from "../clients/clients.module.js";
@@ -23,8 +29,8 @@ import { FinanceSources } from "./finance.sources.js";
 /** Módulo 07 · Financial & Accounting Control Center. Consume Clientes, Servicios, Contratos, Ventas y Operaciones sin duplicarlos. */
 @Module({
   imports:[ClientsModule,ClientServicesModule,ContractsModule,CommercialModule,OperationsModule],
-  controllers:[FinanceController,PaymentWebhookController,PublicPaymentController,PortalQuotePaymentsController],
-  providers:[FinanceRepository,FinanceSources,FinanceContext,FinanceSettingsService,LedgerService,AccountingRuleEngine,StatementsService,InvoiceService,BillingScheduleService,DteCertificateProvider,DteSchemaValidator,SiiDirectDteProvider,ExternalCertifiedDteProvider,DteService,ReceivedDocumentsService,RcvService,MercadoPagoPaymentProvider,{provide:PaymentProvider,useExisting:MercadoPagoPaymentProvider},PaymentService,OnlinePaymentService,CollectionsService,VendorService,ApprovalService,ExpenseService,PayableService,BankService,StatementImportService,ReconciliationService,CloseService,BudgetService,TaxService,CommissionFinanceService,AnalyticsService,ReportsService,CopilotService,QuotePaymentService,FinanceScheduler],
+  controllers:[FlowInternalController,FlowClientSubscriptionsController,FlowCapabilityController,FlowCallbackController,FlowSiteModeController,FinanceController,PaymentWebhookController,PublicPaymentController,PortalQuotePaymentsController],
+  providers:[FlowPaymentProvider,FlowFinanceService,FlowSubscriptionService,FlowWorker,FlowSiteModeService,FinanceRepository,FinanceSources,FinanceContext,FinanceSettingsService,LedgerService,AccountingRuleEngine,StatementsService,InvoiceService,BillingScheduleService,DteCertificateProvider,DteSchemaValidator,SiiDirectDteProvider,ExternalCertifiedDteProvider,DteService,ReceivedDocumentsService,RcvService,MercadoPagoPaymentProvider,{provide:PaymentProvider,useExisting:MercadoPagoPaymentProvider},PaymentService,OnlinePaymentService,CollectionsService,VendorService,ApprovalService,ExpenseService,PayableService,BankService,StatementImportService,ReconciliationService,CloseService,BudgetService,TaxService,CommissionFinanceService,AnalyticsService,ReportsService,CopilotService,QuotePaymentService,FinanceScheduler],
   exports:[AnalyticsService],
 })
 export class FinanceModule {}
