@@ -1,6 +1,6 @@
 {
   "date": "2026-10-11",
-  "status": "LOCAL_IMPLEMENTATION_ONLY",
+  "status": "LOCAL_SANDBOX_AUTHENTICATED_STACK_VALIDATED_PAYMENTS_DISABLED",
   "api_tests": 382,
   "sql_tests": 15,
   "playwright_tests": 10,
@@ -12,7 +12,18 @@
     "portal build",
     "PDF render and visual inspection",
     "npm production audit: 0 vulnerabilities",
-    "API Nest build"
+    "API Nest build",
+    "Clean checkout frozen pnpm install",
+    "Clean contracts/API/portal builds",
+    "Clean full monorepo lint",
+    "Clean API typecheck",
+    "Production portal startup and forged-return/origin HTTP smoke",
+    "Official Render Blueprint JSON Schema",
+    "Real native PostgreSQL full canonical schema migrations",
+    "Real local PostgREST grants and private Storage integration",
+    "Local API loopback startup with signed-auth mode",
+    "Sandbox authenticated HTTP200 read-only probe",
+    "Local scripts ESLint"
   ],
   "not_validated": [
     "Real Flow Sandbox transaction",
@@ -21,15 +32,71 @@
     "Render staging deployment",
     "Real website maintenance acknowledgement"
   ],
-  "remote_mutations": "Render/GitHub login session changes only; no services, database schema or payments changed",
+  "remote_mutations": "Login sessions; source branch and draft PR #9 only. No remote service, database migration, subscription, payment or email created.",
   "branding": "ZYTERON_ONLY_ON_OWN_CLIENT_UI_PDF_EMAIL",
   "render_account_verified": "basededatos.server@gmail.com",
   "render_workspace": "tea-csp9vv3gbbvc73e6q2v0",
   "sandbox_auth_probe": {
-    "authenticated": false,
-    "http_status": 401,
-    "error_code": 501,
-    "operation": "read-only plans/list"
+    "authenticated": true,
+    "http_status": 200,
+    "error_code": null,
+    "operation": "read-only plans/list",
+    "verified_at": "2026-10-11T09:06:15.300Z"
   },
-  "http_smoke": "passed; actual Nest bootstrap/API prefix/fail-closed/identity spoofing"
+  "http_smoke": "passed; actual Nest bootstrap/API prefix/fail-closed/identity spoofing",
+  "github": {
+    "repository": "iag-lol/zyteroncontrol",
+    "branch": "feature/zyteron-payments-staging",
+    "commit": "f4872a95b093ea7192e9168a0241017d77096725",
+    "draft_pull_request": "https://github.com/iag-lol/zyteroncontrol/pull/9",
+    "authorized_by_user": true,
+    "remote_ci_runs": 0
+  },
+  "credentials_environment_probe": {
+    "read_only": true,
+    "sandbox_http_status": 401,
+    "sandbox_provider_code": 501,
+    "production_http_status": 200,
+    "conclusion": "INITIAL_KEYS_ARE_PRODUCTION_NOT_SANDBOX",
+    "temporary_credentials_deleted": true
+  },
+  "sandbox_onboarding": "COMPLETE",
+  "supabase_account_verified": "zyteron.spa@gmail.com",
+  "staging_database": "LOCAL_NATIVE_SUPABASE",
+  "staging_cost_estimate": {
+    "currency": "USD",
+    "supabase_separate_pro_organization_base": 25,
+    "render_two_starter_services_base": 14,
+    "total_monthly_base": 39,
+    "excludes": "taxes and extra usage",
+    "user_authorized": false,
+    "charged": false,
+    "decision": "USER_CHOSE_LOCAL_ONLY"
+  },
+  "local_stack": {
+    "cli_version": "2.120.0",
+    "runtime": "native-experimental",
+    "canonical_migrations_applied": 23,
+    "cloud_linked": false,
+    "clients": 0,
+    "payments": 0,
+    "financial_tables_verified": 8,
+    "anonymous_reads_denied": true,
+    "anonymous_mutation_rpc_denied": true,
+    "unknown_account_binding_denied": true,
+    "private_pdf_storage_bytes_verified": true,
+    "anonymous_pdf_download_denied": true,
+    "api_spoofed_identity_denied": true,
+    "api_bind": "127.0.0.1:4000",
+    "worker_enabled": false,
+    "site_bindings": 0,
+    "external_email_sent": false
+  },
+  "private_configuration": {
+    "sandbox_credentials_verified_and_saved_locally": true,
+    "file_permissions": "0600",
+    "git_ignored": true,
+    "temporary_copy_deleted": true,
+    "secrets_printed": false
+  }
 }

@@ -13,13 +13,15 @@ La rama `feature/zyteron-payments-staging` reúne API, migración y portal bajo 
 - Supabase: zyteron.spa@gmail.com, organización actual cssnoptmxkydetgomqyb.
 - Acceso de pruebas: https://dashboard.sandbox.flow.cl/. El enlace legado `/app/web/misDatos.php` redirigió a producción y no debe utilizarse para obtener credenciales Sandbox.
 
-La verificación firmada y de solo lectura del 11-10-2026 identificó las primeras claves como productivas: producción HTTP200, Sandbox HTTP401/code501. Se borró el archivo temporal de credenciales. No se creó ningún cobro. La cuenta Sandbox nueva está en su onboarding.
+La verificación firmada y de solo lectura del 11-10-2026 identificó las primeras claves como productivas: producción HTTP200, Sandbox HTTP401/code501. La cuenta nueva completó el onboarding y sus claves nuevas respondieron HTTP200 en Sandbox. No se creó ningún cobro ni se conservaron los archivos temporales de copia de claves.
 
 ## Base aislada y costo antes de crear recursos
 
 Los dos proyectos gratuitos actuales de Supabase están ocupados; el dashboard bloquea un tercero. No aplicar la migración Sandbox en ADMINZYTERONCONTROL. Opción preparada: organización separada de pruebas en Pro con un proyecto Micro, manteniendo los dos proyectos actuales sin cambios.
 
 Estimación base: Supabase Pro con un Micro cubierto por el crédito, USD25/mes; dos servicios Render Starter, USD14/mes; total USD39/mes, más impuestos y consumos adicionales. No se contrató ni cobró nada. Verificar el importe mostrado en el checkout antes de contratar. Fuentes: https://supabase.com/docs/guides/platform/billing-faq y https://render.com/pricing.
+
+El usuario eligió **mantener la versión local**, por lo que esta propuesta queda aplazada. Se levantó Supabase local native con CLI 2.120.0, se aplicaron 23 migraciones canónicas y se verificaron acceso de servidor, denegación de anon, Storage privado y cabeceras falsas contra servicios locales reales. Se preservaron las cuatro copias de migraciones fuera del directorio activo; la reparación de Fenice no actúa en una base sin ambos registros. API local limitada a loopback, worker financiero apagado y sitios sin bindings. La web demo aún no cobra; callbacks HTTPS, Auth financiero y piloto externo siguen pendientes.
 
 ## Secuencia de activación
 

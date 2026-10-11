@@ -47,7 +47,7 @@ async function bootstrap() {
 
   app.enableShutdownHooks();
   const port = Number(process.env.PORT ?? 4000);
-  await app.listen(port);
+  await app.listen(port, process.env.API_BIND_ADDRESS ?? "0.0.0.0");
   console.log(`Zyteron Control API listening on http://localhost:${port}/api`);
 }
 

@@ -19,6 +19,12 @@ begin
   where id='8423191e-7dfe-48cf-81a7-2aa895068053'
   for update;
 
+  -- A new isolated database has neither production record to repair.
+  -- A partially missing existing chain remains an error requiring review.
+  if quote_row.id is null and work_row.id is null then
+    return;
+  end if;
+
   if quote_row.id is null or work_row.id is null then
     raise exception 'No se encontraron la cotización y la OT de Fenice';
   end if;
