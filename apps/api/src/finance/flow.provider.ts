@@ -17,7 +17,7 @@ export interface FlowSubscription {
 }
 export const flowStates: Record<number, FlowState> = {1:'PENDING',2:'CONFIRMED',3:'REJECTED',4:'CANCELLED'};
 const rejectReasons: Record<string,string> = {'-1':'La tarjeta no es válida.','-2':'El medio de pago informó un problema de conexión.','-3':'Se excedió el monto permitido.','-4':'La fecha de expiración no es válida.','-5':'El banco no pudo completar la autenticación.','-6':'El medio de pago rechazó la operación.','-7':'La tarjeta está bloqueada.','-8':'La tarjeta está vencida.','-9':'El medio no permite esta transacción.','-10':'El medio de pago informó un problema en la operación.','-11':'Se alcanzó el límite de intentos del medio de pago.'};
-export function flowReason(code:string|null){return code&&rejectReasons[code]||'Flow informó que el pago no fue aprobado. No se registró un abono.';}
+export function flowReason(code:string|null){return code&&rejectReasons[code]||'La pasarela informó que el pago no fue aprobado. No se registró un abono.';}
 export function clp(value:unknown):string {
   const s=typeof value==='number'?String(value):typeof value==='string'?value:'';
   if(!/^(0|[1-9]\d{0,11})(?:\.0{1,2})?$/.test(s))throw new BadRequestException('Importe CLP inválido.');
